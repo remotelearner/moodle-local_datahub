@@ -728,7 +728,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
      * @param string $filename The import file name, used for logging
      * @return boolean true on success, otherwise false
      */
-    function user_create($record, $filename) {
+    public function user_create($record, $filename) {
         global $CFG, $DB;
         require_once($CFG->dirroot.'/user/lib.php');
         require_once($CFG->dirroot.'/user/profile/lib.php');
@@ -822,7 +822,11 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
 
         //sync to PM is necessary
         $user = $DB->get_record('user', array('id' => $record->id));
-        events_trigger('user_created', $user);
+        $eventdata = array('objectid' => $record->id,
+            'context' => context_user::instance($record->id)
+        );
+        $event = \core\event\user_created::create($eventdata);
+        $event->trigger();
 
         //string to describe the user
         $user_descriptor = $this->get_user_descriptor($record);
@@ -1058,7 +1062,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
      * @param string $filename The import file name, used for logging
      * @return boolean true on success, otherwise false
      */
-    function user_update($record, $filename) {
+    public function user_update($record, $filename) {
         global $CFG, $DB;
         require_once($CFG->dirroot.'/user/lib.php');
         require_once($CFG->dirroot.'/user/profile/lib.php');
@@ -1129,8 +1133,11 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
         profile_save_data($record);
 
         // trigger user_updated event on the full database user row
-        $updateduser = $DB->get_record('user', array('id' => $record->id));
-        events_trigger('user_updated', $updateduser);
+        $eventdata = array('objectid' => $record->id,
+            'context' => context_user::instance($record->id)
+        );
+        $event = \core\event\user_updated::create($eventdata);
+        $event->trigger();
 
         //string to describe the user
         $user_descriptor = $this->get_user_descriptor($record);
