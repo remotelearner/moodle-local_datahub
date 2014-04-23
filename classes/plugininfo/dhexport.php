@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * @package    local_datahub
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -34,7 +34,7 @@ class dhexport extends \core\plugininfo\base {
     /** @var string the plugintype name, eg. mod, auth or workshopform */
     public $type = 'local';
     /** @var string full path to the location of all the plugins of this type */
-    public $typerootdir = '/local/datahub/dhexport/';
+    public $typerootdir = '/local/datahub/exportplugins/';
     /** @var string the plugin name, eg. assignment, ldap */
     public $name = 'dhexport';
     /** @var string the localized plugin name */

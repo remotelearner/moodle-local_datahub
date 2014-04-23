@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * @package    local_datahub
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote Learner.net Inc http://www.remote-learner.net
+ * @copyright  (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -1226,7 +1226,7 @@ class utilitymethod_testcase extends rlip_test {
         global $CFG, $DB;
         require_once($CFG->dirroot.'/blocks/moodleblock.class.php');
         require_once($CFG->dirroot.'/local/datahub/db/uninstall.php');
-        require_once($CFG->dirroot.'/local/datahub/fileplugins/log/db/tasks.php');
+        require_once($CFG->dirroot.'/local/datahub/fileplugins/log/db/elistasks.php');
 
         // Setup some bogus config_plugins settings and local_eliscore_sched_tasks.
         set_config('bogus1', 1, 'dhexport_version1');
