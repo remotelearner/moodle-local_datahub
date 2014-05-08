@@ -184,7 +184,7 @@ class elis_pmentity_field_mappings_testcase extends rlip_elis_test {
         $record = $DB->get_record(curriculum::TABLE, array('idnumber' => 'testprogramidnumber'));
         $this->assertEquals('testprogramdescription', $record->description);
 
-        $instance = \local_elisprogram\context\program::instance(1);
+        $instance = \local_elisprogram\context\program::instance($record->id);
 
         $this->assertTrue($DB->record_exists(field_data_int::TABLE, array(
             'fieldid' => $customfieldid,
@@ -240,7 +240,7 @@ class elis_pmentity_field_mappings_testcase extends rlip_elis_test {
         $record = $DB->get_record(curriculum::TABLE, array('idnumber' => 'testprogramidnumber'));
         $this->assertEquals('updatedtestprogramdescription', $record->description);
 
-        $instance = \local_elisprogram\context\program::instance(1);
+        $instance = \local_elisprogram\context\program::instance($record->id);
 
         $this->assertTrue($DB->record_exists(field_data_int::TABLE, array(
             'fieldid' => $customfieldid,
@@ -332,7 +332,7 @@ class elis_pmentity_field_mappings_testcase extends rlip_elis_test {
 
         $this->assertEquals(1, $DB->count_records(pmclass::TABLE));
 
-        $instance = \local_elisprogram\context\track::instance(1);
+        $instance = \local_elisprogram\context\track::instance($record->id);
 
         $this->assertTrue($DB->record_exists(field_data_int::TABLE, array(
             'fieldid' => $customfieldid,
@@ -386,7 +386,7 @@ class elis_pmentity_field_mappings_testcase extends rlip_elis_test {
         $record = $DB->get_record(track::TABLE, array('idnumber' => 'testtrackidnumber'));
         $this->assertEquals('updatedtesttrackdescription', $record->description);
 
-        $instance = \local_elisprogram\context\track::instance(1);
+        $instance = \local_elisprogram\context\track::instance($record->id);
 
         $this->assertTrue($DB->record_exists(field_data_int::TABLE, array(
             'fieldid' => $customfieldid,
@@ -507,7 +507,7 @@ class elis_pmentity_field_mappings_testcase extends rlip_elis_test {
             'location' => $course->id
         )));
 
-        $instance = \local_elisprogram\context\course::instance(1);
+        $instance = \local_elisprogram\context\course::instance($record->id);
 
         $this->assertTrue($DB->record_exists(field_data_int::TABLE, array(
             'fieldid' => $customfieldid,
@@ -601,7 +601,7 @@ class elis_pmentity_field_mappings_testcase extends rlip_elis_test {
             'location' => $course->id
         )));
 
-        $instance = \local_elisprogram\context\course::instance(1);
+        $instance = \local_elisprogram\context\course::instance($record->id);
 
         $this->assertTrue($DB->record_exists(field_data_int::TABLE, array(
             'fieldid' => $customfieldid,
@@ -729,7 +729,7 @@ class elis_pmentity_field_mappings_testcase extends rlip_elis_test {
             'moodlecourseid' => $course->id
         )));
 
-        $instance = \local_elisprogram\context\pmclass::instance(1);
+        $instance = \local_elisprogram\context\pmclass::instance($record->id);
 
         $this->assertTrue($DB->record_exists(field_data_int::TABLE, array(
             'fieldid' => $customfieldid,
@@ -828,7 +828,8 @@ class elis_pmentity_field_mappings_testcase extends rlip_elis_test {
             'moodlecourseid' => $course->id
         )));
 
-        $instance = \local_elisprogram\context\pmclass::instance(1);
+        $record = $DB->get_record(pmclass::TABLE, array('idnumber' => $data['idnumber']));
+        $instance = \local_elisprogram\context\pmclass::instance($record->id);
 
         $this->assertTrue($DB->record_exists(field_data_int::TABLE, array(
             'fieldid' => $customfieldid,

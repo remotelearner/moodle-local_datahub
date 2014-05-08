@@ -6341,7 +6341,12 @@ class version1filesystemlogging_testcase extends rlip_test {
         $manual = true;
         $format = get_string('logfile_timestamp', 'local_datahub');
         $entity = 'user';
-        $starttime = $DB->get_field(RLIP_LOG_TABLE, 'starttime', array('id'=>'1'));
+
+        $record = $DB->get_records(RLIP_LOG_TABLE, array(), 'id DESC', '*', 0, 1);
+        $this->assertNotEmpty($record);
+        $record = reset($record);
+        $starttime = $record->starttime;
+
         $testfilename = $filepath.'/'.$plugintype.'_version1_manual_'.$entity.'_'.userdate($starttime, $format).'.log';
         $testfilename = self::get_current_logfile($testfilename);
 

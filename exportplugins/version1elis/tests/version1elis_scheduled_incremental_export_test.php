@@ -204,12 +204,13 @@ class version1elisscheduledincrementalexport_testcase extends rlip_elis_test {
         run_ipjob($taskname);
 
         // Path to export file.
-        $datestr = date('M_j_Y_His', $starttime);
-        $filepath = $CFG->dataroot.'/datahub/dhexport_version1elis/export_version1elis_'.$datestr.'.csv';
+        $datestr = date('M_j_Y_', $starttime);
+        $filepath = $CFG->dataroot.'/datahub/dhexport_version1elis/export_version1elis_'.$datestr.'*.csv';
 
         // Validate that the file exists.
-        $this->assertTrue(file_exists($filepath));
-        $handle = fopen($filepath, 'r');
+        $files = glob($filepath);
+        $this->assertTrue(!empty($files));
+        $handle = fopen($files[0], 'r');
         $this->assertNotEquals(false, $handle);
 
         // Validate header.

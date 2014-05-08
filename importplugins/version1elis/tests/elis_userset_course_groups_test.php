@@ -215,7 +215,8 @@ class elis_userset_course_groups_testcase extends rlip_elis_test {
         require_once($CFG->dirroot.'/lib/grouplib.php');
 
         // Validate group creation.
-        $groupid = groups_get_group_by_name(2, 'testusersetname');
+        $courseid = $DB->get_field('course', 'id', array('shortname' => 'testcourseshortname'));
+        $groupid = groups_get_group_by_name($courseid, 'testusersetname');
         $this->assertNotEquals(false, $groupid);
 
         // Validate user-group assignment.

@@ -135,11 +135,12 @@ class elis_cluster_profile_import_testcase extends rlip_elis_test {
         $result = $importplugin->process_record('user', $record, 'bogus');
 
         $userid = $DB->get_field(user::TABLE, 'id', array('username' => 'testuserusername'));
+        $clusterid = $DB->get_field(userset::TABLE, 'id', array('name' => 'testusersetname'));
 
         // Validation.
         $this->assertTrue($DB->record_exists(clusterassignment::TABLE, array(
             'userid' => $userid,
-            'clusterid' => 1,
+            'clusterid' => $clusterid,
             'plugin' => 'moodleprofile'
         )));
     }
@@ -172,10 +173,13 @@ class elis_cluster_profile_import_testcase extends rlip_elis_test {
         $importplugin->fslogger = new silent_fslogger(null);
         $importplugin->process_record('user', $record, 'bogus');
 
+        $userid = $DB->get_field(user::TABLE, 'id', array('username' => 'testuserusername'));
+        $clusterid = $DB->get_field(userset::TABLE, 'id', array('name' => 'testusersetname'));
+
         // Validation.
         $this->assertTrue($DB->record_exists(clusterassignment::TABLE, array(
-            'userid' => 1,
-            'clusterid' => 1,
+            'userid' => $userid,
+            'clusterid' => $clusterid,
             'plugin' => 'moodleprofile'
         )));
     }
@@ -214,10 +218,13 @@ class elis_cluster_profile_import_testcase extends rlip_elis_test {
         $importplugin->fslogger = new silent_fslogger(null);
         $importplugin->process_record('user', $record, 'bogus');
 
+        $userid = $DB->get_field(user::TABLE, 'id', array('username' => 'testuserusername'));
+        $clusterid = $DB->get_field(userset::TABLE, 'id', array('name' => 'testusersetname'));
+
         // Validation.
         $this->assertTrue($DB->record_exists(clusterassignment::TABLE, array(
-            'userid' => 1,
-            'clusterid' => 1,
+            'userid' => $userid,
+            'clusterid' => $clusterid,
             'plugin' => 'moodleprofile'
         )));
     }
@@ -257,10 +264,13 @@ class elis_cluster_profile_import_testcase extends rlip_elis_test {
         $importplugin->fslogger = new silent_fslogger(null);
         $importplugin->process_record('user', $record, 'bogus');
 
+        $userid = $DB->get_field(user::TABLE, 'id', array('username' => 'testuserusername'));
+        $clusterid = $DB->get_field(userset::TABLE, 'id', array('name' => 'testusersetname'));
+
         // Validation.
         $this->assertTrue($DB->record_exists(clusterassignment::TABLE, array(
-            'userid' => 1,
-            'clusterid' => 1,
+            'userid' => $userid,
+            'clusterid' => $clusterid,
             'plugin' => 'moodleprofile'
         )));
     }

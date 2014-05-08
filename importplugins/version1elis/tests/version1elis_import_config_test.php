@@ -277,6 +277,8 @@ class version1elisimportconfig_testcase extends rlip_elis_test {
         $file = get_plugin_directory('dhimport', 'version1elis').'/lib.php';
         require_once($file);
 
+        $DB->delete_records(RLIPIMPORT_VERSION1ELIS_MAPPING_TABLE);
+
         // Obtain available fields.
         $plugin = new rlip_importplugin_version1elis(null, false);
         $options = $plugin->get_available_fields($entitytype);

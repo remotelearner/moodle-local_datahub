@@ -323,6 +323,8 @@ class version1importconfig_testcase extends rlip_test {
         $file = get_plugin_directory('dhimport', 'version1').'/lib.php';
         require_once($file);
 
+        $DB->delete_records(RLIPIMPORT_VERSION1_MAPPING_TABLE);
+
         // Obtain available fields.
         $plugin = new rlip_importplugin_version1(null, false);
         $options = $plugin->get_available_fields($entitytype);
@@ -354,7 +356,7 @@ class version1importconfig_testcase extends rlip_test {
 
         // Data validation.
         $params = array('entitytype' => $entitytype);
-        $this->assertEquals($DB->get_records(RLIPIMPORT_VERSION1_MAPPING_TABLE, $params, 'id'), $expecteddata);
+        $this->assertEquals($expecteddata, $DB->get_records(RLIPIMPORT_VERSION1_MAPPING_TABLE, $params, 'id ASC'));
     }
 
     /**

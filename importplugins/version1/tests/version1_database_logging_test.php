@@ -1344,7 +1344,10 @@ class version1databaselogging_testcase extends rlip_test {
         $this->run_user_import($data);
         $maxtime = time();
 
-        $record = $DB->get_record(RLIP_LOG_TABLE, array('id' => 1));
+        $record = $DB->get_records(RLIP_LOG_TABLE, array(), 'id DESC', '*', 0, 1);
+        $this->assertNotEmpty($record);
+        $record = reset($record);
+
         $this->assertGreaterThanOrEqual($mintime, $record->endtime);
         $this->assertLessThanOrEqual($maxtime, $record->endtime);
     }
@@ -1362,7 +1365,10 @@ class version1databaselogging_testcase extends rlip_test {
         $this->run_user_import($data);
         $maxtime = time();
 
-        $record = $DB->get_record(RLIP_LOG_TABLE, array('id' => 1));
+        $record = $DB->get_records(RLIP_LOG_TABLE, array(), 'id DESC', '*', 0, 1);
+        $this->assertNotEmpty($record);
+        $record = reset($record);
+
         $this->assertGreaterThanOrEqual($mintime, $record->endtime);
         $this->assertLessThanOrEqual($maxtime, $record->endtime);
     }
@@ -1380,7 +1386,10 @@ class version1databaselogging_testcase extends rlip_test {
         $this->run_user_import($data);
         $maxtime = time();
 
-        $record = $DB->get_record(RLIP_LOG_TABLE, array('id' => 1));
+        $record = $DB->get_records(RLIP_LOG_TABLE, array(), 'id DESC', '*', 0, 1);
+        $this->assertNotEmpty($record);
+        $record = reset($record);
+
         $this->assertGreaterThanOrEqual($mintime, $record->endtime);
         $this->assertLessThanOrEqual($maxtime, $record->endtime);
     }
@@ -1403,7 +1412,10 @@ class version1databaselogging_testcase extends rlip_test {
         $importplugin->run(0, 0, 1);
         $maxtime = time();
 
-        $record = $DB->get_record(RLIP_LOG_TABLE, array('id' => 1));
+        $record = $DB->get_records(RLIP_LOG_TABLE, array(), 'id DESC', '*', 0, 1);
+        $this->assertNotEmpty($record);
+        $record = reset($record);
+
         $this->assertGreaterThanOrEqual($mintime, $record->endtime);
         $this->assertLessThanOrEqual($maxtime, $record->endtime);
     }
@@ -1430,7 +1442,10 @@ class version1databaselogging_testcase extends rlip_test {
         $this->run_user_import($data);
         $maxtime = time();
 
-        $record = $DB->get_record(RLIP_LOG_TABLE, array('id' => 1));
+        $record = $DB->get_records(RLIP_LOG_TABLE, array(), 'id DESC', '*', 0, 1);
+        $this->assertNotEmpty($record);
+        $record = reset($record);
+
         $this->assertGreaterThanOrEqual($mintime, $record->endtime);
         $this->assertLessThanOrEqual($maxtime, $record->endtime);
     }
