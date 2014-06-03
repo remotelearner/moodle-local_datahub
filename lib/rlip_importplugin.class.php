@@ -607,7 +607,15 @@ abstract class rlip_importplugin_base extends rlip_dataplugin {
         $action = isset($record->action) ? $record->action : '';
         $method = "{$entity}_action";
 
-        return $this->$method($record, $action, $filename);
+        try {
+            $result = $this->$method($record, $action, $filename);
+        } catch (Exception $e) {
+            $result = false;
+            // log error
+            $message = 'Exception processing record: '.$e->getMessage();
+            $this->fslogger->log_failure($message, 0, $filename, $this->linenumber);
+        }
+        return $result;
     }
 
     /**
