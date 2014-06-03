@@ -1434,4 +1434,43 @@ class version1databaselogging_testcase extends rlip_test {
         $this->assertGreaterThanOrEqual($mintime, $record->endtime);
         $this->assertLessThanOrEqual($maxtime, $record->endtime);
     }
+
+    /**
+     * Validate that invalid file encoding do not throw exception
+     * ELIS-8721
+     */
+    public function test_version1_noexception_badfileencoding() {
+        global $CFG, $DB;
+        require_once($CFG->dirroot.'/local/datahub/lib.php');
+
+        // Set the log file name to a fixed value.
+        $filepath = $CFG->dataroot;
+
+        // Set up a "user" import provider, using a single fixed file.
+        // MUST copy file to temp area 'cause it'll be deleted after import.
+        $testfile = dirname(__FILE__).'/fixtures/userfile_badencoding.csv';
+        $tempdir = $CFG->dataroot.'/local_datahub_phpunit/';
+        $file = $tempdir.'userfile_badencoding.csv';
+        @mkdir($tempdir, 0777, true);
+        @copy($testfile, $file);
+        $provider = new rlipimport_version1_importprovider_file($file, 'user');
+
+        // Run the import.
+        $importplugin = new rlip_importplugin_version1($provider);
+        $result = $importplugin->run();
+        $this->assertNull($result);
+
+        // Data validation.
+        $select = $DB->sql_like('statusmessage', ':message');
+        $params = array(
+            'filesuccesses' => 0,
+            'filefailures' => 1,
+            'message' => 'One or more lines from import file userfile_badencoding.csv failed because they contain data errors. Please fix the import file and re-upload it.');
+        $exists = $DB->record_exists_select(RLIP_LOG_TABLE, $select, $params);
+        $this->assertEquals($exists, true);
+
+        // Clean-up data file & tempdir.
+        @unlink($file);
+        @rmdir($tempdir);
+    }
 }

@@ -1,0 +1,2 @@
+action,password,username,idnumber,firstname,lastname,email,city,country,auth
+add,Test123!,sojenkins843,sojenkins843,Sport,Jenkiï,sojenkins843@my.pittcc.edu,Greenville,US,cas
