@@ -1291,6 +1291,9 @@ class version1elisfilesystemsuccesslogging_testcase extends rlip_elis_test {
         unset_config('noemailever');
         $sink = $this->redirectEmails();
 
+        // Force refreshing of configuration.
+        elis::$config = new elis_config();
+
         // Validation.
         $expectedmessage = "[enrolment.csv line 2] User with {$identifier} successfully {$messagesuffix}\n";
         $this->assert_data_produces_message($data, $expectedmessage, 'enrolment');

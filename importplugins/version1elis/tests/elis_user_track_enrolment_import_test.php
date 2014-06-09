@@ -70,6 +70,9 @@ class elis_user_track_enrolment_testcase extends rlip_elis_test {
         $this->setAdminUser();
         unset_config('noemailever');
 
+        // Force refreshing of configuration.
+        elis::$config = new elis_config();
+
         $user = new user(array(
             'idnumber' => 'testuseridnumber',
             'username' => 'testuserusername',

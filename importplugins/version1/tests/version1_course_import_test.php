@@ -3023,7 +3023,7 @@ class version1courseimport_testcase extends rlip_test {
     public function test_version1importsucceedswithmaxlengthcoursefields() {
         // Data for all fixed-size fields at their maximum sizes.
         $data = array(
-            'fullname' => str_repeat('x', 254),
+            'fullname' => str_repeat('x', 248),
             'shortname' => str_repeat('x', 100),
             'idnumber' => str_repeat('x', 100)
         );

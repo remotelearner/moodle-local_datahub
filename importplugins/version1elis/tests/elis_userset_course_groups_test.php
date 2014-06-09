@@ -296,6 +296,7 @@ class elis_userset_course_groups_testcase extends rlip_elis_test {
     public function test_user_update_triggers_group_setup() {
         global $CFG;
         require_once($CFG->dirroot.'/local/elisprogram/lib/data/user.class.php');
+        require_once($CFG->dirroot.'/lib/eventslib.php');
 
         $this->set_up_required_data(false, true, true, true);
 
@@ -313,6 +314,9 @@ class elis_userset_course_groups_testcase extends rlip_elis_test {
         $importplugin = rlip_dataplugin_factory::factory('dhimport_version1elis');
         $importplugin->fslogger = new silent_fslogger(null);
         $importplugin->process_record('user', $record, 'bogus');
+
+        // Ensure that the triggers have run.
+        events_cron();
 
         $this->validate_end_result();
     }

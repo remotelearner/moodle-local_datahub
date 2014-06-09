@@ -30,6 +30,7 @@ require_once($CFG->dirroot.'/local/datahub/tests/other/rlip_test.class.php');
 // Libs.
 require_once($CFG->dirroot.'/local/datahub/lib/rlip_dataplugin.class.php');
 require_once($CFG->dirroot.'/local/datahub/tests/other/silent_fslogger.class.php');
+require_once($CFG->dirroot.'/lib/eventslib.php');
 
 /**
  * Test class for validating that users are auto-assigned to clusters (i.e.
@@ -137,6 +138,9 @@ class elis_cluster_profile_import_testcase extends rlip_elis_test {
         $userid = $DB->get_field(user::TABLE, 'id', array('username' => 'testuserusername'));
         $clusterid = $DB->get_field(userset::TABLE, 'id', array('name' => 'testusersetname'));
 
+        // Ensure that the custom fields have been synced.
+        events_cron();
+
         // Validation.
         $this->assertTrue($DB->record_exists(clusterassignment::TABLE, array(
             'userid' => $userid,
@@ -175,6 +179,9 @@ class elis_cluster_profile_import_testcase extends rlip_elis_test {
 
         $userid = $DB->get_field(user::TABLE, 'id', array('username' => 'testuserusername'));
         $clusterid = $DB->get_field(userset::TABLE, 'id', array('name' => 'testusersetname'));
+
+        // Ensure that the custom fields have been synced.
+        events_cron();
 
         // Validation.
         $this->assertTrue($DB->record_exists(clusterassignment::TABLE, array(
@@ -221,6 +228,9 @@ class elis_cluster_profile_import_testcase extends rlip_elis_test {
         $userid = $DB->get_field(user::TABLE, 'id', array('username' => 'testuserusername'));
         $clusterid = $DB->get_field(userset::TABLE, 'id', array('name' => 'testusersetname'));
 
+        // Ensure that the custom fields have been synced.
+        events_cron();
+
         // Validation.
         $this->assertTrue($DB->record_exists(clusterassignment::TABLE, array(
             'userid' => $userid,
@@ -266,6 +276,9 @@ class elis_cluster_profile_import_testcase extends rlip_elis_test {
 
         $userid = $DB->get_field(user::TABLE, 'id', array('username' => 'testuserusername'));
         $clusterid = $DB->get_field(userset::TABLE, 'id', array('name' => 'testusersetname'));
+
+        // Ensure that the custom fields have been synced.
+        events_cron();
 
         // Validation.
         $this->assertTrue($DB->record_exists(clusterassignment::TABLE, array(
