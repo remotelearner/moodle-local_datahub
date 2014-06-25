@@ -503,7 +503,7 @@ class version1export_testcase extends rlip_test {
         $this->load_csv_data();
 
         // Delete the grade record.
-        $DB->delete_records('grade_grades', array('id' => 1));
+        $DB->delete_records('grade_grades');
 
         $data = $this->get_export_data();
 
@@ -1532,6 +1532,7 @@ class version1export_testcase extends rlip_test {
         // Lower bound on starttime.
         $starttime = time();
         $datestr = date_format_string($starttime, '%b_%e_%Y_'); // not Windows compatible %e
+        $datestr = str_replace(' ', '', $datestr); // %e will add a space before single digits.
         $outputfilename = 'rliptestexport_'.$datestr.'*.csv'; // Wildcard for time
 
         // Run the export.

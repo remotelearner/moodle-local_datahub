@@ -149,7 +149,9 @@ class elis_elis_multivalue_custom_fields_import_testcase extends rlip_elis_test 
         // Obtain instance.
         $contextlevel = \local_eliscore\context\helper::get_level_from_name($contextlevelname);
         $contextlevel = \local_eliscore\context\helper::get_class_for_level($contextlevel);
-        $instance = $contextlevel::instance(1);
+        $entity = $DB->get_records($entitytable, array(), 'id DESC', 'id', 0, 1);
+        $entity = reset($entity);
+        $instance = $contextlevel::instance($entity->id);
 
         // Validate specific values.
         foreach ($values as $value) {

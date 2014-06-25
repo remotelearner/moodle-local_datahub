@@ -1140,8 +1140,10 @@ class version1elisfilesystemsuccesslogging_testcase extends rlip_elis_test {
      *
      * @param string $contextlevel The string descriptor of the context level
      * @param string $role The shortname of the import record's role column
+     * @param int $elementid The element id we're creating the enrolment for.
+     * @param int $userid The user id we're enrolling.
      */
-    private function create_enrolment($contextlevel, $role) {
+    private function create_enrolment($contextlevel, $role, $elementid = 1, $userid = 1) {
         global $CFG, $DB;
         require_once($CFG->dirroot.'/local/elisprogram/lib/setup.php');
 
@@ -1150,8 +1152,8 @@ class version1elisfilesystemsuccesslogging_testcase extends rlip_elis_test {
                 // Program enrolment.
                 require_once(elispm::lib('data/curriculumstudent.class.php'));
                 $data = array(
-                    'curriculumid' => 1,
-                    'userid' => 1
+                    'curriculumid' => $elementid,
+                    'userid' => $userid
                 );
                 $curriculumstudent = new curriculumstudent($data);
                 $curriculumstudent->save();
@@ -1160,8 +1162,8 @@ class version1elisfilesystemsuccesslogging_testcase extends rlip_elis_test {
                 // Track enrolment.
                 require_once(elispm::lib('data/usertrack.class.php'));
                 $data = array(
-                    'trackid' => 1,
-                    'userid' => 1
+                    'trackid' => $elementid,
+                    'userid' => $userid
                 );
                 $usertrack = new usertrack($data);
                 $usertrack->save();
@@ -1170,8 +1172,8 @@ class version1elisfilesystemsuccesslogging_testcase extends rlip_elis_test {
                 // User set enrolment.
                 require_once(elispm::lib('data/clusterassignment.class.php'));
                 $data = array(
-                    'clusterid' => 1,
-                    'userid' => 1
+                    'clusterid' => $elementid,
+                    'userid' => $userid
                 );
                 $clusterassignment = new clusterassignment($data);
                 $clusterassignment->save();
@@ -1181,8 +1183,8 @@ class version1elisfilesystemsuccesslogging_testcase extends rlip_elis_test {
                     // Class instance instructor enrolment.
                     require_once(elispm::lib('data/instructor.class.php'));
                     $data = array(
-                        'classid' => 1,
-                        'userid' => 1
+                        'classid' => $elementid,
+                        'userid' => $userid
                     );
                     $instructor = new instructor($data);
                     $instructor->save();
@@ -1190,8 +1192,8 @@ class version1elisfilesystemsuccesslogging_testcase extends rlip_elis_test {
                     // Class instance student enrolment.
                     require_once(elispm::lib('data/student.class.php'));
                     $data = array(
-                        'classid' => 1,
-                        'userid' => 1
+                        'classid' => $elementid,
+                        'userid' => $userid
                     );
                     $student = new student($data);
                     $student->save();
@@ -1224,6 +1226,7 @@ class version1elisfilesystemsuccesslogging_testcase extends rlip_elis_test {
      */
     public function test_enrolmentactioncreateslogmessage($action, $context, $username, $email, $idnumber, $messagesuffix,
                                                           $extraparams) {
+        global $DB;
         set_config('notify_trackenrol_user', 1, 'local_elisprogram');
 
         // Combine base data with additional info.
@@ -1256,7 +1259,28 @@ class version1elisfilesystemsuccesslogging_testcase extends rlip_elis_test {
             if (isset($extraparams['role'])) {
                 $role = $extraparams['role'];
             }
-            $this->create_enrolment($parts[0], $role);
+
+            // Get user id.
+            $userid = $DB->get_field(user::TABLE, 'id', array('idnumber' => 'testuseridnumber'));
+
+            // Get element id.
+            $elementid = 1;
+            switch ($parts[0]) {
+                case 'class':
+                    $elementid = $DB->get_field(\pmclass::TABLE, 'id', array('idnumber' => $parts[1]));
+                    break;
+                case 'cluster':
+                    $elementid = $DB->get_field(\userset::TABLE, 'id', array('name' => $parts[1]));
+                    break;
+                case 'track':
+                    $elementid = $DB->get_field(\track::TABLE, 'id', array('idnumber' => $parts[1]));
+                    break;
+                case 'curriculum':
+                    $elementid = $DB->get_field(\curriculum::TABLE, 'id', array('idnumber' => $parts[1]));
+                    break;
+            }
+
+            $this->create_enrolment($parts[0], $role, $elementid, $userid);
         }
 
         // String representing identifying fields.
@@ -1266,6 +1290,9 @@ class version1elisfilesystemsuccesslogging_testcase extends rlip_elis_test {
         $this->setAdminUser();
         unset_config('noemailever');
         $sink = $this->redirectEmails();
+
+        // Force refreshing of configuration.
+        elis::$config = new elis_config();
 
         // Validation.
         $expectedmessage = "[enrolment.csv line 2] User with {$identifier} successfully {$messagesuffix}\n";
@@ -1304,6 +1331,7 @@ class version1elisfilesystemsuccesslogging_testcase extends rlip_elis_test {
      * @param string $idnumber The import user_idnumber field
      */
     public function test_studentenrolmentupdatecreateslogmessage($username, $email, $idnumber) {
+        global $DB;
         $data = array(
             'action' => 'update',
             'context' => 'class_testclassidnumber',
@@ -1314,7 +1342,12 @@ class version1elisfilesystemsuccesslogging_testcase extends rlip_elis_test {
 
         // Set up the course description, class instance, and user.
         $this->load_csv_data(false, false, true, true, false, true);
-        $this->create_enrolment('class', 'student');
+
+        // Get ids.
+        $userid = $DB->get_field(user::TABLE, 'id', array('idnumber' => 'testuseridnumber'));
+        $elementid = $DB->get_field(pmclass::TABLE, 'id', array('idnumber' => 'testclassidnumber'));
+
+        $this->create_enrolment('class', 'student', $elementid, $userid);
 
         // String representing identifying fields.
         $identifier = $this->get_user_identifier($username, $email, $idnumber);
@@ -1334,6 +1367,7 @@ class version1elisfilesystemsuccesslogging_testcase extends rlip_elis_test {
      * @param string $idnumber The import user_idnumber field
      */
     public function test_instructorenrolmentupdatecreateslogmessage($username, $email, $idnumber) {
+        global $DB;
         $data = array(
             'action' => 'update',
             'context' => 'class_testclassidnumber',
@@ -1345,7 +1379,12 @@ class version1elisfilesystemsuccesslogging_testcase extends rlip_elis_test {
 
         // Set up the course description, class instance, and user.
         $this->load_csv_data(false, false, true, true, false, true);
-        $this->create_enrolment('class', 'instructor');
+
+        // Get ids.
+        $userid = $DB->get_field(user::TABLE, 'id', array('idnumber' => 'testuseridnumber'));
+        $elementid = $DB->get_field(pmclass::TABLE, 'id', array('idnumber' => 'testclassidnumber'));
+
+        $this->create_enrolment('class', 'instructor', $elementid, $userid);
 
         // String representing identifying fields.
         $identifier = $this->get_user_identifier($username, $email, $idnumber);

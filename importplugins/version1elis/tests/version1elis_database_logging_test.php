@@ -463,7 +463,9 @@ class rlipimport_version1elis_databaselogging_testcase extends rlip_elis_test {
         $this->run_user_import($data);
         $maxtime = time();
 
-        $record = $DB->get_record(RLIP_LOG_TABLE, array('id' => 1));
+        $record = $DB->get_records(RLIP_LOG_TABLE, array(), 'id DESC', '*', 0, 1);
+        $this->assertNotEmpty($record);
+        $record = reset($record);
         $this->assertGreaterThanOrEqual($mintime, $record->endtime);
         $this->assertLessThanOrEqual($maxtime, $record->endtime);
     }
@@ -481,7 +483,9 @@ class rlipimport_version1elis_databaselogging_testcase extends rlip_elis_test {
         $this->run_user_import($data);
         $maxtime = time();
 
-        $record = $DB->get_record(RLIP_LOG_TABLE, array('id' => 1));
+        $record = $DB->get_records(RLIP_LOG_TABLE, array(), 'id DESC', '*', 0, 1);
+        $this->assertNotEmpty($record);
+        $record = reset($record);
         $this->assertGreaterThanOrEqual($mintime, $record->endtime);
         $this->assertLessThanOrEqual($maxtime, $record->endtime);
     }
@@ -499,7 +503,9 @@ class rlipimport_version1elis_databaselogging_testcase extends rlip_elis_test {
         $this->run_user_import($data);
         $maxtime = time();
 
-        $record = $DB->get_record(RLIP_LOG_TABLE, array('id' => 1));
+        $record = $DB->get_records(RLIP_LOG_TABLE, array(), 'id DESC', '*', 0, 1);
+        $this->assertNotEmpty($record);
+        $record = reset($record);
         $this->assertGreaterThanOrEqual($mintime, $record->endtime);
         $this->assertLessThanOrEqual($maxtime, $record->endtime);
     }
@@ -522,7 +528,9 @@ class rlipimport_version1elis_databaselogging_testcase extends rlip_elis_test {
         $importplugin->run(0, 0, 1);
         $maxtime = time();
 
-        $record = $DB->get_record(RLIP_LOG_TABLE, array('id' => 1));
+        $record = $DB->get_records(RLIP_LOG_TABLE, array(), 'id DESC', '*', 0, 1);
+        $this->assertNotEmpty($record);
+        $record = reset($record);
         $this->assertGreaterThanOrEqual($mintime, $record->endtime);
         $this->assertLessThanOrEqual($maxtime, $record->endtime);
     }
@@ -548,7 +556,9 @@ class rlipimport_version1elis_databaselogging_testcase extends rlip_elis_test {
         $this->run_user_import($data);
         $maxtime = time();
 
-        $record = $DB->get_record(RLIP_LOG_TABLE, array('id' => 1));
+        $record = $DB->get_records(RLIP_LOG_TABLE, array(), 'id DESC', '*', 0, 1);
+        $this->assertNotEmpty($record);
+        $record = reset($record);
         $this->assertGreaterThanOrEqual($mintime, $record->endtime);
         $this->assertLessThanOrEqual($maxtime, $record->endtime);
     }
@@ -708,7 +718,10 @@ class rlipimport_version1elis_databaselogging_testcase extends rlip_elis_test {
         );
         $exists = $DB->record_exists(RLIP_LOG_TABLE, $params);
 
-        $log = $DB->get_record(RLIP_LOG_TABLE, array('id' => 1));
+        $log = $DB->get_records(RLIP_LOG_TABLE, array(), 'id DESC', '*', 0, 1);
+        $this->assertNotEmpty($log);
+        $log = reset($log);
+
         // Validate entity type.
         $this->assertEquals($entity, $log->entitytype);
 

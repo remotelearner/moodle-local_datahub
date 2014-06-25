@@ -223,7 +223,7 @@ class elis_user_field_mappings_testcase extends rlip_elis_test {
         $this->assertEquals('testusercomments', $record->comments);
         $this->assertEquals('testusernotes', $record->notes);
 
-        $instance = \local_elisprogram\context\user::instance(1);
+        $instance = \local_elisprogram\context\user::instance($record->id);
 
         $this->assertTrue($DB->record_exists(field_data_int::TABLE, array(
             'fieldid' => $customfieldid,
@@ -323,7 +323,7 @@ class elis_user_field_mappings_testcase extends rlip_elis_test {
         $this->assertEquals('updatedtestusercomments', $record->comments);
         $this->assertEquals('updatedtestusernotes', $record->notes);
 
-        $instance = \local_elisprogram\context\user::instance(1);
+        $instance = \local_elisprogram\context\user::instance($record->id);
 
         $this->assertTrue($DB->record_exists(field_data_int::TABLE, array(
             'fieldid' => $customfieldid,

@@ -631,7 +631,8 @@ class elis_user_custom_fields_testcase extends rlip_elis_test {
         $importplugin->process_record('user', (object)$record, 'bogus');
 
         // Validation.
-        $user = new user(1);
+        $userid = $DB->get_field(user::TABLE, 'id', array('idnumber' => 'testuserid'));
+        $user = new user($userid);
         $user->load();
 
         $this->assertEquals('option1', $user->field_testcustomfieldshortname);

@@ -229,7 +229,7 @@ class elis_userset_hierarchy_testcase extends rlip_elis_test {
         $userset = $DB->get_record(userset::TABLE, array('id' => $child->id));
         $this->assertNotEquals(false, $userset);
         $this->assertEquals('childname', $userset->name);
-        $this->assertEquals(2, $userset->parent);
+        $this->assertEquals($finalparent->id, $userset->parent);
         $this->assertEquals(2, $userset->depth);
 
         // Get new parent context record.

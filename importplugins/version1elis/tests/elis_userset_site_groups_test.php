@@ -234,6 +234,7 @@ class elis_userset_site_groups_testcase extends rlip_elis_test {
     public function test_elis_user_update_triggers_group_and_grouping_setup() {
         global $CFG;
         require_once($CFG->dirroot.'/local/elisprogram/lib/data/user.class.php');
+        require_once($CFG->dirroot.'/lib/eventslib.php');
 
         $this->set_up_required_data(true, false, true);
 
@@ -255,6 +256,9 @@ class elis_userset_site_groups_testcase extends rlip_elis_test {
         $importplugin->fslogger = new silent_fslogger(null);
         // Need to call process_record so that custom field mappings are handled.
         $importplugin->process_record('user', $record, 'bogus');
+
+        // Ensure that the custom fields have been synced.
+        events_cron();
 
         $this->validate_end_result();
     }

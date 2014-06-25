@@ -327,6 +327,10 @@ class databaselogging_testcase extends rlip_test {
      * for later retrieval
      */
     public function test_dbloggerobjectaccumulateslogids() {
+        global $DB;
+
+        $DB->delete_records(RLIP_LOG_TABLE);
+
         // Obtain the logging object.
         $dblogger = new rlip_dblogger_import();
 
@@ -337,7 +341,7 @@ class databaselogging_testcase extends rlip_test {
 
         // Validate that all ids were stored and can be retrieved.
         $logids = $dblogger->get_log_ids();
-        $this->assertEquals($logids, array(1, 2, 3));
+        $this->assertEquals(array(1, 2, 3), $logids);
     }
 
     /**

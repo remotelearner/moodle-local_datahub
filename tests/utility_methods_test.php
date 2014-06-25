@@ -330,7 +330,10 @@ class utilitymethod_testcase extends rlip_test {
      */
     public function test_deletingjob() {
         global $DB;
+
         $DB->delete_records('local_eliscore_sched_tasks');
+        $DB->delete_records(RLIP_SCHEDULE_TABLE);
+
         // Create a scheduled job.
         $data = array(
             'plugin' => 'dhexport_version1',

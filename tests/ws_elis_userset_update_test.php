@@ -97,6 +97,7 @@ class local_datahub_ws_elis_userset_update_testcase extends rlip_test_ws {
 
         // Get Userset.
         $updatedus = new userset($response['record']['id']);
+        $updatedus->reset_custom_field_list();
         $updatedus->load();
         $updatedus = $updatedus->to_array();
         $expectus = array(

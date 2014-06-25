@@ -291,7 +291,7 @@ class elis_userset_import_testcase extends rlip_elis_test {
         return array(
                 array('', 0, 1),
                 array('top', 0, 1),
-                array('testparentusersetname', 1, 2
+                array('testparentusersetname', '**parentid**', 2
         ));
     }
 
@@ -311,6 +311,10 @@ class elis_userset_import_testcase extends rlip_elis_test {
         // Set up a parent userset.
         $parent = new userset(array('name' => 'testparentusersetname'));
         $parent->save();
+
+        if ($dbvalue === '**parentid**') {
+            $dbvalue = $parent->id;
+        }
 
         // Run the import.
         $data = array('parent' => $inputvalue);

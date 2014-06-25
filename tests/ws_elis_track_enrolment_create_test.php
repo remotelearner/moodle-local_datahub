@@ -56,6 +56,9 @@ class local_datahub_ws_elis_track_enrolment_create_testcase extends rlip_test_ws
         unset_config('noemailever');
         $this->give_permissions(array('local/elisprogram:track_enrol'));
 
+        // Force refreshing of configuration.
+        elis::$config = new elis_config();
+
         // Initialize version1elis importplugin for utility functions.
         $importplugin = rlip_dataplugin_factory::factory('dhimport_version1elis');
 
