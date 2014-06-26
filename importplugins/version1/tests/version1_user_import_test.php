@@ -307,7 +307,7 @@ class version1userimport_testcase extends rlip_test {
             'autosubscribe' => '1',
             'trackforums' => '1',
             'timezone' => -5.0,
-            'theme' => 'standard',
+            'theme' => 'bootstrapbase',
             'lang' => 'en',
             'description' => 'rlipdescription',
             'idnumber' => 'rlipidnumber',
@@ -338,7 +338,7 @@ class version1userimport_testcase extends rlip_test {
             'autosubscribe' => 1,
             'trackforums' => 1,
             'timezone' => -5.0,
-            'theme' => 'standard',
+            'theme' => 'bootstrapbase',
             'lang' => 'en',
             'description' => 'rlipdescription',
             'idnumber' => 'rlipidnumber',
@@ -366,7 +366,7 @@ class version1userimport_testcase extends rlip_test {
             'autosubscribe' => 1,
             'trackforums' => 1,
             'timezone' => -5.0,
-            'theme' => 'standard',
+            'theme' => 'bootstrapbase',
             'lang' => 'en',
             'description' => 'rlipdescription',
             'institution' => 'rlipinstitution',
@@ -412,7 +412,7 @@ class version1userimport_testcase extends rlip_test {
             'autosubscribe' => 1,
             'trackforums' => 1,
             'timezone' => -5.0,
-            'theme' => 'standard',
+            'theme' => 'bootstrapbase',
             'lang' => 'en',
             'description' => 'rlipdescription',
             'institution' => 'rlipinstitution',
@@ -459,7 +459,7 @@ class version1userimport_testcase extends rlip_test {
             'autosubscribe' => 'yes',
             'trackforums' => 'yes',
             'timezone' => -5.0,
-            'theme' => 'standard',
+            'theme' => 'bootstrapbase',
             'lang' => 'en',
             'description' => 'rlipdescription',
             'institution' => 'rlipinstitution',
@@ -2417,7 +2417,7 @@ class version1userimport_testcase extends rlip_test {
         set_config('noemailever', true);
 
         // Set up a user tag.
-        tag_set('user', $userid, array('testtag'));
+        tag_set('user', $userid, array('testtag'), 'user', context_user::instance($userid)->id);
 
         // Create a new course-level role.
         $roleid = create_role('testrole', 'testrole', 'testrole');
@@ -2524,7 +2524,7 @@ class version1userimport_testcase extends rlip_test {
             'city1' => 'rlipcity',
             'country1' => 'CA',
             'timezone1' => -5.0,
-            'theme1' => 'standard',
+            'theme1' => 'bootstrapbase',
             'lang1' => 'en',
             'description1' => 'rlipdescription',
             'idnumber1' => 'rlipidnumber',
@@ -2564,7 +2564,7 @@ class version1userimport_testcase extends rlip_test {
             'city' => 'rlipcity',
             'country' => 'CA',
             'timezone' => -5.0,
-            'theme' => 'standard',
+            'theme' => 'bootstrapbase',
             'lang' => 'en',
             'description' => 'rlipdescription',
             'idnumber' => 'rlipidnumber',

@@ -2638,11 +2638,6 @@ class version1courseimport_testcase extends rlip_test {
         $completion->timemodified = time();
         $DB->insert_record('course_modules_completion', $completion);
 
-        // Set up a completion condition.
-        $forum->id = $cmid;
-        $ci = new condition_info($forum, CONDITION_MISSING_EVERYTHING, false);
-        $ci->add_completion_condition($cmid, COMPLETION_ENABLED);
-
         // Set the blocks position.
         $instances = $DB->get_records('block_instances', array('parentcontextid' => $coursecontext->id));
         $page = new stdClass;
@@ -2670,10 +2665,7 @@ class version1courseimport_testcase extends rlip_test {
         groups_assign_grouping($groupingid, $groupid);
 
         // Set up a user tag.
-        tag_set('course', $courseid, array('testtag'));
-
-        // Add a course-level log.
-        add_to_log($courseid, 'bogus', 'bogus');
+        tag_set('course', $courseid, array('testtag'), 'course', $coursecontext->id);
 
         // Set up the default course question category.
         $newcategory = question_make_default_categories(array($coursecontext));
@@ -2727,7 +2719,6 @@ class version1courseimport_testcase extends rlip_test {
         $initialnumforum = $DB->count_records('forum');
         $initialnumcoursemodules = $DB->count_records('course_modules');
         $initialnumcoursemodulescompletion = $DB->count_records('course_modules_completion');
-        $initialnumcoursemodulesavailability = $DB->count_records('course_modules_availability');
         $initialnumblockinstances = $DB->count_records('block_instances');
         $initialnumblockpositions = $DB->count_records('block_positions');
         $initialnumgroups = $DB->count_records('groups');
@@ -2774,7 +2765,6 @@ class version1courseimport_testcase extends rlip_test {
         $this->assertEquals($DB->count_records('groups_members'), $initialnumgroupsmembers - 1);
         $this->assertEquals($DB->count_records('groupings'), $initialnumgroupings - 1);
         $this->assertEquals($DB->count_records('groupings_groups'), $initialnumgroupingsgroups - 1);
-        $this->assertEquals($DB->count_records('log', array('course' => $courseid)), 0);
         $this->assertEquals($DB->count_records('tag_instance'), $initialnumtaginstance - 1);
         $this->assertEquals($DB->count_records('course_sections'), $initialnumcoursesections - 1);
         $this->assertEquals($DB->count_records('question_categories'), $initialnumquestioncategories - 1);

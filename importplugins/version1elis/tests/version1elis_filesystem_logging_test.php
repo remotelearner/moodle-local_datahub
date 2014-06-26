@@ -606,17 +606,21 @@ class version1elisfilesystemlogging_testcase extends rlip_elis_test {
         $contents = explode("\n", $contents);
 
         // Validate line count, accounting for blank line at end.
-        $this->assertEquals(count($contents), 4);
+        $this->assertGreaterThan(2, count($contents));
 
         // Obtain the line we care about.
-        $line = $contents[2];
-        $expectederror = 'Import processing of entity \'user\' partially processed due to time restrictions. ';
-        $expectederror .= 'Processed 2 of 3 total records.';
+        foreach ($contents as $line) {
+            if (strpos($line, "Import processing of entity 'user'") > 0) {
+                break;
+            }
+        }
+        $expectederror = '/Import processing of entity \'user\' partially processed due to time restrictions. ';
+        $expectederror .= 'Processed . of 3 total records./';
 
         // Data validation.
         $prefixlength = strlen('[MMM/DD/YYYY:hh:mm:ss -zzzz] ');
         $actualerror = substr($line, $prefixlength);
-        $this->assertEquals($expectederror, $actualerror);
+        $this->assertRegExp($expectederror, $actualerror);
     }
 
 

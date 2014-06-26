@@ -81,6 +81,16 @@ class elis_notifications_testcase extends rlip_elis_test {
         $class = new pmclass(array('courseid' => $course->id, 'idnumber' => 'testclassidnumber'));
         $class->save();
 
+        // Create a Moodle course.
+        $mdlcoursedata = new stdClass();
+        $mdlcoursedata->shortname = "testclassidnumber";
+        $mdlcoursedata->fullname = "testclassidnumber";
+        $mdlcoursedata->category = 1;
+        $mdlcourse = create_course($mdlcoursedata);
+
+        // Attach our class to the Moodle course.
+        $result = moodle_attach_class($class->id, $mdlcourse->id);
+
         // Run the enrolment create action.
         $record = new stdClass;
         $record->context = 'class_testclassidnumber';
