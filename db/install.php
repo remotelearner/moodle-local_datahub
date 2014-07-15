@@ -102,15 +102,12 @@ function xmldb_local_datahub_install() {
 
     unset_all_config_for_plugin('block_rlip');
 
-    // Remove the shortname for the old service.
-    $oldservice = $DB->get_record('external_services', array('shortname' => 'rldh_webservices'));
-    if (!empty($oldservice)) {
-        $updated = new \stdClass;
-        $updated->id = $oldservice->id;
-        $updated->shortname = 'rldh_webservices_old';
-        $updated->name = 'RLDH Webservices Old';
-        $DB->update_record('external_services', $updated);
-    }
+    // Remove old webservice entries from block/rlip
+    $DB->delete_records('external_functions', array('component' => 'block_rlip'));
+    $DB->delete_records('external_services', array('component' => 'block_rlip'));
+    $where = $DB->sql_like('functionname', '?', false);
+    $params = array('block_rldh_%');
+    $DB->delete_records_select('external_services_functions', $where, $params);
 
     return $result;
 }

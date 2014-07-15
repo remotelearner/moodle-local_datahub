@@ -47,5 +47,15 @@ function xmldb_local_datahub_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint($result, 2014030701, 'local', 'datahub');
     }
 
+    // Remove old webservice entries from block/rlip
+    if ($result && $oldversion < 2014030702) {
+        $DB->delete_records('external_functions', array('component' => 'block_rlip'));
+        $DB->delete_records('external_services', array('component' => 'block_rlip'));
+        $where = $DB->sql_like('functionname', '?', false);
+        $params = array('block_rldh_%');
+        $DB->delete_records_select('external_services_functions', $where, $params);
+        upgrade_plugin_savepoint($result, 2014030702, 'local', 'datahub');
+    }
+
     return $result;
 }
