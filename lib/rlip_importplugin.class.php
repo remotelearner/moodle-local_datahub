@@ -657,11 +657,19 @@ abstract class rlip_importplugin_base extends rlip_dataplugin {
             return false; // no error cause we're just gonna skip this entity
         }
 
-        // must count import files lines in case of error
+        // Must count import files lines in case of error and scan for acceptable character encoding.
         $filelines = 0;
         $fileplugin->open(RLIP_FILE_READ);
         $filename = $fileplugin->get_filename();
-        while ($fileplugin->read()) {
+        $encodingok = true;
+        $firstbadline = 0;
+        while ($lineitems = $fileplugin->read()) {
+            foreach ($lineitems as $item) {
+                if (!mb_check_encoding($item, 'utf-8')) {
+                    $encodingok = false;
+                    $firstbadline = $firstbadline == 0 ? $filelines : $firstbadline;
+                }
+            }
             ++$filelines;
         }
 
@@ -673,6 +681,18 @@ abstract class rlip_importplugin_base extends rlip_dataplugin {
 
         //set up fslogger with this starttime for this entity
         $this->fslogger = $this->provider->get_fslogger($this->dblogger->plugin, $entity, $this->manual, $starttime);
+
+        // Handle unacceptable character encoding.
+        if (!$encodingok) {
+            // Unacceptable character encoding found, so we can't continue.
+            $message = "Import file {$filename} was not processed because it contains unacceptable character encoding. ";
+            $message .= "Please fix (convert to UTF-8) the import file and re-upload it.";
+            $this->fslogger->log_failure($message, 0, $filename, $firstbadline);
+            $this->dblogger->signal_invalid_encoding($message);
+            $this->dblogger->set_endtime(time());
+            $this->dblogger->flush($filename);
+            return null;
+        }
 
         $this->dblogger->set_log_path($this->provider->get_log_path());
         $this->dblogger->set_entity_type($entity);
