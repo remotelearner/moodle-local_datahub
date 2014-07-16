@@ -1451,8 +1451,8 @@ class version1databaselogging_testcase extends rlip_test {
     }
 
     /**
-     * Validate that invalid file encoding do not throw exception
-     * ELIS-8721
+     * Validate that invalid file encoding stops the import.
+     * ELIS-8726 / ELIS-8721
      */
     public function test_version1_noexception_badfileencoding() {
         global $CFG, $DB;
@@ -1480,7 +1480,8 @@ class version1databaselogging_testcase extends rlip_test {
         $params = array(
             'filesuccesses' => 0,
             'filefailures' => 1,
-            'message' => 'One or more lines from import file userfile_badencoding.csv failed because they contain data errors. Please fix the import file and re-upload it.');
+            'message' => 'Import file userfile_badencoding.csv was not processed because it contains unacceptable character encoding. '.
+                    'Please fix (convert to UTF-8) the import file and re-upload it.');
         $exists = $DB->record_exists_select(RLIP_LOG_TABLE, $select, $params);
         $this->assertEquals($exists, true);
 
