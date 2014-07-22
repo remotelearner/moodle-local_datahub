@@ -664,13 +664,15 @@ abstract class rlip_importplugin_base extends rlip_dataplugin {
         $encodingok = true;
         $firstbadline = 0;
         while ($lineitems = $fileplugin->read()) {
-            foreach ($lineitems as $item) {
-                if (!mb_check_encoding($item, 'utf-8')) {
-                    $encodingok = false;
-                    $firstbadline = $firstbadline == 0 ? $filelines : $firstbadline;
+            ++$filelines;
+            if ($encodingok) {
+                foreach ($lineitems as $item) {
+                    if (!mb_check_encoding($item, 'utf-8')) {
+                        $encodingok = false;
+                        $firstbadline = $filelines;
+                    }
                 }
             }
-            ++$filelines;
         }
 
         //track the total number of records to process
