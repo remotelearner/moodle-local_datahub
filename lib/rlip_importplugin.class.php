@@ -709,6 +709,16 @@ abstract class rlip_importplugin_base extends rlip_dataplugin {
             }
             $this->dblogger->track_success(false, true);
             $this->dblogger->flush($filename);
+
+            if (!$this->manual) {
+                // Delete processed import file.
+                if (!$fileplugin->delete()) {
+                    $message = "Error when attempting to delete temporary file '".$filename."'";
+                    mtrace($message);
+                    $this->fslogger->log_failure($message, 0, $filename);
+                }
+            }
+
             return null;
         }
 
