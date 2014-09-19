@@ -658,6 +658,7 @@ abstract class rlip_importplugin_base extends rlip_dataplugin {
         }
 
         // Must count import files lines in case of error and scan for acceptable character encoding.
+        $failureexit = false;
         $filelines = 0;
         $fileplugin->open(RLIP_FILE_READ);
         $filename = $fileplugin->get_filename();
@@ -684,32 +685,36 @@ abstract class rlip_importplugin_base extends rlip_dataplugin {
         //set up fslogger with this starttime for this entity
         $this->fslogger = $this->provider->get_fslogger($this->dblogger->plugin, $entity, $this->manual, $starttime);
 
-        // Handle unacceptable character encoding.
-        if (!$encodingok) {
-            // Unacceptable character encoding found, so we can't continue.
-            $message = "Import file {$filename} was not processed because it contains unacceptable character encoding. ";
-            $message .= "Please fix (convert to UTF-8) the import file and re-upload it.";
-            $this->fslogger->log_failure($message, 0, $filename, $firstbadline);
-            $this->dblogger->signal_invalid_encoding($message);
-            $this->dblogger->set_endtime(time());
-            $this->dblogger->flush($filename);
-            return null;
-        }
-
         $this->dblogger->set_log_path($this->provider->get_log_path());
         $this->dblogger->set_entity_type($entity);
         // ELIS-8255: set endtime as now, to avoid endtime = epoch + timezone
         $this->dblogger->set_endtime(time());
 
+        // Handle unacceptable character encoding.
+        if (!$encodingok) {
+            // Unacceptable character encoding found, so we can't continue.
+            $message = "Import file {$filename} was not processed because it contains unacceptable character encoding. ";
+            $message .= "Please fix (convert to UTF-8) the import file and re-upload it.";
+            if ($this->fslogger) {
+                $this->fslogger->log_failure($message, 0, $filename, $firstbadline);
+            }
+            $this->dblogger->signal_invalid_encoding($message);
+            $this->dblogger->flush($filename);
+            $failureexit = true;
+        }
+
         if ($filelines == 1) {
             // header but no records or lines end with CR only
             if ($this->fslogger) {
                 $message = 'Could not read data, make sure import file lines end with LF (linefeed) character: 0x0A';
-                $this->fslogger->log_failure($message, 0, $filename, $this->linenumber);
+                $this->fslogger->log_failure($message, 0, $filename, 1);
             }
             $this->dblogger->track_success(false, true);
             $this->dblogger->flush($filename);
+            $failureexit = true;
+        }
 
+        if ($failureexit) {
             if (!$this->manual) {
                 // Delete processed import file.
                 if (!$fileplugin->delete()) {
@@ -718,7 +723,6 @@ abstract class rlip_importplugin_base extends rlip_dataplugin {
                     $this->fslogger->log_failure($message, 0, $filename);
                 }
             }
-
             return null;
         }
 
