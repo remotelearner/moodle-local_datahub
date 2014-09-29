@@ -29,6 +29,7 @@ require_once($CFG->dirroot.'/local/datahub/tests/other/rlip_test.class.php');
 
 // Libs.
 require_once(dirname(__FILE__).'/other/rlip_mock_provider.class.php');
+require_once($CFG->dirroot.'/local/datahub/lib.php');
 require_once($CFG->dirroot.'/local/datahub/lib/rlip_importplugin.class.php');
 require_once($CFG->dirroot.'/local/datahub/tests/other/readmemory.class.php');
 require_once($CFG->dirroot.'/local/datahub/tests/other/rlip_test.class.php');
