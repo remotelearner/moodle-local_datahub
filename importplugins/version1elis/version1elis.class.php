@@ -820,16 +820,18 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
         $success_message = "User with {$user_descriptor} successfully created.";
         $this->fslogger->log_success($success_message, 0, $filename, $this->linenumber);
 
-        $record->cleartextpassword = $cleartextpassword;
-        $this->newuseremail($record);
-
+        $muser = $user->get_moodleuser();
+        if (!empty($muser)) {
+            $muser->cleartextpassword = $cleartextpassword;
+            $this->newuseremail($muser);
+        }
         return true;
     }
 
     /**
      * If enabled, sends a new user email notification to a user.
      *
-     * @param object $user The user to send the email to.
+     * @param object $user The Moodle user to send the email to.
      * @return bool Success/Failure.
      */
     public function newuseremail($user) {
