@@ -1792,18 +1792,6 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
             }
         }
 
-        //check that any unset fields are set to course default
-        $courseconfig = get_config('moodlecourse');
-
-        //set up an array with all the course fields that have defaults
-        $course_defaults = array('format', 'numsections', 'hiddensections', 'newsitems', 'showgrades',
-            'showreports', 'maxbytes', 'groupmode', 'groupmodeforce', 'visible', 'lang');
-        foreach ($course_defaults as $course_default) {
-            if (!isset($record->$course_default) && isset($courseconfig->$course_default)) {
-                $record->$course_default = $courseconfig->$course_default;
-            }
-        }
-
         //write to the database
         if (isset($record->link)) {
             //creating from template
@@ -1820,7 +1808,20 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
             //log success
             $this->fslogger->log_success("Course with shortname \"{$record->shortname}\" successfully created from template course with shortname \"{$record->link}\".", 0, $filename, $this->linenumber);
         } else {
-            //creating directly (not from template)
+            // Creating directly (not from template).
+
+            // Check that any unset fields are set to course default.
+            $courseconfig = get_config('moodlecourse');
+
+            // Set up an array with all the course fields that have defaults.
+            $coursedefaults = array('format', 'numsections', 'hiddensections', 'newsitems', 'showgrades',
+                    'showreports', 'maxbytes', 'groupmode', 'groupmodeforce', 'visible', 'lang');
+            foreach ($coursedefaults as $coursedefault) {
+                if (!isset($record->$coursedefault) && isset($courseconfig->$coursedefault)) {
+                    $record->$coursedefault = $courseconfig->$coursedefault;
+                }
+            }
+
             create_course($record);
 
             //log success
