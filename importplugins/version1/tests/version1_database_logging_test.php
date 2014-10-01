@@ -26,6 +26,7 @@
 require_once(dirname(__FILE__).'/../../../../../local/eliscore/test_config.php');
 global $CFG;
 require_once($CFG->dirroot.'/local/datahub/tests/other/rlip_test.class.php');
+require_once($CFG->dirroot.'/course/lib.php'); // create_course()
 
 // Libs.
 require_once(dirname(__FILE__).'/other/rlip_mock_provider.class.php');
@@ -1488,5 +1489,62 @@ class version1databaselogging_testcase extends rlip_test {
         // Clean-up data file & tempdir.
         @unlink($file);
         @rmdir($tempdir);
+    }
+
+    /**
+     * Validate that DB logging logs failure on enrolment creation when manual enrol plugin disabled for course
+     * ELIS-8669
+     */
+    public function test_version1dblogginglogsfailureonenrolmentcreationwithoutmanualenrolmentplugin() {
+        global $CFG, $DB;
+        require_once($CFG->dirroot.'/user/lib.php');
+        require_once($CFG->dirroot.'/local/datahub/lib.php');
+        require_once($CFG->dirroot.'/lib/enrollib.php');
+
+        // Prevent problem with cached contexts.
+        accesslib_clear_all_caches(true);
+
+        // Set up config values.
+        $enrolpluginsenabled = get_config(null, 'enrol_plugins_enabled');
+        $enrolpluginsenabled = str_replace('manual', '', $enrolpluginsenabled);
+        $enrolpluginsenabled = trim($enrolpluginsenabled, ',');
+        set_config('enrol_plugins_enabled', $enrolpluginsenabled);
+        set_config('status', ENROL_INSTANCE_DISABLED, 'enrol_manual');
+
+        $category = new stdClass;
+        $category->name = 'testcategory';
+        $category->id = $DB->insert_record('course_categories', $category);
+
+        $course = new stdClass;
+        $course->category = $category->id;
+        $course->shortname = 'rlipshortname';
+        $course->fullname = 'rlipfullname';
+        $course = create_course($course);
+
+        $user = new stdClass;
+        $user->username = 'rlipusername';
+        $user->password = 'Password!0';
+        $user->mnethostid = $CFG->mnet_localhost_id;
+        $user->id = user_create_user($user);
+
+        $roleid = create_role('rlipname', 'rlipshortname', 'rlipdescription');
+        set_role_contextlevels($roleid, array(CONTEXT_COURSE));
+        $syscontext = context_system::instance();
+
+        $data = array(
+            'entity' => 'enrolment',
+            'action' => 'create',
+            'username' => 'rlipusername',
+            'context' => 'course',
+            'instance' => 'rlipshortname',
+            'role' => 'rlipshortname'
+        );
+        $result = $this->run_enrolment_import($data);
+        $this->assertNull($result);
+
+        $message = 'One or more lines from import file memoryfile failed because they contain data errors. ';
+        $message .= 'Please fix the import file and re-upload it.';
+        $exists = $this->log_with_message_exists($message);
+        $this->assertEquals($exists, true);
     }
 }
