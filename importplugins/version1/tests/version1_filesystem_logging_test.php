@@ -198,6 +198,9 @@ class version1filesystemlogging_testcase extends rlip_test {
 
         fclose($pointer);
 
+        if (strlen($expectederror) < strlen($actualerror)) {
+            $actualerror = substr($actualerror, -strlen($expectederror));
+        }
         $this->assertEquals($expectederror, $actualerror);
     }
 
@@ -7307,5 +7310,46 @@ class version1filesystemlogging_testcase extends rlip_test {
         $expectedmessage = "[user.csv line 2] User with username \"testuser5162a\", email \"tu5162c@noreply.com\", idnumber \"testuser5162b\" could not be deleted.";
         $expectedmessage .= " idnumber value of \"testuser5162b\", username value of \"testuser5162a\", email value of \"tu5162c@noreply.com\" refer to different users.\n";
         $this->assert_data_produces_error($data, $expectedmessage, 'user');
+    }
+
+    /**
+     * Validates an attempted enrolment on course w/o manual enrolment plugin enabled gives failure message
+     */
+    public function test_version1importlogsenrolmentfailuremessagewithoutmanualenrolmentplugin() {
+        global $DB;
+
+        // Create guest user.
+        $guestuser = get_test_user('guest');
+        set_config('siteguest', $guestuser->id);
+
+        // Create admin user.
+        $adminuser = get_test_user('admin');
+        set_config('siteadmins', $adminuser->id);
+
+        $userid = $this->create_test_user();
+        $courseid = $this->create_test_course();
+        $context = context_course::instance($courseid);
+        $roleid = $this->create_test_role();
+
+        // Disable manual enrolments.
+        $enrolpluginsenabled = get_config(null, 'enrol_plugins_enabled');
+        $enrolpluginsenabled = str_replace('manual', '', $enrolpluginsenabled);
+        $enrolpluginsenabled = trim($enrolpluginsenabled, ',');
+        set_config('enrol_plugins_enabled', $enrolpluginsenabled);
+        set_config('status', ENROL_INSTANCE_DISABLED, 'enrol_manual');
+
+        // Base data used every time.
+        $basedata = array(
+            'action' => 'create',
+            'context' => 'course',
+            'instance' => 'rlipshortname',
+            'role' => 'rlipshortname'
+        );
+        // Username.
+        $data = $basedata;
+        $data['username'] = 'rlipusername';
+        $expectedmessage = "Enrolment into course \"rlipshortname\" has failed for user with username \"rlipusername\"";
+        $expectedmessage .= ", likely due to manual enrolments being disabled.\n";
+        $this->assert_data_produces_error($data, $expectedmessage, 'enrolment');
     }
 }

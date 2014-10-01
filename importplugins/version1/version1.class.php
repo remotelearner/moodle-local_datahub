@@ -2441,17 +2441,17 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
             // Set enrolment start and end time if specified, otherwise set enrolment time to 'now' to allow immediate access.
             $timestart = empty($record->enrolmenttime) ? time() : $this->parse_date($record->enrolmenttime);
             $timeend = empty($record->completetime) ? 0 : $this->parse_date($record->completetime);
-
+            $enrolresult = true;
             if ($role_assignment_exists && !$enrolment_exists) {
                 // Role assignment already exists, so just enrol the user.
-                enrol_try_internal_enrol($context->instanceid, $userid, null, $timestart, $timeend);
+                $enrolresult = enrol_try_internal_enrol($context->instanceid, $userid, null, $timestart, $timeend);
             } else if (!$enrolment_exists) {
                 // Role assignment does not exist, so enrol and assign role.
-                enrol_try_internal_enrol($context->instanceid, $userid, $roleid, $timestart, $timeend);
-
-                //collect success message for logging at end of action
-                $logmessages[] = "User with {$user_descriptor} successfully assigned role with shortname ".
-                                 "\"{$record->role}\" on {$context_descriptor}.";
+                if (($enrolresult = enrol_try_internal_enrol($context->instanceid, $userid, $roleid, $timestart, $timeend)) !== false) {
+                    // Collect success message for logging at end of action.
+                    $logmessages[] = "User with {$user_descriptor} successfully assigned role with shortname ".
+                            "\"{$record->role}\" on {$context_descriptor}.";
+                }
             } else if (!$role_assignment_exists) {
                 //just assign the role
                 role_assign($roleid, $userid, $context->id);
@@ -2470,7 +2470,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
             }
 
             //collect success message for logging at end of action
-            if (!$enrolment_exists) {
+            if ($enrolresult && !$enrolment_exists) {
                 $logmessages[] = "User with {$user_descriptor} enrolled in course with shortname \"{$record->instance}\".";
                 if (!empty($context->instanceid) && !empty($userid)) {
                     $this->newenrolmentemail($userid, $context->instanceid);
@@ -2490,6 +2490,13 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
 
             //collect success message for logging at end of action
             $logmessages[] = "User with {$user_descriptor} successfully assigned role with shortname \"{$record->role}\" on {$context_descriptor}.";
+        }
+
+        if ($enrolresult === false) {
+            // ELIS-8669: Enrolment in Moodle course failed, likely due to manual enrol plugin being disabled.
+            $this->fslogger->log_failure("Enrolment into {$context_descriptor} has failed for user with {$user_descriptor}, likely due to manual enrolments being disabled.",
+                    0, $filename, $this->linenumber, $record, "enrolment");
+            return false;
         }
 
         if ($record->context == 'course' && isset($record->group)) {
