@@ -82,9 +82,6 @@ class ip_schedule_page extends elis_page {
 
     function can_do_default() {
         if (has_capability('moodle/site:config', context_system::instance())) {
-            // Ensure that scheduling is setup correctly
-            rlip_scheduling_init();
-
             return true;
         }
 
