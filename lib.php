@@ -1112,13 +1112,13 @@ function rlip_scheduling_init() {
         return;
     }
 
-    // If we haven't setup a scheduled task for the block yet, do so now
-    if (!$DB->record_exists('local_eliscore_sched_tasks', array('plugin' => 'local_datahub'))) {
-        require_once($CFG->dirroot.'/local/eliscore/lib/tasklib.php');
+    require_once($CFG->dirroot.'/local/eliscore/lib/tasklib.php');
 
-        // Add a cron task for the Datahub block
-        elis_tasks_update_definition('local_datahub');
-    }
+    // Update cron task for the Datahub block
+    elis_tasks_update_definition('local_datahub');
+
+    // Update cron task for the Datahub log file[sub-]plugin.
+    elis_tasks_update_definition('dhfile_log');
 }
 
 /**

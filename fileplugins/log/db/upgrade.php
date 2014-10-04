@@ -16,14 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    local_datahub
- * @author     Remote-Learner.net Inc
+ * @package    dhfile_log
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright  (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
- *
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2014030701;
-$plugin->release = '2.6.4.1 (Build: 20140826)';
+require_once($CFG->dirroot.'/local/datahub/lib.php');
+
+function xmldb_dhfile_log_upgrade($oldversion = 0) {
+    $result = true;
+
+    // Ensure that scheduling is setup correctly regardless of oldversion.
+    rlip_scheduling_init();
+
+    return $result;
+}
