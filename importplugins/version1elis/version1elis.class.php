@@ -82,7 +82,7 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
                                             'credits', 'cost', 'version', 'description', 'reqcredits', 'timetocomplete',
                                             'frequency', 'priority', 'startdate', 'enddate', 'autocreate', 'assignment',
                                             'starttimehour', 'starttimeminute', 'endtimehour', 'endtimeminute', 'maxstudents',
-                                            'enrol_from_waitlist', 'track', 'autoenrol', 'link', 'display', 'parent', 'recursive');
+                                            'enrol_from_waitlist', 'track', 'autoenrol', 'link', 'display', 'parent', 'recursive', 'required');
     static $course_field_keywords       = array('action', 'context', 'name', 'code', 'idnumber', 'syllabus', 'lengthdescription',
                                                 'length', 'credits', 'completion_grade', 'cost', 'version', 'assignment', 'link');
 
@@ -2799,7 +2799,9 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
             $currcrsrec = new stdClass;
             $currcrsrec->curriculumid = $currid;
             $currcrsrec->courseid = $course->id;
-
+            if (isset($record->required)) {
+                $currcrsrec->required = ($record->required && $record->required != 'no') ? 1 : 0;
+            }
             $currcrs->set_from_data($currcrsrec);
             $currcrs->save();
         }
@@ -2916,7 +2918,9 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
             $assoc = new stdClass;
             $assoc->curriculumid = $currid;
             $assoc->courseid = $course->id;
-
+            if (isset($record->required)) {
+                $assoc->required = ($record->required && $record->required != 'no') ? 1 : 0;
+            }
             $currcrs->set_from_data($assoc);
             $currcrs->save();
         }

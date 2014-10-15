@@ -168,6 +168,7 @@ class elis_entity_import_testcase extends rlip_elis_test {
                 'cost' => '$355.80',
                 'version' => '1.01',
                 'assignment' => 'programidnumber',
+                'required' => 'no'
             ),
             array(TEST_SETUP_CURRICULUM),
             ELIS_ENTITY_EXISTS
@@ -212,6 +213,7 @@ class elis_entity_import_testcase extends rlip_elis_test {
                 'cost'             => '$499.99',
                 'version'          => '2.5',
                 'assignment'       => 'programidnumber',
+                'required'         => 'no'
             ),
             array(TEST_SETUP_COURSE, TEST_SETUP_CURRICULUM),
             ELIS_ENTITY_EXISTS
@@ -1122,9 +1124,20 @@ class elis_entity_import_testcase extends rlip_elis_test {
      */
     public function map_course($input, $shouldexist) {
         global $DB;
+        $curcrs = false;
         if (array_key_exists('assignment', $input)) {
-            $this->assertEquals($shouldexist, $DB->record_exists(curriculumcourse::TABLE, array()));
+            if (($prgid = $DB->get_field(curriculum::TABLE, 'id', array('idnumber' => $input['assignment'])))) {
+                $curcrs = $DB->get_record(curriculumcourse::TABLE, array('curriculumid' => $prgid));
+            }
+            $this->assertEquals($shouldexist, $curcrs != false);
             unset($input['assignment']);
+        }
+        if (array_key_exists('required', $input)) {
+            if ($shouldexist) {
+                $bool = $input['required'] && $input['required'] != 'no';
+                $this->assertTrue($curcrs && $curcrs->required == $bool);
+            }
+            unset($input['required']);
         }
         if (array_key_exists('syllabus', $input)) {
             $where  = $DB->sql_compare_text('syllabus').' = ?';
