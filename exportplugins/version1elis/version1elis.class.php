@@ -160,6 +160,7 @@ class rlip_exportplugin_version1elis extends rlip_exportplugin_base {
                 {$extra_joins}
                 WHERE stu.completestatusid = ?
                 {$time_condition}
+                GROUP BY stu.id
                 ORDER BY u.idnumber ASC,
                          crs.idnumber ASC,
                          stu.completetime ASC,
