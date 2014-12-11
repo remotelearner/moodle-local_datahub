@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
  * @package    dhexport_version1elis
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -198,7 +198,6 @@ class dhexport_version1elis_renderer extends plugin_renderer_base {
                                       array $overridden_names = array()) {
         global $PAGE;
 
-        $PAGE->requires->js('/local/datahub/exportplugins/version1elis/jquery-ui-1.10.2.custom.min.js');
         $PAGE->requires->js('/local/datahub/exportplugins/version1elis/config_fields.js');
 
         // Generate Fieldset LIs.
