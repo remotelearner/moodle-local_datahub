@@ -28,7 +28,7 @@ global $CFG;
 require_once($CFG->dirroot.'/local/datahub/tests/other/rlip_test.class.php');
 
 // Libs.
-$plugindir = get_plugin_directory('dhimport', 'version1elis');
+$plugindir = core_component::get_plugin_directory('dhimport', 'version1elis');
 require_once($plugindir.'/version1elis.class.php');
 require_once($plugindir.'/lib.php');
 require_once($CFG->dirroot.'/user/profile/definelib.php');
@@ -79,7 +79,7 @@ class version1elisimportconfig_testcase extends rlip_elis_test {
     private function create_profile_field($name, $datatype, $categoryid, $contextlevelname = 'user') {
         global $CFG;
         require_once($CFG->dirroot.'/local/eliscore/lib/data/customfield.class.php');
-        $file = get_plugin_directory('dhimport', 'version1elis').'/lib.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1elis').'/lib.php';
         require_once($file);
 
         $field = new field(array(
@@ -207,7 +207,7 @@ class version1elisimportconfig_testcase extends rlip_elis_test {
      */
     public function test_getmappingreturnsvaliddata($entitytype, $field) {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhimport', 'version1elis').'/lib.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1elis').'/lib.php';
         require_once($file);
 
         // Obtain the entire list of fields.
@@ -274,7 +274,7 @@ class version1elisimportconfig_testcase extends rlip_elis_test {
      */
     public function test_savemappingpersistsalldata($entitytype, $field) {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhimport', 'version1elis').'/lib.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1elis').'/lib.php';
         require_once($file);
 
         $DB->delete_records(RLIPIMPORT_VERSION1ELIS_MAPPING_TABLE);
@@ -318,7 +318,7 @@ class version1elisimportconfig_testcase extends rlip_elis_test {
      */
     public function testsavemappingupdatesexistingrecords() {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhimport', 'version1elis').'/lib.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1elis').'/lib.php';
         require_once($file);
 
         // Obtain the available fields.
@@ -350,7 +350,7 @@ class version1elisimportconfig_testcase extends rlip_elis_test {
      */
     public function testsavemappingdoesnotdeletemappingsforotherentities() {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhimport', 'version1elis').'/lib.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1elis').'/lib.php';
         require_once($file);
 
         // Create a user mapping record.
@@ -377,7 +377,7 @@ class version1elisimportconfig_testcase extends rlip_elis_test {
      */
     public function testsavemappingdoesnotsaveinvalidfields() {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhimport', 'version1elis').'/lib.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1elis').'/lib.php';
         require_once($file);
 
         // Obtain available fields.
@@ -397,7 +397,7 @@ class version1elisimportconfig_testcase extends rlip_elis_test {
      */
     public function testrestoredefaultmappingupdatesrecords() {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhimport', 'version1elis').'/lib.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1elis').'/lib.php';
         require_once($file);
 
         // Obtain available fields.

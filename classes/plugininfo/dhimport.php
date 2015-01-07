@@ -78,7 +78,7 @@ class dhimport extends \core\plugininfo\base {
         }
 
         // Obtain the list of all file plugins.
-        $fileplugins = get_plugin_list('dhimport');
+        $fileplugins = \core_component::get_plugin_list('dhimport');
 
         foreach ($fileplugins as $pluginname => $pluginpath) {
             if (in_array($pluginname, array('sample', 'header', 'multiple'))) {

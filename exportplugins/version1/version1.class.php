@@ -52,7 +52,7 @@ class rlip_exportplugin_version1 extends rlip_exportplugin_base {
     function init($targetstarttime = 0, $lastruntime = 0) {
         global $CFG, $DB;
         require_once($CFG->dirroot.'/local/datahub/lib.php');
-        $file = get_plugin_directory('dhexport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhexport', 'version1').'/lib.php';
         require_once($file);
 
         //columns that are always displayed

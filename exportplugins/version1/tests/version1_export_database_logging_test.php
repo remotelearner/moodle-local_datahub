@@ -163,7 +163,7 @@ class version1exportdatabaselogging_testcase extends rlip_test {
      */
     public function run_export($targetstarttime = 0, $writedelay = 0, $lastruntime = 0, $maxruntime = 0, $state = null) {
         global $CFG;
-        $file = get_plugin_directory('dhexport', 'version1').'/version1.class.php';
+        $file = core_component::get_plugin_directory('dhexport', 'version1').'/version1.class.php';
         require_once($file);
 
         // Set the log file location to the dataroot.

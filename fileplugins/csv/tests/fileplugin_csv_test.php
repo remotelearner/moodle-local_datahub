@@ -39,7 +39,7 @@ class fileplugincsv_testcase extends rlip_test {
     public function test_fileplugincsvhandlesemptylines() {
         global $CFG;
         require_once($CFG->dirroot.'/local/datahub/lib/rlip_fileplugin.class.php');
-        $file = get_plugin_directory('dhfile', 'csv').'/csv.class.php';
+        $file = core_component::get_plugin_directory('dhfile', 'csv').'/csv.class.php';
         require_once($file);
 
         // Fileplugin instance.

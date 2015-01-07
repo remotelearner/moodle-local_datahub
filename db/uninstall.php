@@ -38,7 +38,7 @@ function xmldb_local_datahub_uninstall() {
     // Delegate to sub-plugins
     $subplugintypes = array('dhimport', 'dhexport', 'dhfile');
     foreach ($subplugintypes as $subplugintype) {
-        $subplugins = get_plugin_list($subplugintype);
+        $subplugins = core_component::get_plugin_list($subplugintype);
 
         // Go through the subplugins for this type
         foreach ($subplugins as $subpluginname => $subpluginpath) {

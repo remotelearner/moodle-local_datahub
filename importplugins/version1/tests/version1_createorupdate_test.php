@@ -47,7 +47,7 @@ class version1createorupdate_testcase extends rlip_test {
      */
     private function run_core_user_import($data) {
         global $CFG;
-        $file = get_plugin_directory('dhimport', 'version1').'/version1.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/version1.class.php';
         require_once($file);
 
         $provider = new rlipimport_version1_importprovider_createorupdateuser($data);
@@ -63,7 +63,7 @@ class version1createorupdate_testcase extends rlip_test {
      */
     private function run_core_course_import($data) {
         global $CFG;
-        $file = get_plugin_directory('dhimport', 'version1').'/version1.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/version1.class.php';
         require_once($file);
 
         $provider = new rlipimport_version1_importprovider_createorupdatecourse($data);
@@ -79,7 +79,7 @@ class version1createorupdate_testcase extends rlip_test {
      */
     private function run_core_enrolment_import($data) {
         global $CFG;
-        $file = get_plugin_directory('dhimport', 'version1').'/version1.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/version1.class.php';
         require_once($file);
 
         $provider = new rlipimport_version1_importprovider_createorupdateenrolment($data);
@@ -148,7 +148,7 @@ class version1createorupdate_testcase extends rlip_test {
      */
     private function create_mapping_record($entitytype, $standardfieldname, $customfieldname) {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhimport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/lib.php';
         require_once($file);
 
         // Add the record to the DB.

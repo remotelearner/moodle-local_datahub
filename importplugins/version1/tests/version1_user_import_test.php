@@ -87,7 +87,7 @@ class version1userimport_testcase extends rlip_test {
      */
     private function run_core_user_import($extradata, $usedefaultdata = true) {
         global $CFG;
-        $file = get_plugin_directory('dhimport', 'version1').'/version1.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/version1.class.php';
         require_once($file);
 
         if ($usedefaultdata) {
@@ -238,7 +238,7 @@ class version1userimport_testcase extends rlip_test {
      */
     public function test_version1importsetsrequireduserfieldsoncreate() {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhimport', 'version1').'/version1.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/version1.class.php';
         require_once($file);
 
         $data = $this->get_core_user_data();
@@ -268,7 +268,7 @@ class version1userimport_testcase extends rlip_test {
      */
     public function test_version1importsetsrequireduserfieldsonadd() {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhimport', 'version1').'/version1.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/version1.class.php';
         require_once($file);
 
         $data = $this->get_core_user_data();
@@ -2472,7 +2472,7 @@ class version1userimport_testcase extends rlip_test {
      */
     public function test_version1importusesuserfieldmappings() {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhimport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/lib.php';
         require_once($file);
         $CFG->allowuserthemes = true;
 
@@ -2585,7 +2585,7 @@ class version1userimport_testcase extends rlip_test {
      */
     public function test_version1importuserfieldimportpreventsstandardfielduse() {
         global $CFG, $DB;
-        $plugindir = get_plugin_directory('dhimport', 'version1');
+        $plugindir = core_component::get_plugin_directory('dhimport', 'version1');
         require_once($plugindir.'/version1.class.php');
         require_once($plugindir.'/lib.php');
 

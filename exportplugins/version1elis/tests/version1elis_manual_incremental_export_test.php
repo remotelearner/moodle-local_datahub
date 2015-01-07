@@ -55,7 +55,7 @@ class version1elismanualincrementalexport_testcase extends rlip_elis_test {
      */
     protected function get_export_data($manual = true, $targetstarttime = 0, $lastruntime = 0) {
         global $CFG;
-        $file = get_plugin_directory('dhexport', 'version1elis').'/version1elis.class.php';
+        $file = core_component::get_plugin_directory('dhexport', 'version1elis').'/version1elis.class.php';
         require_once($file);
 
         // Set the export to be incremental.
@@ -742,7 +742,7 @@ class version1elismanualincrementalexport_testcase extends rlip_elis_test {
      */
     public function test_export_resetsstate() {
         global $CFG;
-        $file = get_plugin_directory('dhexport', 'version1elis').'/version1elis.class.php';
+        $file = core_component::get_plugin_directory('dhexport', 'version1elis').'/version1elis.class.php';
         require_once($file);
 
         // Data setup.
@@ -782,7 +782,7 @@ class version1elismanualincrementalexport_testcase extends rlip_elis_test {
     public function test_exportincludes_correct_customfield_header_info($entityname, $entitytable) {
         global $CFG, $DB;
 
-        $file = get_plugin_directory('dhexport', 'version1elis').'/lib.php';
+        $file = core_component::get_plugin_directory('dhexport', 'version1elis').'/lib.php';
         require_once($file);
 
         // Set the export to be incremental.

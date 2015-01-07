@@ -103,7 +103,7 @@ class elis_enrolment_field_mappings_testcase extends rlip_elis_test {
      */
     private function run_enrolment_import($data) {
         global $CFG;
-        $file = get_plugin_directory('dhimport', 'version1elis').'/version1elis.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1elis').'/version1elis.class.php';
         require_once($file);
 
         $provider = new rlipimport_version1elis_importprovider_mockenrolment($data);

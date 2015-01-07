@@ -550,7 +550,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
         global $CFG;
 
         //make sure auth plugin refers to a valid plugin
-        $auths = get_plugin_list('auth');
+        $auths = core_component::get_plugin_list('auth');
         if (!$this->validate_fixed_list($record, 'auth', array_keys($auths))) {
             $identifier = $this->mappings['auth'];
             $this->fslogger->log_failure("{$identifier} value of \"{$record->auth}\" is not a valid auth plugin.", 0, $filename, $this->linenumber, $record, "user");
@@ -1522,7 +1522,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
 
         //make sure format refers to a valid course format
         if (isset($record->format)) {
-            $courseformats = get_plugin_list('format');
+            $courseformats = core_component::get_plugin_list('format');
 
             if (!$this->validate_fixed_list($record, 'format', array_keys($courseformats))) {
                 $identifier = $this->mappings['format'];
@@ -2443,7 +2443,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
 
         //going to collect all messages for this action
         $logmessages = array();
-
+        $enrolresult = null;
         if ($record->context == 'course') {
 
             // Set enrolment start and end time if specified, otherwise set enrolment time to 'now' to allow immediate access.
@@ -2731,7 +2731,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
      */
     function apply_mapping($entity, $record) {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhimport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/lib.php';
         require_once($file);
 
         //mappings should already be fetched
@@ -2779,7 +2779,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
      *                             or null for success.
      */
     function process_import_file($entity, $maxruntime = 0, $state = null) {
-        $file = get_plugin_directory('dhimport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/lib.php';
         require_once($file);
 
         //store field mappings for this entity type

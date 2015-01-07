@@ -28,7 +28,7 @@ global $CFG;
 require_once($CFG->dirroot.'/local/datahub/tests/other/rlip_test.class.php');
 
 // Libs.
-$plugindir = get_plugin_directory('dhimport', 'version1');
+$plugindir = core_component::get_plugin_directory('dhimport', 'version1');
 require_once($plugindir.'/version1.class.php');
 require_once($plugindir.'/lib.php');
 require_once($CFG->dirroot.'/user/profile/definelib.php');
@@ -253,7 +253,7 @@ class version1importconfig_testcase extends rlip_test {
      */
     public function test_getmappingreturnsvaliddata($entitytype, $field) {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhimport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/lib.php';
         require_once($file);
 
         // Obtain the entire list of fields.
@@ -320,7 +320,7 @@ class version1importconfig_testcase extends rlip_test {
      */
     public function test_savemappingpersistsalldata($entitytype, $field) {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhimport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/lib.php';
         require_once($file);
 
         $DB->delete_records(RLIPIMPORT_VERSION1_MAPPING_TABLE);
@@ -364,7 +364,7 @@ class version1importconfig_testcase extends rlip_test {
      */
     public function test_savemappingupdatesexistingrecords() {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhimport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/lib.php';
         require_once($file);
 
         // Obtain the available fields.
@@ -396,7 +396,7 @@ class version1importconfig_testcase extends rlip_test {
      */
     public function test_savemappingdoesnotdeletemappingsforotherentities() {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhimport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/lib.php';
         require_once($file);
 
         // Create a user mapping record.
@@ -423,7 +423,7 @@ class version1importconfig_testcase extends rlip_test {
      */
     public function test_savemappingdoesnotsaveinvalidfields() {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhimport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/lib.php';
         require_once($file);
 
         // Obtain available fields.
@@ -443,7 +443,7 @@ class version1importconfig_testcase extends rlip_test {
      */
     public function test_restoredefaultmappingupdatesrecords() {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhimport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/lib.php';
         require_once($file);
 
         // Obtain available fields.

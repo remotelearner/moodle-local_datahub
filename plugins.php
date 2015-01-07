@@ -41,7 +41,7 @@ echo $OUTPUT->header();
 //the types of plugins we are considering
 $plugintypes = array('dhimport', 'dhexport');
 //lookup for the directory paths for plugins
-$directories = get_plugin_types();
+$directories = core_component::get_plugin_types();
 
 foreach ($plugintypes as $plugintype) {
     //plugin header
@@ -58,7 +58,7 @@ foreach ($plugintypes as $plugintype) {
     $table->width = '40%';
 
     //obtain plugins and iterate through them
-    $plugins = get_plugin_list($plugintype);
+    $plugins = core_component::get_plugin_list($plugintype);
     //base directory
     $directory = $directories[$plugintype];
     $directory = str_replace($CFG->dirroot, $CFG->wwwroot, $directory);

@@ -28,7 +28,7 @@ global $CFG;
 require_once($CFG->dirroot.'/local/datahub/tests/other/rlip_test.class.php');
 
 // Libs.
-$file = get_plugin_directory('dhimport', 'version1').'/version1.class.php';
+$file = core_component::get_plugin_directory('dhimport', 'version1').'/version1.class.php';
 require_once($file);
 require_once($CFG->dirroot.'/local/datahub/lib.php');
 

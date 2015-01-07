@@ -916,7 +916,7 @@ class elis_user_import_testcase extends rlip_elis_test {
      */
     public function test_elis_user_import($action, $userdata, $setupindex, $elisexists, $mdlexists) {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhimport', 'version1elis').'/version1elis.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1elis').'/version1elis.class.php';
         require_once($file);
 
         $CFG->siteguest = '';
@@ -1335,7 +1335,7 @@ class elis_user_import_testcase extends rlip_elis_test {
      */
     public function test_version1elis_get_userid_for_user_actions($usersdata, $inputdata, $expected) {
         global $CFG, $DB;
-        $dir = get_plugin_directory('dhimport', 'version1elis');
+        $dir = core_component::get_plugin_directory('dhimport', 'version1elis');
         require_once($dir.'/lib.php');
 
         // Create users for test saving ids for later comparison

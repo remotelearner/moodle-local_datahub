@@ -351,7 +351,7 @@ class elis_userset_import_testcase extends rlip_elis_test {
     private function run_core_userset_import($extradata, $usedefaultdata = true) {
         global $CFG;
 
-        $file = get_plugin_directory('dhimport', 'version1elis').'/version1elis.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1elis').'/version1elis.class.php';
         require_once($file);
 
         if ($usedefaultdata) {

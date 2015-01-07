@@ -22,7 +22,7 @@
  * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
-$file = get_plugin_directory('dhfile', 'csv').'/csv.class.php';
+$file = core_component::get_plugin_directory('dhfile', 'csv').'/csv.class.php';
 require_once($file);
 
 /**

@@ -24,7 +24,7 @@
  */
 
 require_once($CFG->dirroot.'/local/datahub/lib/rlip_importplugin.class.php');
-$file = get_plugin_directory('dhimport', 'sample').'/sample.class.php';
+$file = core_component::get_plugin_directory('dhimport', 'sample').'/sample.class.php';
 require_once($file);
 
 /**

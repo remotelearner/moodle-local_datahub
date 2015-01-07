@@ -326,7 +326,7 @@ class rlip_fslogger_factory {
         list($type, $instance) = explode('_', $plugin);
 
         //try to load in the appropriate file
-        $file = get_plugin_directory($type, $instance).'/'.$instance.'.class.php';
+        $file = core_component::get_plugin_directory($type, $instance).'/'.$instance.'.class.php';
         if (!file_exists($file)) {
             //this should only happen during unit tests
             require_once($CFG->dirroot.'/local/datahub/lib/rlip_fslogger.class.php');

@@ -85,7 +85,7 @@ if ($tasks && $tasks->valid()) {
             continue;
         }
 
-        $rlip_plugins = get_plugin_list($plugparts[0]);
+        $rlip_plugins = core_component::get_plugin_list($plugparts[0]);
         //print_object($rlip_plugins);
         if (!array_key_exists($plugparts[1], $rlip_plugins)) {
             mtrace("{$filename}: {$rlipshortname} plugin '{$plugin}' unknown!");

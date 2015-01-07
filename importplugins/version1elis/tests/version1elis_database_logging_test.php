@@ -411,7 +411,7 @@ class rlipimport_version1elis_databaselogging_testcase extends rlip_elis_test {
      */
     private function run_user_import($data) {
         global $CFG;
-        $file = get_plugin_directory('dhimport', 'version1elis').'/version1elis.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1elis').'/version1elis.class.php';
         require_once($file);
 
         $provider = new rlipimport_version1elis_importprovider_mockuser($data);
@@ -610,7 +610,7 @@ class rlipimport_version1elis_databaselogging_testcase extends rlip_elis_test {
     public function test_manualimportobeysmaxruntime($filename, $entity) {
         global $CFG, $DB;
         require_once($CFG->dirroot.'/local/datahub/tests/other/csv_delay.class.php');
-        $file = get_plugin_directory('dhimport', 'version1elis').'/version1elis.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1elis').'/version1elis.class.php';
         require_once($file);
 
         // Set the log file name to a fixed value.

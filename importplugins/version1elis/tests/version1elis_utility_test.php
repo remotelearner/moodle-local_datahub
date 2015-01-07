@@ -25,7 +25,7 @@
 
 require_once(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))).'/config.php');
 global $CFG;
-$file = get_plugin_directory('dhimport', 'version1elis').'/version1elis.class.php';
+$file = core_component::get_plugin_directory('dhimport', 'version1elis').'/version1elis.class.php';
 require_once($file);
 
 /**
