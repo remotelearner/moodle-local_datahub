@@ -81,7 +81,7 @@ class rlip_import_version1elis_fslogger extends rlip_fslogger_linebased {
     */
     function general_validation_message($record, $message, $type) {
         //need the plugin class for some utility functions
-        $file = get_plugin_directory('dhimport', 'version1elis').'/version1elis.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1elis').'/version1elis.class.php';
         require_once($file);
         $msg = "";
 

@@ -30,7 +30,7 @@ require_once($CFG->dirroot.'/course/lib.php'); // create_course()
 
 // Libs.
 require_once(dirname(__FILE__).'/other/rlip_mock_provider.class.php');
-$file = get_plugin_directory('dhfile', 'csv').'/csv.class.php';
+$file = core_component::get_plugin_directory('dhfile', 'csv').'/csv.class.php';
 require_once($file);
 require_once($CFG->dirroot.'/local/datahub/lib/rlip_importplugin.class.php');
 require_once($CFG->dirroot.'/local/datahub/importplugins/version1/version1.class.php');
@@ -85,7 +85,7 @@ class version1databaselogging_testcase extends rlip_test {
      */
     private function run_user_import($data) {
         global $CFG;
-        $file = get_plugin_directory('dhimport', 'version1').'/version1.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/version1.class.php';
         require_once($file);
 
         $provider = new rlipimport_version1_importprovider_loguser($data);
@@ -101,7 +101,7 @@ class version1databaselogging_testcase extends rlip_test {
      */
     private function run_course_import($data) {
         global $CFG;
-        $file = get_plugin_directory('dhimport', 'version1').'/version1.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/version1.class.php';
         require_once($file);
 
         $provider = new rlipimport_version1_importprovider_logcourse($data);
@@ -117,7 +117,7 @@ class version1databaselogging_testcase extends rlip_test {
      */
     private function run_enrolment_import($data) {
         global $CFG;
-        $file = get_plugin_directory('dhimport', 'version1').'/version1.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/version1.class.php';
         require_once($file);
 
         $provider = new rlipimport_version1_importprovider_logenrolment($data);
@@ -297,7 +297,7 @@ class version1databaselogging_testcase extends rlip_test {
         set_config('hiddensections', 0, 'moodlecourse');
         set_config('coursedisplay', 1, 'moodlecourse');
 
-        $file = get_plugin_directory('dhimport', 'version1').'/version1.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/version1.class.php';
         require_once($file);
 
         $data = array(
@@ -320,7 +320,7 @@ class version1databaselogging_testcase extends rlip_test {
      */
     public function test_version1dbloggingdoesnotlogsuccessmessageonfailedcoursecreate() {
         global $CFG;
-        $file = get_plugin_directory('dhimport', 'version1').'/version1.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/version1.class.php';
         require_once($file);
 
         $data = array(
@@ -345,7 +345,7 @@ class version1databaselogging_testcase extends rlip_test {
     public function test_version1dblogginglogssuccessmessageoncourseupdate() {
         global $CFG, $DB;
         require_once($CFG->dirroot.'/local/datahub/lib.php');
-        $file = get_plugin_directory('dhimport', 'version1').'/version1.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/version1.class.php';
         require_once($file);
 
         // Prevent problem with cached contexts.
@@ -404,7 +404,7 @@ class version1databaselogging_testcase extends rlip_test {
     public function test_version1dblogginglogssuccessmessageoncoursedelete() {
         global $CFG, $DB;
         require_once($CFG->dirroot.'/local/datahub/lib.php');
-        $file = get_plugin_directory('dhimport', 'version1').'/version1.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/version1.class.php';
         require_once($file);
 
         // Prevent problem with cached contexts.
@@ -441,7 +441,7 @@ class version1databaselogging_testcase extends rlip_test {
      */
     public function test_version1dbloggingdoesnotlogsuccessmessageonfailedcoursedelete() {
         global $CFG;
-        $file = get_plugin_directory('dhimport', 'version1').'/version1.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/version1.class.php';
         require_once($file);
 
         $data = array(
@@ -838,7 +838,7 @@ class version1databaselogging_testcase extends rlip_test {
     public function test_version1manualimportobeysmaxruntime() {
         global $CFG, $DB;
         require_once($CFG->dirroot.'/local/datahub/tests/other/csv_delay.class.php');
-        $file = get_plugin_directory('dhimport', 'version1').'/version1.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/version1.class.php';
         require_once($file);
 
         // Set the log file name to a fixed value.
@@ -872,7 +872,7 @@ class version1databaselogging_testcase extends rlip_test {
      */
     public function test_version1scheduledimportobeysmaxruntime() {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhimport', 'version1').'/version1.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/version1.class.php';
         require_once($file);
 
         // Set the log file name to a fixed value.
@@ -1156,7 +1156,7 @@ class version1databaselogging_testcase extends rlip_test {
     public function test_version1dblogginglogscorrectuseridformanualimport() {
         global $CFG, $DB, $USER;
         require_once($CFG->dirroot.'/local/datahub/lib.php');
-        $file = get_plugin_directory('dhimport', 'version1').'/version1.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/version1.class.php';
         require_once($file);
 
         $USER->id = 9999;

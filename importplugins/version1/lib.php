@@ -96,7 +96,7 @@ function rlipimport_version1_get_tabs($baseurl) {
 function rlipimport_version1_get_mapping($entitytype) {
     global $CFG, $DB;
     require_once($CFG->dirroot.'/local/datahub/lib/rlip_dataplugin.class.php');
-    $file = get_plugin_directory('dhimport', 'version1').'/lib.php';
+    $file = core_component::get_plugin_directory('dhimport', 'version1').'/lib.php';
     require_once($file);
 
     //obtain the list of supported fields
@@ -171,7 +171,7 @@ function rlipimport_version1_save_mapping($entitytype, $options, $formdata) {
  */
 function rlipimport_version1_reset_mappings($entitytype) {
     global $CFG, $DB;
-    $file = get_plugin_directory('dhimport', 'version1').'/lib.php';
+    $file = core_component::get_plugin_directory('dhimport', 'version1').'/lib.php';
     require_once($file);
 
     $sql = "UPDATE {".RLIPIMPORT_VERSION1_MAPPING_TABLE."}

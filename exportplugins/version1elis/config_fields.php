@@ -29,7 +29,7 @@ $PAGE->requires->jquery();
 $PAGE->requires->jquery_plugin('ui');
 $PAGE->requires->jquery_plugin('ui-css');
 $PAGE->requires->css('/local/datahub/exportplugins/version1elis/config_fields.css');
-$file = get_plugin_directory('dhexport', 'version1elis').'/lib.php';
+$file = core_component::get_plugin_directory('dhexport', 'version1elis').'/lib.php';
 require_once($file);
 
 // Permissions checking.

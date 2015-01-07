@@ -24,7 +24,7 @@
  */
 
 require_once('../../../../config.php');
-$file = get_plugin_directory('dhexport', 'version1').'/lib.php';
+$file = core_component::get_plugin_directory('dhexport', 'version1').'/lib.php';
 require_once($file);
 
 //permissions checking

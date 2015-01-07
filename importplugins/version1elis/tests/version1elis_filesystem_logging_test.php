@@ -207,7 +207,7 @@ class version1elisfilesystemlogging_testcase extends rlip_elis_test {
     private function create_mapping_record($entitytype, $standardfieldname, $customfieldname) {
         global $DB;
 
-        $file = get_plugin_directory('dhimport', 'version1elis').'/lib.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1elis').'/lib.php';
         require_once($file);
 
         $record = new stdClass;

@@ -1195,7 +1195,7 @@ class utilitymethod_testcase extends rlip_test {
 
         $manager = $DB->get_manager();
 
-        $filename = get_component_directory($component)."/db/install.xml";
+        $filename = core_component::get_component_directory($component)."/db/install.xml";
         $xmldbfile = new xmldb_file($filename);
 
         if (!$xmldbfile->fileExists()) {

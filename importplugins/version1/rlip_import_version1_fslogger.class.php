@@ -82,7 +82,7 @@ class rlip_import_version1_fslogger extends rlip_fslogger_linebased {
     */
     function general_validation_message($record, $message, $type) {
         // Need the plugin class for some utility functions
-        $file = get_plugin_directory('dhimport', 'version1').'/version1.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/version1.class.php';
         require_once($file);
 
         // "action" is not always provided. In that case, return only the specific message

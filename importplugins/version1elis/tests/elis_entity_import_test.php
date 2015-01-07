@@ -1215,7 +1215,7 @@ class elis_entity_import_testcase extends rlip_elis_test {
             return;
         }
 
-        $file = get_plugin_directory('dhimport', 'version1elis').'/version1elis.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1elis').'/version1elis.class.php';
         require_once($file);
 
         set_config('enable_curriculum_expiration', true, 'local_elisprogram');

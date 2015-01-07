@@ -70,7 +70,7 @@ class pluginfactories_testcase extends basic_testcase {
     public function test_fsloggerfactoryinstantiatescorrectclass() {
         global $CFG;
         require_once($CFG->dirroot.'/local/datahub/lib/rlip_fslogger.class.php');
-        $file = get_plugin_directory('dhimport', 'version1').'/rlip_import_version1_fslogger.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1').'/rlip_import_version1_fslogger.class.php';
         require_once($file);
 
         // Setup.

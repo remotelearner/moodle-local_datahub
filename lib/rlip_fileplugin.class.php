@@ -141,14 +141,14 @@ class rlip_fileplugin_factory {
 
     	if ($logging) {
       	    //using a standard text file for logging
-            $file = get_plugin_directory('dhfile', 'log').'/log.class.php';
+            $file = core_component::get_plugin_directory('dhfile', 'log').'/log.class.php';
             require_once($file);
 
             return new rlip_fileplugin_log($filename);
     	}
 
     	//load the CSV file plugin definition
-        $file = get_plugin_directory('dhfile', 'csv').'/csv.class.php';
+        $file = core_component::get_plugin_directory('dhfile', 'csv').'/csv.class.php';
         require_once($file);
 
     	if ($sendtobrowser) {

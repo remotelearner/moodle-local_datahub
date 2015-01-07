@@ -438,7 +438,7 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
      */
     function apply_mapping($entity, $record) {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhimport', 'version1elis').'/lib.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1elis').'/lib.php';
         require_once($file);
 
         //mappings should already be fetched
@@ -1362,7 +1362,7 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
      *                             or null for success.
      */
     function process_import_file($entity, $maxruntime = 0, $state = null) {
-        $file = get_plugin_directory('dhimport', 'version1elis').'/lib.php';
+        $file = core_component::get_plugin_directory('dhimport', 'version1elis').'/lib.php';
         require_once($file);
 
         //store field mappings for this entity type

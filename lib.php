@@ -42,7 +42,6 @@ define('RLIP_IMPORT_TEMPDIR', '/datahub/%s/temp/');
 //the default log path
 define('RLIP_DEFAULT_LOG_PATH', '/datahub/log');
 
-require_once($CFG->dirroot.'/lib/pluginlib.php');
 require_once($CFG->dirroot.'/lib/adminlib.php');
 require_once($CFG->dirroot.'/local/datahub/lib/rlip_dataplugin.class.php');
 
@@ -115,7 +114,7 @@ function rlip_admintree_setup(&$adminroot) {
 
     foreach ($plugintypes as $plugintype) {
         //obtain the list of plugins of the current type
-        if ($plugins = get_plugin_list($plugintype)) {
+        if ($plugins = core_component::get_plugin_list($plugintype)) {
             ksort($plugins);
 
             foreach ($plugins as $p => $path) {
@@ -961,7 +960,7 @@ function rlip_compress_logs_cron($taskname, $runtime = 0, $time = 0) {
     //the types of plugins we are considering
     $plugintypes = array('dhimport' => 'import', 'dhexport' => 'export');
     //lookup for the directory paths for plugins
-    $directories = get_plugin_types();
+    $directories = core_component::get_plugin_types();
     //Loop through all plugins...
     $timestamp = userdate($time, get_string('logfiledaily_timestamp','local_datahub'), 99);
 
@@ -970,7 +969,7 @@ function rlip_compress_logs_cron($taskname, $runtime = 0, $time = 0) {
         $directory = $directories[$plugintype];
 
         //obtain plugins and iterate through them
-        $plugins = get_plugin_list($plugintype);
+        $plugins = core_component::get_plugin_list($plugintype);
 
         foreach ($plugins as $name => $path) {
             //skip plugins used for testing only / ones that are not available

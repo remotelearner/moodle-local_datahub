@@ -27,7 +27,7 @@ require_once('../../config.php');
 require_login();
 require_once($CFG->dirroot.'/local/datahub/lib.php');
 require_once($CFG->dirroot.'/local/datahub/lib/rlip_fileplugin.class.php');
-$file = get_plugin_directory('dhfile', 'log').'/log.class.php';
+$file = core_component::get_plugin_directory('dhfile', 'log').'/log.class.php';
 require_once($file);
 
 $id = required_param('id', PARAM_INT);

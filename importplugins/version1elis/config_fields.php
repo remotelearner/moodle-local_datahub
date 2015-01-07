@@ -26,7 +26,7 @@
 require_once('../../../../config.php');
 
 //plugin directory
-$plugindir = get_plugin_directory('dhimport', 'version1elis');
+$plugindir = core_component::get_plugin_directory('dhimport', 'version1elis');
 
 require_once($plugindir.'/version1elis.class.php');
 require_once($plugindir.'/lib.php');

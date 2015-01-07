@@ -196,7 +196,7 @@ class version1export_testcase extends rlip_test {
      */
     protected function get_export_data($manual = true, $targetstarttime = 0, $lastruntime = 0) {
         global $CFG;
-        $file = get_plugin_directory('dhexport', 'version1').'/version1.class.php';
+        $file = core_component::get_plugin_directory('dhexport', 'version1').'/version1.class.php';
         require_once($file);
 
         // Plugin for file IO.
@@ -283,7 +283,7 @@ class version1export_testcase extends rlip_test {
      */
     private function create_field_mapping($fieldid, $header = 'Header', $fieldorder = 1) {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhexport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhexport', 'version1').'/lib.php';
         require_once($file);
 
         // Set up and insert the record.
@@ -984,7 +984,7 @@ class version1export_testcase extends rlip_test {
      */
     public function test_version1exportdeletesfield() {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhexport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhexport', 'version1').'/lib.php';
         require_once($file);
 
         // Set up the category and field, along with the export mapping.
@@ -1010,7 +1010,7 @@ class version1export_testcase extends rlip_test {
      */
     public function test_version1exportaddsfield() {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhexport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhexport', 'version1').'/lib.php';
         require_once($file);
 
         // Set up the category and field.
@@ -1030,7 +1030,7 @@ class version1export_testcase extends rlip_test {
      */
     public function test_version1exportmovesfieldup() {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhexport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhexport', 'version1').'/lib.php';
         require_once($file);
 
         // Set up the category and field, along with the export mapping.
@@ -1057,7 +1057,7 @@ class version1export_testcase extends rlip_test {
      */
     public function test_version1exportmovesfielddown() {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhexport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhexport', 'version1').'/lib.php';
         require_once($file);
 
         // Set up the category and field, along with the export mapping.
@@ -1084,7 +1084,7 @@ class version1export_testcase extends rlip_test {
      */
     public function test_version1exportupdatesheader() {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhexport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhexport', 'version1').'/lib.php';
         require_once($file);
 
         // Set up the category and field, along with the export mapping.
@@ -1106,7 +1106,7 @@ class version1export_testcase extends rlip_test {
      */
     public function test_version1exportupdatesheaders() {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhexport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhexport', 'version1').'/lib.php';
         require_once($file);
 
         // Set up the category and field, along with the export mapping.
@@ -1138,7 +1138,7 @@ class version1export_testcase extends rlip_test {
      */
     public function test_version1exportreportsconfiguredfields() {
         global $CFG;
-        $file = get_plugin_directory('dhexport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhexport', 'version1').'/lib.php';
         require_once($file);
 
         // Set up the category and field, along with the export mapping.
@@ -1188,7 +1188,7 @@ class version1export_testcase extends rlip_test {
      */
     public function test_version1exportreportsavailablefields() {
         global $CFG;
-        $file = get_plugin_directory('dhexport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhexport', 'version1').'/lib.php';
         require_once($file);
 
         // Set up the category and field, along with the export mapping.
@@ -1231,7 +1231,7 @@ class version1export_testcase extends rlip_test {
      */
     public function test_version1exporthandlesdeletedfieldswhenmovingup() {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhexport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhexport', 'version1').'/lib.php';
         require_once($file);
 
         // Set up the category and field, along with the export mapping.
@@ -1262,7 +1262,7 @@ class version1export_testcase extends rlip_test {
      */
     public function test_version1exporthandlesdeletedfieldswhenmovingdown() {
         global $CFG, $DB;
-        $file = get_plugin_directory('dhexport', 'version1').'/lib.php';
+        $file = core_component::get_plugin_directory('dhexport', 'version1').'/lib.php';
         require_once($file);
 
         // Set up the category and field, along with the export mapping.

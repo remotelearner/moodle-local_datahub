@@ -213,7 +213,7 @@ class databaselogging_testcase extends rlip_test {
      */
     public function test_dbloggingdoesnotproduceoutputformanualexport() {
         global $CFG;
-        require_once(get_plugin_directory('dhexport', 'version1').'/tests/other/rlip_fileplugin_nowrite.class.php');
+        require_once(core_component::get_plugin_directory('dhexport', 'version1').'/tests/other/rlip_fileplugin_nowrite.class.php');
 
         // Set up the export.
         $fileplugin = new rlip_fileplugin_nowrite();
@@ -234,7 +234,7 @@ class databaselogging_testcase extends rlip_test {
      */
     public function test_dbloggingdoesnotproduceoutputforscheduledexport() {
         global $CFG;
-        require_once(get_plugin_directory('dhexport', 'version1').'/tests/other/rlip_fileplugin_nowrite.class.php');
+        require_once(core_component::get_plugin_directory('dhexport', 'version1').'/tests/other/rlip_fileplugin_nowrite.class.php');
 
         // Set up the export.
         $fileplugin = new rlip_fileplugin_nowrite();

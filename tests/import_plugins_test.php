@@ -254,7 +254,7 @@ class importplugin_testcase extends rlip_test {
      */
     public function test_validinputtriggersaction() {
         global $CFG;
-        $file = get_plugin_directory('dhimport', 'sample').'/sample.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'sample').'/sample.class.php';
         require_once($file);
 
         $provider = new rlip_importprovider_mock();
@@ -272,7 +272,7 @@ class importplugin_testcase extends rlip_test {
      */
     public function test_importclosesfile() {
         global $CFG;
-        $file = get_plugin_directory('dhimport', 'sample').'/sample.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'sample').'/sample.class.php';
         require_once($file);
 
         $provider = new rlip_importprovider_inputclosed();
@@ -289,7 +289,7 @@ class importplugin_testcase extends rlip_test {
      */
     public function test_importpluginssupportmultiplefiles() {
         global $CFG;
-        $file = get_plugin_directory('dhimport', 'multiple').'/multiple.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'multiple').'/multiple.class.php';
         require_once($file);
 
         $provider = new rlip_importprovider_multiple();
@@ -306,7 +306,7 @@ class importplugin_testcase extends rlip_test {
      */
     public function test_importtriggersheaderreadhook() {
         global $CFG;
-        $file = get_plugin_directory('dhimport', 'header').'/header.class.php';
+        $file = core_component::get_plugin_directory('dhimport', 'header').'/header.class.php';
         require_once($file);
 
         $provider = new rlip_importprovider_mock();
