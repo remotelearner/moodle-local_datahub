@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2014 Remote Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2015 Remote Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * @package    local_datahub
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -55,6 +55,15 @@ function xmldb_local_datahub_upgrade($oldversion = 0) {
         $params = array('block_rldh_%');
         $DB->delete_records_select('external_services_functions', $where, $params);
         upgrade_plugin_savepoint($result, 2014030702, 'local', 'datahub');
+    }
+
+    if ($result && $oldversion < 2014030705) {
+        // ELIS-9030: Update Datahub plugins in log & schedule tables
+        $sql = "UPDATE {local_datahub_summary_logs} SET plugin = REPLACE(plugin, 'rlip', 'dh') WHERE plugin LIKE 'rlip%'";
+        $DB->execute($sql);
+        $sql = "UPDATE {local_datahub_schedule} SET plugin = REPLACE(plugin, 'rlip', 'dh') WHERE plugin LIKE 'rlip%'";
+        $DB->execute($sql);
+        upgrade_plugin_savepoint(true, 2014030705, 'local', 'datahub');
     }
 
     return $result;

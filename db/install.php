@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
  *
  * @package    local_datahub
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  */
 
 require_once(dirname(__FILE__).'/../lib.php');
@@ -95,6 +95,12 @@ function xmldb_local_datahub_install() {
             }
         }
     }
+
+    // ELIS-9030: Update Datahub plugins in log & schedule tables
+    $sql = "UPDATE {local_datahub_summary_logs} SET plugin = REPLACE(plugin, 'rlip', 'dh') WHERE plugin LIKE 'rlip%'";
+    $DB->execute($sql);
+    $sql = "UPDATE {local_datahub_schedule} SET plugin = REPLACE(plugin, 'rlip', 'dh') WHERE plugin LIKE 'rlip%'";
+    $DB->execute($sql);
 
     // Migrate language strings
     $migrator = new \local_eliscore\install\migration\migrator('block_rlip', 'local_datahub');
