@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * @package    local_datahub
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -383,36 +383,6 @@ function rlip_get_scheduled_jobs($plugin, $userid = 0) {
 }
 
 /**
- * Get scheduled period in minutes
- *
- * @param  string $period  The schedule period in: *d*h*m format
- * @return int             The schedule period in minutes, -1 on error
- */
-function rlip_schedule_period_minutes($period) {
-    $period_elems = array('d' => DAYSECS/60,
-                          'h' => HOURSECS/60,
-                          'm' => 1);
-    $parray = str_split($period);
-    $num = '';
-    $min = 0;
-    foreach ($parray as $char) {
-        if (ctype_space($char)) {
-            continue;
-        } else if (ctype_digit($char)) {
-            $num .= $char;
-        } else {
-            if (!array_key_exists($char, $period_elems)) {
-                return -1; // error
-            }
-            $multiplier = $period_elems[$char];
-            $min += intval($num) * $multiplier;
-            $num = '';
-        }
-    }
-    return $min;
-}
-
-/**
  * Add schedule job for IP
  *
  * @param  mixed  $data   The scheduled jobs form parameters.
@@ -424,7 +394,7 @@ function rlip_schedule_add_job($data) {
     global $DB, $USER;
 
     //calculate the next run time, for use in both records
-    $nextruntime = (int)(time() + rlip_schedule_period_minutes($data['period']) * 60);
+    $nextruntime = (int)(time() + schedule_period_minutes($data['period']) * 60);
 
     $userid = isset($data['userid']) ? $data['userid'] : $USER->id;
     $data['timemodified'] = time();
@@ -451,7 +421,7 @@ function rlip_schedule_add_job($data) {
 
     $task = new stdClass;
     $task->plugin        = 'local_datahub';
-    $task->taskname      = 'ipjob_'. $ipjob->id;
+    $task->taskname      = 'ipjob_'.$ipjob->id;
     $task->callfile      = '/local/datahub/lib.php';
     $task->callfunction  = serialize('run_ipjob'); // TBD
     $task->lastruntime   = 0;
@@ -581,24 +551,6 @@ function rlip_get_run_instance($prefix, $plugin, $type, $userid, $state) {
 }
 
 /**
-* Calculate the next runtime
-*
-* @param    int    $targetstarttime Ideal start time for a job
-* @param    string $period          How often a job runs
-* @param    int    $currenttime     Optional current time
-* @return   int                     The next runtime
-*/
-function rlip_calc_next_runtime($targetstarttime, $period, $currenttime = 0) {
-    $time = ($currenttime == 0) ? time() : $currenttime;
-
-    $period = (int)rlip_schedule_period_minutes($period) * 60;
-    $iterations = ceil(($time - $targetstarttime + 59) / $period);
-    $nextruntime = ($iterations * $period) + $targetstarttime;
-
-    return $nextruntime;
-}
-
-/**
  *  Callback function for local_eliscore_sched_tasks IP jobs
  *
  * @param  string  $taskname  The task name, in the form ipjob_{id}, where id
@@ -618,9 +570,10 @@ function run_ipjob($taskname, $maxruntime = 0) {
         $maxruntime = IP_SCHEDULE_TIMELIMIT;
     }
 
-    require_once($CFG->dirroot .'/local/datahub/lib/rlip_dataplugin.class.php');
-    require_once($CFG->dirroot .'/local/datahub/lib/rlip_fileplugin.class.php');
-    require_once($CFG->dirroot .'/local/datahub/lib/rlip_importprovider_csv.class.php');
+    require_once($CFG->dirroot.'/local/eliscore/lib/tasklib.php');
+    require_once($CFG->dirroot.'/local/datahub/lib/rlip_dataplugin.class.php');
+    require_once($CFG->dirroot.'/local/datahub/lib/rlip_fileplugin.class.php');
+    require_once($CFG->dirroot.'/local/datahub/lib/rlip_importprovider_csv.class.php');
 
     // Get the schedule record
     list($prefix, $id) = explode('_', $taskname);
@@ -638,8 +591,7 @@ function run_ipjob($taskname, $maxruntime = 0) {
     $targetstarttime = $ipjob->nextruntime;
 
     // Set the next run time & lastruntime
-    if ($task = $DB->get_record('local_eliscore_sched_tasks',
-                                array('taskname' => $taskname))) {
+    if ($task = $DB->get_record('local_eliscore_sched_tasks', array('taskname' => $taskname))) {
         // Check if a job is already in progress.
         try {
             $like = $DB->sql_like('config', '?');
@@ -657,7 +609,7 @@ function run_ipjob($taskname, $maxruntime = 0) {
         } else if (empty($disabledincron)) {
             //record last runtime
             $lastruntime = (int)($ipjob->lastruntime);
-            $nextruntime = rlip_calc_next_runtime($targetstarttime, $data['period']);
+            $nextruntime = cron_next_run_time($targetstarttime, (array)$task);
             $task->nextruntime = $nextruntime;
             //update the next runtime on the ip schedule record
             $ipjob->nextruntime = $task->nextruntime;

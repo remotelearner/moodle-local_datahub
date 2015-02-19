@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * @package    local_datahub
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2014 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -213,88 +213,6 @@ class utilitymethod_testcase extends rlip_test {
     public function test_timestringtooffsetreturnscorrectoffsetforcomplexstring() {
         $result = rlip_time_string_to_offset('1d2h3m');
         $this->assertEquals($result, DAYSECS + 2 * HOURSECS + 3 * MINSECS);
-    }
-
-    /**
-     * Data provider for test_rlip_schedule_period_minutes()
-     */
-    public static function period_minutes_provider() {
-        return array(
-            array('1x', -1),
-            array('1m', 1),
-            array('5m', 5),
-            array('10m', 10),
-            array('1h', HOURSECS/60),
-            array('1d', DAYSECS/60),
-            array('2d3h4m', DAYSECS/30 + (HOURSECS * 3)/60 + 4),
-            array('9m 8d 7h', (DAYSECS * 8)/60 + (HOURSECS * 7)/60 + 9),
-            array('9h  8m  7d', (DAYSECS * 7)/60 + (HOURSECS * 9)/60 + 8),
-            array('4  d 5h  6m', (DAYSECS * 4)/60 + (HOURSECS * 5)/60 + 6),
-            array('7 d 8 h 9 m', (DAYSECS * 7)/60 + (HOURSECS * 8)/60 + 9),
-            array('20d23h45m', DAYSECS/3 + (HOURSECS * 23)/60 + 45),
-            array('2a3b4c', -1)
-        );
-    }
-
-    /**
-     * Test library function: rlip_schedule_period_minutes()
-     * @dataProvider period_minutes_provider
-     */
-    public function test_rlip_schedule_period_minutes($a, $b) {
-        $this->assertEquals(rlip_schedule_period_minutes($a), $b);
-    }
-
-    /**
-     * Validate that adding a new job sets the right next runtime on the IP
-     * schedule record
-     */
-    public function test_addingjobsetsipnextruntime() {
-        global $DB;
-
-        // A lower bound for the start time.
-        $starttime = time();
-
-        // Create a scheduled job.
-        $data = array(
-            'plugin' => 'dhexport_version1',
-            'period' => '5m',
-            'label' => 'bogus',
-            'type' => 'dhexport'
-        );
-
-        // Obtain scheduled task info.
-        $taskid = rlip_schedule_add_job($data);
-        $task = $DB->get_record('local_eliscore_sched_tasks', array('id' => $taskid));
-
-        // Obtain IP job info.
-        list($name, $jobid) = explode('_', $task->taskname);
-        $job = $DB->get_record(RLIP_SCHEDULE_TABLE, array('id' => $jobid));
-
-        // Make sure the next runtime is between 5 and 6 minutes from now.
-        $this->assertGreaterThanOrEqual($starttime + 5 * MINSECS, (int)$task->nextruntime);
-        $this->assertGreaterThanOrEqual((int)$task->nextruntime, $starttime + 6 * MINSECS);
-
-        // Make sure both records have the same next run time.
-        $this->assertEquals((int)$task->nextruntime, (int)$job->nextruntime);
-    }
-
-    /**
-     * Test that the next runtime is aligned to the correct boundary
-     */
-    public function test_nextruntimeboundry() {
-        $targetstarttime = mktime(12, 0, 0, 1, 1, 2012);    // 12:00.
-        $lowerboundtime = mktime(12, 2, 0, 1, 1, 2012);     // 12:02.
-        $middleboundtime = mktime(12, 4, 30, 1, 1, 2012);   // 12:04:30.
-        $upperboundtime = mktime(12, 7, 0, 1, 1, 2012);     // 12:07.
-
-        $nextruntime =  rlip_calc_next_runtime($targetstarttime, '5m', $lowerboundtime);
-        $this->assertEquals($nextruntime, $targetstarttime + (60 * 5)); // 12:05.
-
-        $nextruntime =  rlip_calc_next_runtime($targetstarttime, '5m', $middleboundtime);
-        $this->assertEquals($nextruntime, $targetstarttime + (60 * 10)); // 12:10.
-
-        $nextruntime =  rlip_calc_next_runtime($targetstarttime, '5m', $upperboundtime);
-        $this->assertEquals($nextruntime, $targetstarttime + (60 * 10)); // 12:10.
     }
 
     /**
