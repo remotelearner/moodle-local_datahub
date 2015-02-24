@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * @package    local_datahub
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -79,7 +79,7 @@ foreach ($plugintypes as $plugintype) {
         $config_tag = html_writer::tag('a', get_string('edit'), $attributes);
 
         // schedule link
-        $url = $CFG->wwwroot ."/local/datahub/schedulepage.php?plugin={$plugintype}_{$name}";
+        $url = $CFG->wwwroot."/local/datahub/schedulepage.php?plugin={$plugintype}_{$name}&action=list";
         $attributes = array('href' => $url);
         $sched_tag = html_writer::tag('a', get_string('managesched', 'local_datahub'), $attributes);
 

@@ -339,8 +339,20 @@ class rlipexport_version1elis_databaselogging_testcase extends rlip_elis_test {
             'dbops' => -1,
             'unmetdependency' => 0
         );
-        $exists = $DB->record_exists_select(RLIP_LOG_TABLE, $select, $params);
-        $this->assertTrue($exists);
+        $msg = '';
+        if (!($exists = $DB->record_exists_select(RLIP_LOG_TABLE, $select, $params))) {
+            ob_start();
+            var_dump($params);
+            $tmp = ob_get_contents();
+            $msg = "SQL = {$select} params = {$tmp}; ";
+            ob_clean();
+            $rec = $DB->get_record(RLIP_SCHEDULE_TABLE, array('plugin' => 'dhexport_version1'));
+            var_dump($rec);
+            $tmp = ob_get_contents();
+            $msg .= "record = {$tmp}";
+            ob_end_clean();
+        }
+        $this->assertTrue($exists, $msg);
     }
 
     /**

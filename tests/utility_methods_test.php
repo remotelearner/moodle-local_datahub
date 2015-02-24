@@ -229,15 +229,16 @@ class utilitymethod_testcase extends rlip_test {
                       'period' => '5m',
                       'label' => 'bogus',
                       'type' => 'dhexport');
-        $data['id'] = rlip_schedule_add_job($data);
+        $taskid = rlip_schedule_add_job($data);
 
         // Update the job.
         $data['plugin'] = 'bogusplugin';
         $data['userid'] = 9999;
+        $data['schedule_id'] = $DB->get_field(RLIP_SCHEDULE_TABLE, 'id', array('plugin' => 'dhexport_version1'));
         rlip_schedule_add_job($data);
 
         // Data validation.
-        $job = $DB->get_record(RLIP_SCHEDULE_TABLE, array('id' => $data['id']));
+        $job = $DB->get_record(RLIP_SCHEDULE_TABLE, array('plugin' => $data['plugin']));
         $this->assertNotEmpty($job);
         $this->assertEquals($job->plugin, 'bogusplugin');
         $this->assertEquals($job->userid, 9999);
@@ -259,14 +260,14 @@ class utilitymethod_testcase extends rlip_test {
             'label' => 'bogus',
             'type' => 'dhexport'
         );
-        $jobid = rlip_schedule_add_job($data);
+        $taskid = rlip_schedule_add_job($data);
 
         // Setup validation.
         $this->assertEquals($DB->count_records(RLIP_SCHEDULE_TABLE), 1);
         $this->assertEquals($DB->count_records('local_eliscore_sched_tasks'), 1);
 
         // Delete the job.
-        rlip_schedule_delete_job($jobid);
+        rlip_schedule_delete_job($DB->get_field(RLIP_SCHEDULE_TABLE, 'id', array('plugin' => 'dhexport_version1')));
 
         // Data validation.
         $this->assertEquals($DB->count_records(RLIP_SCHEDULE_TABLE), 0);
@@ -294,13 +295,15 @@ class utilitymethod_testcase extends rlip_test {
         $userid = user_create_user($user);
 
         // Create a scheduled job.
-        $data = array('plugin' => 'dhexport_version1',
-                      'period' => '5m',
-                      'label' => 'bogus',
-                      'type' => 'dhexport',
-                      'userid' => $userid);
-        $starttime = time();
-        $ipid = rlip_schedule_add_job($data);
+        $data = array(
+            'plugin' => 'dhexport_version1',
+            'period' => '5m',
+            'label' => 'bogus',
+            'type' => 'dhexport',
+            'userid' => $userid,
+            'starttime' => $starttime = time()
+        );
+        $estid = rlip_schedule_add_job($data);
         $endtime = time();
 
         // Fetch jobs.
@@ -310,16 +313,16 @@ class utilitymethod_testcase extends rlip_test {
         $this->assertTrue($recordset->valid());
 
         $current = $recordset->current();
-        // Ip schedule fields.
+        // DH schedule fields.
         $this->assertEquals($current->plugin, $data['plugin']);
         // User fields.
         $this->assertEquals($current->username, $user->username);
         $this->assertEquals($current->firstname, $user->firstname);
         $this->assertEquals($current->lastname, $user->lastname);
         $this->assertEquals($current->timezone, $user->timezone);
+        // Elis scheduled task fields.
         $this->assertEquals($current->lastruntime, 0);
-        // Elis scheduled task field.
-        $this->assertGreaterThanOrEqual($starttime + 5 * MINSECS, (int)$current->nextruntime);
+        $this->assertGreaterThanOrEqual($starttime, (int)$current->nextruntime);
         $this->assertGreaterThanOrEqual((int)$current->nextruntime, $endtime + 5 * MINSECS);
     }
 

@@ -383,59 +383,23 @@ function rlip_get_scheduled_jobs($plugin, $userid = 0) {
 }
 
 /**
- * Add schedule job for IP
+ * Add schedule job for IP - now used only for testing.
  *
- * @param  mixed  $data   The scheduled jobs form parameters.
- * @uses   $DB
- * @uses   $USER
- * @return bool           true on success, false on error.
+ * @param array $data The scheduled job's parameters.
+ * @return int|bool The local_eliscore_sched_tasks record DB id (> 0) on success, or false on error.
  */
 function rlip_schedule_add_job($data) {
-    global $DB, $USER;
-
-    //calculate the next run time, for use in both records
-    $nextruntime = (int)(time() + schedule_period_minutes($data['period']) * 60);
-
-    $userid = isset($data['userid']) ? $data['userid'] : $USER->id;
-    $data['timemodified'] = time();
-    if (isset($data['submitbutton'])) { // formslib!
-        unset($data['submitbutton']);
+    global $CFG, $USER;
+    require_once($CFG->dirroot.'/local/datahub/lib/schedulelib.php');
+    if (!isset($data['userid'])) {
+        $data['userid'] = $USER->id;
     }
-    $ipjob  = new stdClass;
-    $ipjob->userid = $userid;
-    $ipjob->plugin = $data['plugin'];
-    $ipjob->config = serialize($data);
-
-    //store as a redundant copy in order to prevent elis task strangeness
-    $ipjob->nextruntime = $nextruntime;
-
-    if (!empty($data['id'])) {
-        $ipjob->id = $data['id'];
-        $DB->update_record(RLIP_SCHEDULE_TABLE, $ipjob);
-        // Must delete any existing task records for the old schedule
-        $taskname = 'ipjob_'. $ipjob->id;
-        $DB->delete_records('local_eliscore_sched_tasks', array('taskname' => $taskname));
-    } else {
-        $ipjob->id = $DB->insert_record(RLIP_SCHEDULE_TABLE, $ipjob);
+    if ($dhschedwkflow = new datahub_scheduling_workflow($data)) {
+        $dhschedwkflow->set_data($data);
+        $dhschedwkflow->save();
+        return $dhschedwkflow->finish();
     }
-
-    $task = new stdClass;
-    $task->plugin        = 'local_datahub';
-    $task->taskname      = 'ipjob_'.$ipjob->id;
-    $task->callfile      = '/local/datahub/lib.php';
-    $task->callfunction  = serialize('run_ipjob'); // TBD
-    $task->lastruntime   = 0;
-    $task->blocking      = 0;
-    $task->minute        = 0;
-    $task->hour          = 0;
-    $task->day           = '*';
-    $task->month         = '*';
-    $task->dayofweek     = '*';
-    $task->timezone      = 0;
-    $task->enddate       = null;
-    $task->runsremaining = null;
-    $task->nextruntime   = $nextruntime;
-    return $DB->insert_record('local_eliscore_sched_tasks', $task);
+    return false;
 }
 
 /**
@@ -632,8 +596,8 @@ function run_ipjob($taskname, $maxruntime = 0) {
     }
 
     // Perform the IP scheduled action
-    $instance = rlip_get_run_instance($fcnname, $plugin, $data['type'],
-                                      $ipjob->userid, $state);
+    list($type, $subtype) = explode('_', $plugin);
+    $instance = rlip_get_run_instance($fcnname, $plugin, $type, $ipjob->userid, $state);
     if ($instance == null) {
         return false;
     }
