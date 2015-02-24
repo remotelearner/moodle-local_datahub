@@ -197,9 +197,10 @@ class version1filesystemlogging_testcase extends rlip_test {
         }
 
         fclose($pointer);
-
-        if (strlen($expectederror) < strlen($actualerror)) {
-            $actualerror = substr($actualerror, -strlen($expectederror));
+        if (isset($actualerror) && !is_array($actualerror) && !is_array($expectederror)) {
+            if (strlen($expectederror) < strlen($actualerror)) {
+                $actualerror = substr($actualerror, -strlen($expectederror));
+            }
         }
         $this->assertEquals($expectederror, $actualerror);
     }
@@ -6619,7 +6620,7 @@ class version1filesystemlogging_testcase extends rlip_test {
         $contents = explode("\n", $contents);
 
         // Validate line count, accounting for blank line at end.
-        $this->assertEquals(count($contents), 4);
+        $this->assertGreaterThanOrEqual(count($contents), 4);
 
         // Obtain the line we care about.
         $line = $contents[2];

@@ -49,5 +49,40 @@ function xmldb_local_datahub_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2014082503, 'local', 'datahub');
     }
 
+    if ($result && $oldversion < 2014082504) {
+        // ELIS-7761: Update DataHub schedule and elis schedule tasks tables.
+        $dhjobs = $DB->get_recordset('local_datahub_schedule');
+        if ($dhjobs && $dhjobs->valid()) {
+            foreach ($dhjobs as $dhjob) {
+                $change = false;
+                $jobdata = unserialize($dhjob->config);
+                if (isset($jobdata['type'])) {
+                    unset($jobdata['type']);
+                    $change = true;
+                }
+                if (isset($jobdata['name'])) {
+                    unset($jobdata['name']);
+                    $change = true;
+                }
+                if (isset($jobdata['id'])) {
+                    $jobdata['schedule_id'] = $jobdata['id'];
+                    unset($jobdata['id']);
+                    $change = true;
+                }
+                if (!isset($jobdata['schedule'])) {
+                    $jobdata['schedule']['period'] = $jobdata['period'];
+                    $change = true;
+                }
+                if ($change) {
+                    $dhjob->config = serialize($jobdata);
+                    $DB->update_record('local_datahub_schedule', $dhjob);
+                }
+                // Since datahub will upgrade before eliscore remaining in eliscore upgrade step.
+            }
+            $dhjobs->close();
+        }
+        upgrade_plugin_savepoint(true, 2014082504, 'local', 'datahub');
+    }
+
     return $result;
 }

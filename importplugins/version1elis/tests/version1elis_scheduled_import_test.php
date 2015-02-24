@@ -181,7 +181,7 @@ class version1elisscheduledimport_testcase extends rlip_elis_test {
 
         // Get the initial duplicate job lastruntime and nextruntime values.
         $initlastruntime = $DB->get_field('local_eliscore_sched_tasks', 'lastruntime', array('id' => $taskid2));
-        $initnextruntime = $DB->get_field('local_eliscore_sched_tasks', 'nextruntime', array('id' => $taskid2));
+        $initnextruntime = $DB->get_field(RLIP_SCHEDULE_TABLE, 'nextruntime', array('id' => 2));
 
         // Emulate the ELIS cron adjusting the job run times.
         $task = $DB->get_record('local_eliscore_sched_tasks', array('id' => $taskid2));

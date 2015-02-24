@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * @package    local_datahub
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -103,7 +103,7 @@ if ($tasks && $tasks->valid()) {
 
         $data = unserialize($ipjob->config);
         $state = isset($data['state']) ? $data['state'] : null;
-        $nextruntime = rlip_calc_next_runtime($targetstarttime, $data['period']);
+        $nextruntime = cron_next_run_time($targetstarttime, (array)$task);
         $task->nextruntime = $nextruntime;
         $task->lastruntime = $timenow;
         $DB->update_record('local_eliscore_sched_tasks', $task);
