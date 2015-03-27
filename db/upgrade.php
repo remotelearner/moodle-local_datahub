@@ -40,16 +40,16 @@ function xmldb_local_datahub_upgrade($oldversion = 0) {
         elis_tasks_update_definition('local_datahub');
     }
 
-    if ($result && $oldversion < 2014082503) {
+    if ($result && $oldversion < 2014082505) {
         // ELIS-9030: Update Datahub plugins in log & schedule tables
         $sql = "UPDATE {local_datahub_summary_logs} SET plugin = REPLACE(plugin, 'rlip', 'dh') WHERE plugin LIKE 'rlip%'";
         $DB->execute($sql);
         $sql = "UPDATE {local_datahub_schedule} SET plugin = REPLACE(plugin, 'rlip', 'dh') WHERE plugin LIKE 'rlip%'";
         $DB->execute($sql);
-        upgrade_plugin_savepoint(true, 2014082503, 'local', 'datahub');
+        upgrade_plugin_savepoint(true, 2014082505, 'local', 'datahub');
     }
 
-    if ($result && $oldversion < 2014082504) {
+    if ($result && $oldversion < 2014082506) {
         // ELIS-7761: Update DataHub schedule and elis schedule tasks tables.
         $dhjobs = $DB->get_recordset('local_datahub_schedule');
         if ($dhjobs && $dhjobs->valid()) {
@@ -81,7 +81,7 @@ function xmldb_local_datahub_upgrade($oldversion = 0) {
             }
             $dhjobs->close();
         }
-        upgrade_plugin_savepoint(true, 2014082504, 'local', 'datahub');
+        upgrade_plugin_savepoint(true, 2014082506, 'local', 'datahub');
     }
 
     return $result;

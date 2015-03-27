@@ -115,5 +115,11 @@ function xmldb_local_datahub_install() {
     $params = array('block_rldh_%');
     $DB->delete_records_select('external_services_functions', $where, $params);
 
+    if (!empty($oldrecord)) {
+        require_once(dirname(__FILE__).'/upgrade.php');
+        set_config('version', 2014082500, 'local_datahub');
+        xmldb_local_datahub_upgrade(2014082500);
+    }
+
     return $result;
 }

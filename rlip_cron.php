@@ -35,8 +35,8 @@ require_once($CFG->dirroot .'/local/datahub/lib/rlip_importprovider_csv.class.ph
 
 $filename = basename(__FILE__);
 $disabledincron = !empty($CFG->forcedatahubcron) || get_config('local_datahub', 'disableincron');
-
-if (empty($disabledincron)) {
+$upgraderunning = get_config(null, 'upgraderunning');
+if (!empty($upgraderunning) || empty($disabledincron)) {
     exit(0);
 }
 
