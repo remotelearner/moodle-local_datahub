@@ -198,6 +198,7 @@ class dhexport_version1elis_renderer extends plugin_renderer_base {
                                       array $overridden_names = array()) {
         global $PAGE;
 
+        $PAGE->requires->js('/local/eliscore/js/verify_jqueryui.js');
         $PAGE->requires->js('/local/datahub/exportplugins/version1elis/config_fields.js');
 
         // Generate Fieldset LIs.
