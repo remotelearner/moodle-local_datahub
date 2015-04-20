@@ -1069,28 +1069,6 @@ function rlip_get_notification_emails($plugin) {
 }
 
 /**
- * Obtain an object that we can use as the target user in email_to_user
- *
- * @param string $email Email of the target recipient
- * @return object A user object, either from the db, or a simulated user record
- *                for non-moodle emails
- */
-function rlip_get_email_recipient($email) {
-    global $DB;
-
-    if ($result = $DB->get_record('user', array('email' => $email))) {
-        //user exists, so use their user record
-        return $result;
-    }
-
-    //fake user record for non-moodle recipient
-    $result = new stdClass;
-    $result->email = $email;
-
-    return $result;
-}
-
-/**
  * Send a log email to a specific recipient
  *
  * @param string $plugin The plugin for which we are sending logs
@@ -1119,7 +1097,7 @@ function rlip_send_log_email($plugin, $recipient, $archive_name) {
  * @param boolean $manual True if manual, false if scheduled
  */
 function rlip_send_log_emails($plugin, $logids, $manual = false) {
-    global $CFG;
+    global $CFG, $USER;
 
     //obtain the sanitized list of emails
     $emails = rlip_get_notification_emails($plugin);
@@ -1131,14 +1109,21 @@ function rlip_send_log_emails($plugin, $logids, $manual = false) {
         return false;
     }
 
-    //send to all appropriate users
+    // send to all appropriate users
+    // A valid $user->id & all other fields now required by Moodle 2.6+ email_to_user() API which also calls fullname($user).
+    $duser = new stdClass;
+    $allfields = get_all_user_name_fields();
+    foreach ($allfields as $field) {
+        $duser->$field = null;
+    }
+    $duser->id = $USER->id; // let's just use this user as default (TBD)
+    $duser->mailformat = 1;
     foreach ($emails as $email) {
-        $recipient = rlip_get_email_recipient($email);
-        rlip_send_log_email($plugin, $recipient, $archive_name);
+        $duser->email = trim($email);
+        rlip_send_log_email($plugin, $duser, $archive_name);
     }
 
     @unlink($CFG->dataroot.'/'.$archive_name);
-
     return true;
 }
 

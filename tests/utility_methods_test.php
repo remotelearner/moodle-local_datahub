@@ -1306,34 +1306,6 @@ class utilitymethod_testcase extends rlip_test {
     }
 
     /**
-     * Validate that email recipient retrieval creates a mock user record for
-     * an email address that is not within Moodle
-     */
-    public function test_getemailrecipientreturnsmockuserfornonexistentemailaddress() {
-        $recipient = rlip_get_email_recipient('test@user.com');
-
-        $expectedresult = new stdClass;
-        $expectedresult->email = 'test@user.com';
-
-        $this->assertEquals($recipient, $expectedresult);
-    }
-
-    /**
-     * Validate that the email recipient retrieval uses an existing user record
-     * for an email address that is within Moodle
-     */
-    public function test_getemailrecipientreturnsvaliduserforexistingemailaddress() {
-        global $DB;
-
-        $this->create_complete_test_user();
-
-        $recipient = rlip_get_email_recipient('rlipuser@rlipdomain.com');
-
-        $expectedresult = $DB->get_record('user', array('username' => 'rlipusername'));
-        $this->assertEquals($recipient, $expectedresult);
-    }
-
-    /**
      * Validate zip file name construction for logging emails related to an
      * import plugin
      */
