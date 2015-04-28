@@ -96,5 +96,11 @@ foreach ($plugintypes as $plugintype) {
     echo html_writer::table($table);
 }
 
+// ELIS-9084: DH logs link.
+echo $OUTPUT->box_start('generalbox');
+echo html_writer::tag('a', get_string('logs', 'local_datahub'), array(
+    'href' => $CFG->wwwroot.'/local/datahub/viewlogs.php'));
+echo $OUTPUT->box_end();
+
 //footer
 echo $OUTPUT->footer();
