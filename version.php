@@ -33,6 +33,6 @@ $plugin->dependencies = array(
     'local_eliscore' => 2015051100
 );
 
-if (file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php')) {
+if (file_exists(dirname(__FILE__).'/../elisprogram/lib/setup.php')) {
     $plugin->dependencies['local_elisprogram'] = 2015051100;
 }
