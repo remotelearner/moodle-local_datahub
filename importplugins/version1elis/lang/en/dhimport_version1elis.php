@@ -83,13 +83,13 @@ $string['newuseremailtemplatedesc'] = 'If enabled, send new users created with t
 </ul>
 ';
 $string['newenrolmentemailenabledname'] = 'Send New Enrolment Email Notifications';
-$string['newenrolmentemailenableddesc'] = 'When a user is enroled into a course with this import plugin, send them an email using the template below.';
+$string['newenrolmentemailenableddesc'] = 'When a user is enrolled into a course with this import plugin, send them an email using the template below.';
 $string['newenrolmentemailfromname'] = 'Send Enrolment Email from';
 $string['newenrolmentemailfromdesc'] = 'Set who the email should be from.';
 $string['newenrolmentemailsubjectname'] = 'New Enrolment Email Notifications Subject';
 $string['newenrolmentemailsubjectdesc'] = 'This is the text to use for the subject line of the email.';
 $string['newenrolmentemailtemplatename'] = 'New Enrolment Email Notifications Template';
-$string['newenrolmentemailtemplatedesc'] = 'If enabled, send users enroled with this plugin the above text. Note that if the above text is empty, no email will be sent.<br />
+$string['newenrolmentemailtemplatedesc'] = 'If enabled, send users enrolled with this plugin the above text. Note that if the above text is empty, no email will be sent.<br />
 <b>The following placeholders are available:</b>
 <ul>
 <li><b>%%sitename%%</b>: The site\'s name.</li>
