@@ -511,7 +511,7 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
 
             foreach ($tmpcustomfields as $field) {
                 // Check if valid field
-                if ($result = $DB->get_record(field::TABLE, array('shortname' => $field))) {
+                if (($result = field::get_for_context_level_with_name(($entity == 'user' ? 'user' : $record->context), $field))) {
                     $this->fields[] = $result;
                 } else {
                     // field is not valid
@@ -550,13 +550,12 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
         require_once($CFG->dirroot.'/local/eliscore/fields/manual/custom_fields.php');
 
         foreach ($this->fields as $field) {
-            //obtain the control type
-            $f = new field($field);
-            if (!isset($f->owners['manual'])) {
+            // Obtain the control type.
+            if (!isset($field->owners['manual'])) {
                 //NOTE: should only really happen during unit tests
                 continue;
             }
-            $control = $f->owners['manual']->param_control;
+            $control = $field->owners['manual']->param_control;
 
             //obtain the submitted value
             $v = $record->{'field_'.$field->shortname};
@@ -597,7 +596,7 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
                         }
                         break;
                     case 'menu':
-                        $options = explode("\n", $f->owners['manual']->param_options);
+                        $options = explode("\n", $field->owners['manual']->param_options);
                         //remove carriage return characters
                         array_walk($options, 'trim_cr');
                         // ELIS-8306: Must also check for single language string in multi-lang options
@@ -629,7 +628,7 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
                         }
                         break;
                     case 'text':
-                        $maxlength = $f->owners['manual']->param_maxlength;
+                        $maxlength = $field->owners['manual']->param_maxlength;
                         if (strlen($value) > $maxlength) {
                             //too long
                             $message = 'Text input custom field "'.$identifier.'" value of "'.$value.'" exceeds the maximum field length of '.$maxlength.'.';
@@ -638,7 +637,7 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
                         }
                         break;
                     case 'password':
-                        $maxlength = $f->owners['manual']->param_maxlength;
+                        $maxlength = $field->owners['manual']->param_maxlength;
                         if (strlen($value) > $maxlength) {
                             //too long
                             $message = 'Password custom field "'.$identifier.'" value of "'.$value.'" exceeds the maximum field length of '.$maxlength.'.';
@@ -648,7 +647,7 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
                         break;
                     case 'datetime':
                         //determine whether the field supports the "time" component
-                        $inctime = $f->owners['manual']->param_inctime;
+                        $inctime = $field->owners['manual']->param_inctime;
                         if ($inctime) {
                             //date and time supported
                             $date = $this->parse_date($value, false, true);
