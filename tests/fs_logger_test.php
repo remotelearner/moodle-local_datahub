@@ -272,7 +272,7 @@ class fslogger_testcase extends rlip_test {
         set_config('nofixday', 1);
 
         // Validate that day "1" is displayed as "01" when "nofixday" is enabled.
-        $time = strtotime("1 September 2000 12:00");
+        $time = make_timestamp(2000, 9, 1);
         $expectedresult = "Sep/01/2000";
         $convertedstring = rlip_fslogger::time_display($time, 99);
         $comparestring = substr($convertedstring, 0, strlen($expectedresult));
@@ -447,6 +447,9 @@ class fslogger_testcase extends rlip_test {
      */
     public function test_fsloggerrespectsdaylightsavings() {
         global $DB;
+        if (!$DB->get_manager()->table_exists('timezone')) {
+            $this->markTestSkipped("Moodle timezone table doesn't exist!");
+        }
 
         /*
          * Something in the southern hemisphere

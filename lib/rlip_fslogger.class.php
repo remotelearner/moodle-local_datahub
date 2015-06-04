@@ -110,16 +110,7 @@ class rlip_fslogger {
      * @return float The numerical timezone offset
      */
     function get_offset_from_timezone_string($timezone) {
-        global $DB;
-
-        //look up timezone by name
-        $tzrecord = $DB->get_record_sql('SELECT * FROM {timezone}
-                                         WHERE name = ? ORDER BY year DESC', array($timezone), true);
-        if ($tzrecord) {
-            return (float)$tzrecord->gmtoff / HOURMINS;
-        } else {
-            return 0.0;
-        }
+        return rl_get_user_timezone_offset($timezone);
     }
 
     /**
