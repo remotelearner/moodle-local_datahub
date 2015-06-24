@@ -1277,7 +1277,7 @@ function rlip_data_root_path_translation($path) {
  * @return int  timestamp in GMT
  */
 function rlip_gmt_from_usertime($usertime, $timezone = 99) {
-    $tz = get_user_timezone_offset($timezone);
+    $tz = rl_get_user_timezone_offset($timezone);
     if (abs($tz) > 13) {
         return $usertime;
     }

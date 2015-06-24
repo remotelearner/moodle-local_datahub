@@ -634,7 +634,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
         }
 
         //make sure timezone refers to a valid timezone offset
-        $timezones = get_list_of_timezones();
+        $timezones = core_date::get_list_of_timezones();
         if (!$this->validate_fixed_list($record, 'timezone', array_keys($timezones))) {
             $identifier = $this->mappings['timezone'];
             $this->fslogger->log_failure("{$identifier} value of \"{$record->timezone}\" is not a valid timezone.", 0, $filename, $this->linenumber, $record, "user");

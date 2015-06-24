@@ -122,7 +122,7 @@ class version1elisutility_testcase extends PHPUnit_Framework_TestCase {
      * @dataProvider rlip_gmt_from_usertime_dataprovider
      */
     public function test_rlip_gmt_from_usertime($intimestamp, $timezone, $outtimestamp) {
-        if (get_user_timezone_offset($timezone) == 99) {
+        if (rl_get_user_timezone_offset($timezone) == 99) {
             $this->markTestSkipped("\nSkipping test_rlip_gmt_from_usertime() with undefined timezone = '{$timezone}'\n");
         } else {
             $this->assertEquals($outtimestamp, rlip_gmt_from_usertime($intimestamp, $timezone));
