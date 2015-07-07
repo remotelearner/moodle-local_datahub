@@ -96,7 +96,7 @@ $(function() {
             ui.item.addClass('active');
         },
         update: function(event, ui) {
-            if (ui.item.hasClass('placeholder')) {
+            if (!ui.item.children().length) {
                 var fieldset = ui.item.data('fieldset');
                 var fieldsetlabel = ui.item.data('fieldsetlabel');
                 var field = ui.item.data('field');
@@ -114,7 +114,6 @@ $(function() {
                 var remove = $('<span class="remove">X</span>');
                 remove.click(active_field_remove_action);
                 ui.item.prepend(remove);
-
             }
         }
     });

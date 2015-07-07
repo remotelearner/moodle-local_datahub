@@ -102,4 +102,5 @@ div.active_fields ul li .remove {
     background: none;
     border-style: dashed;
     color: transparent;
+    height: 1.5em;
 }
