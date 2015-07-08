@@ -327,10 +327,10 @@ class ip_schedule_page extends workflowpage {
         if (!empty($ipscheds) && $ipscheds->valid()) {
             echo $OUTPUT->notification(get_string("rlip_jobs_heading_jobs",
                                                   'local_datahub', get_string('pluginname', $display_name)),
-                                       'rlip_bold_header', 'left');
+                                       'rlip_bold_header notifymessage', 'left');
             echo $OUTPUT->notification(get_string('rlip_jobs_heading_fullinstructions',
                                                   'local_datahub', $display_name),
-                                       'rlip_italic_header', 'left');
+                                       'rlip_italic_header notifymessage', 'left');
             $table = new html_table();
             $table->head = array(
                           get_string('rlip_jobs_header_label', 'local_datahub'),
@@ -376,14 +376,14 @@ class ip_schedule_page extends workflowpage {
 
             echo $OUTPUT->notification(get_string('schedulingtime',
                                                   'local_datahub', $display_name),
-                                       'rlip_italic_header', 'left');
+                                       'rlip_italic_header notifymessage', 'left');
         } else {
             echo $OUTPUT->notification(get_string('rlip_jobs_heading_nojobs',
                                                   'local_datahub', get_string('pluginname', $display_name)),
-                                       'rlip_bold_header', 'left');
+                                       'rlip_bold_header notifymessage', 'left');
             echo $OUTPUT->notification(get_string('rlip_jobs_heading_instructions',
                                                   'local_datahub', $display_name),
-                                       'rlip_italic_header', 'left');
+                                       'rlip_italic_header notifymessage', 'left');
         }
         echo $OUTPUT->spacer();
         $submit = $this->get_new_page(array('action' => 'default', 'plugin' => $this->get_ip_plugin()));
