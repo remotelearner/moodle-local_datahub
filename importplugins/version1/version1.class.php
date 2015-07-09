@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * @package    dhimport_version1
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -35,15 +35,13 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
                                               'firstname',
                                               'lastname',
                                               'email',
-                                              'city',
-                                              'country');
+                                              'city');
     static $import_fields_user_add = array('username',
                                            'password',
                                            'firstname',
                                            'lastname',
                                            'email',
-                                           'city',
-                                           'country');
+                                           'city');
 
     static $import_fields_user_update = array(); // set in constructor
     static $import_fields_user_delete = array(); // set in constructor
