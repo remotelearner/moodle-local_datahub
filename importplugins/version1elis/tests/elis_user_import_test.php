@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * @package    dhimport_version1elis
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote Learner.net Inc http://www.remote-learner.net
+ * @copyright  (C) 2008-2015 Remote Learner.net Inc http://www.remote-learner.net
  *
  */
 
@@ -192,8 +192,8 @@ class elis_user_import_testcase extends rlip_elis_test {
                 'lastname'  => 'testlastname',
             ),
             NO_TEST_SETUP,
-            ELIS_USER_DOESNOT_EXIST,
-            MDL_USER_DOESNOT_EXIST
+            ELIS_USER_EXISTS,
+            MDL_USER_EXISTS
         );
 
         // All required create data!.
@@ -204,8 +204,7 @@ class elis_user_import_testcase extends rlip_elis_test {
                 'username'  => 'testusername',
                 'email'     => 'test@email.com',
                 'firstname' => 'testfirstname',
-                'lastname'  => 'testlastname',
-                'country'   => 'CA'
+                'lastname'  => 'testlastname'
             ),
             NO_TEST_SETUP,
             ELIS_USER_EXISTS,
