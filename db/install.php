@@ -117,8 +117,8 @@ function xmldb_local_datahub_install() {
 
     if (!empty($oldrecord)) {
         require_once(dirname(__FILE__).'/upgrade.php');
-        set_config('version', 2015051100, 'local_datahub');
-        xmldb_local_datahub_upgrade(2015051100);
+        set_config('version', 2015102200, 'local_datahub');
+        xmldb_local_datahub_upgrade(2015102200);
     }
 
     return $result;

@@ -24,5 +24,6 @@
  *
  */
 
-$plugin->version = 2015051100;
-$plugin->release = '2.9.1.0 (Build: 20150714)';
+$plugin->version = 2015102200;
+$plugin->release = '3.0.0.0 (Build: 20151022)';
+$plugin->component = 'dhimport_version1elis';

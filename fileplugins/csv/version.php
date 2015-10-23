@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package    local_datahub
+ * @package    dhfile_csv
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright  (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
@@ -25,5 +25,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2015051100;
-$plugin->release = '2.9.0.0 (Build: 20150511)';
+$plugin->version = 2015102200;
+$plugin->release = '3.0.0.0 (Build: 20151022)';
+$plugin->component = 'dhfile_csv';
