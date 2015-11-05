@@ -351,7 +351,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
      * @param string $action The supplied action
      * @return string The action to use in the import
      */
-    function handle_user_createorupdate($record, $action) {
+    function handle_user_createorupdate(&$record, $action) {
         global $CFG, $DB;
 
         //check config setting
@@ -373,6 +373,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
                 //identify the user
                 $params = array();
                 if ($usernameset) {
+                    $record->username = core_text::strtolower($record->username);
                     $params['username'] = $record->username;
                     $params['mnethostid'] = $CFG->mnet_localhost_id;
                 }
@@ -394,7 +395,9 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
                 $action = 'create';
             }
         }
-
+        if ($action == 'create' && isset($record->username)) {
+            $record->username = core_text::strtolower($record->username);
+        }
         return $action;
     }
 
@@ -959,7 +962,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
      * @param string $errsuffix returned error suffix string
      * @return int|bool userid on success, false is not found
      */
-    protected function get_userid_for_user_actions($record, $filename, &$error, &$errors, &$errsuffix) {
+    protected function get_userid_for_user_actions(&$record, $filename, &$error, &$errors, &$errsuffix) {
         global $CFG, $DB;
         $idfields = array('idnumber', 'username', 'email');
         $uniquefields = array('idnumber' => 0, 'username' => 0);
@@ -2047,13 +2050,14 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
      * @param string $fieldprefix Optional prefix for identifying fields, default ''
      * @return mixed The user id, or false if not found
      */
-    protected function get_userid_from_record_no_logging($record, $filename, &$params, $fieldprefix = '') {
+    protected function get_userid_from_record_no_logging(&$record, $filename, &$params, $fieldprefix = '') {
         global $CFG, $DB;
 
         $field = $fieldprefix.'username';
         // echo "get_userid_from_record_no_logging(): checking $field => ";
         if (isset($record->$field)) {
             // echo $record->$field, "\n";
+            $record->$field = core_text::strtolower($record->$field);
             $params['username']   = $record->$field;
             $params['mnethostid'] = $CFG->mnet_localhost_id;
         }
@@ -2087,7 +2091,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
      * @param string $fieldprefix Optional prefix for identifying fields, default ''
      * @return mixed The user id, or false if not found
      */
-    public function get_userid_from_record($record, $filename, $fieldprefix = '') {
+    public function get_userid_from_record(&$record, $filename, $fieldprefix = '') {
         $params = array();
         if (!($userid = $this->get_userid_from_record_no_logging($record, $filename, $params, $fieldprefix))) {
             // Failure
