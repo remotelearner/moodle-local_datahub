@@ -48,7 +48,7 @@ class open_rlip_importplugin_version1 extends rlip_importplugin_version1 {
      * @param string $errsuffix returned error suffix string
      * @return int|bool userid on success, false is not found
      */
-    public function get_userid_for_user_actions($record, $filename, &$error, &$errors, &$errsuffix) {
+    public function get_userid_for_user_actions(&$record, $filename, &$error, &$errors, &$errsuffix) {
         return parent::get_userid_for_user_actions($record, $filename, $error, $errors, $errsuffix);
     }
 }
@@ -2934,6 +2934,30 @@ class version1userimport_testcase extends rlip_test {
                         'user_',
                         false
                 ),
+                array( // Test case 9: update existing w/ mixed-case username & non-prefix id fields
+                        array(
+                                array('username' => 'rlipuser1', 'idnumber' => 'rlipuser1', 'firstname' => 'Test', 'lastname' => 'User',
+                                    'email' => 'noreply1@remote-learner.net', 'password' => 'Test1234!', 'country' => 'CA'),
+                        ),
+                        array('action' => 'update', 'username' => 'RLIPuser1', 'idnumber' => 'rlipuser1', 'firstname' => 'Test', 'lastname' => 'User',
+                            'email' => 'noreply1@remote-learner.net', 'password' => 'Test1234!', 'country' => 'CA'),
+                        '',
+                        1
+                ),
+                array( // Test case 10: update matching user with others w/ mixed-case username & user_ prefixed id fields.
+                        array(
+                                array('username' => 'rlipuser1a', 'idnumber' => 'rlipuser1', 'firstname' => 'Test', 'lastname' => 'User',
+                                    'email' => 'noreply1@remote-learner.net', 'password' => 'Test1234!', 'country' => 'CA'),
+                                array('username' => 'rlipuser1b', 'idnumber' => 'rlipuser1', 'firstname' => 'Test', 'lastname' => 'User',
+                                    'email' => 'noreplyB@remote-learner.net', 'password' => 'Test1234!', 'country' => 'CA'),
+                                array('username' => 'rlipuser1c', 'idnumber' => 'rlipuser3', 'firstname' => 'Test', 'lastname' => 'User',
+                                    'email' => 'noreplyC@remote-learner.net', 'password' => 'Test1234!', 'country' => 'CA'),
+                        ),
+                        array('action' => 'update', 'user_username' => 'RLIPUser1C', 'user_idnumber' => 'rlipuser3', 'firstname' => 'Test', 'lastname' => 'User',
+                            'email' => 'noreplyC@remote-learner.net', 'password' => 'Test1234!', 'country' => 'CA'),
+                        'user_',
+                        3
+                ),
         );
     }
 
@@ -2959,7 +2983,8 @@ class version1userimport_testcase extends rlip_test {
         $importplugin = new rlip_importplugin_version1($provider);
         $importplugin->mappings = rlipimport_version1_get_mapping('user');
         $importplugin->fslogger = $provider->get_fslogger('dhimport_version1', 'user');
-        $this->assertEquals($expected ? $uids[$expected] : false, $importplugin->get_userid_from_record((object)$inputdata, 'user.csv', $prefix));
+        $inputobj = (object)$inputdata;
+        $this->assertEquals($expected ? $uids[$expected] : false, $importplugin->get_userid_from_record($inputobj, 'user.csv', $prefix));
     }
 
     /**
@@ -3127,7 +3152,29 @@ class version1userimport_testcase extends rlip_test {
                                     "email set to \"noreplyB@remote-learner.net\""
                             )
                         )
-                )
+                ),
+                array( // Test case 12: existing user w/ mixed-case username & std.ident. fields
+                        array(
+                                array('username' => 'rlipuser1', 'idnumber' => 'rlipuser1', 'firstname' => 'Test', 'lastname' => 'User',
+                                    'email' => 'noreply1@remote-learner.net', 'password' => 'Test1234!', 'country' => 'CA'),
+                        ),
+                        array('action' => 'update', 'username' => 'rlipUSER1', 'idnumber' => 'rlipuser1', 'firstname' => 'Test', 'lastname' => 'User',
+                            'email' => 'noreply1@remote-learner.net', 'password' => 'Test1234!', 'country' => 'CA'),
+                        array('uid' => 1, 'error' => false)
+                ),
+                array( // Test case 13: update matching user with others w/ mixed-case uername & user_ prefixed id fields.
+                        array(
+                                array('username' => 'rlipuser1a', 'idnumber' => 'rlipuser1', 'firstname' => 'Test', 'lastname' => 'User',
+                                    'email' => 'noreply1@remote-learner.net', 'password' => 'Test1234!', 'country' => 'CA'),
+                                array('username' => 'rlipuser1b', 'idnumber' => 'rlipuser1', 'firstname' => 'Test', 'lastname' => 'User',
+                                    'email' => 'noreplyB@remote-learner.net', 'password' => 'Test1234!', 'country' => 'CA'),
+                                array('username' => 'rlipuser1c', 'idnumber' => 'rlipuser3', 'firstname' => 'Test', 'lastname' => 'User',
+                                    'email' => 'noreplyC@remote-learner.net', 'password' => 'Test1234!', 'country' => 'CA'),
+                        ),
+                        array('action' => 'update', 'user_username' => 'RlipUser1C', 'user_idnumber' => 'rlipuser3', 'firstname' => 'Test', 'lastname' => 'User',
+                            'email' => 'noreplyC@remote-learner.net', 'password' => 'Test1234!', 'country' => 'CA'),
+                        array('uid' => 3, 'error' => false)
+                ),
         );
     }
 
@@ -3157,7 +3204,8 @@ class version1userimport_testcase extends rlip_test {
         $errors = array();
         $errsuffix = '';
         // Cannot use ReflectionMethod for pass-by-reference params in method
-        $uid = $importplugin->get_userid_for_user_actions((object)$inputdata, 'user.csv', $error, $errors, $errsuffix);
+        $inputobj = (object)$inputdata;
+        $uid = $importplugin->get_userid_for_user_actions($inputobj, 'user.csv', $error, $errors, $errsuffix);
         $expecteduid = $expected['uid'];
         if ($expecteduid) {
             $expecteduid = $uids[$expecteduid];
