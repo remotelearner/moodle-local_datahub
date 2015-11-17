@@ -68,7 +68,7 @@ class dhimport extends \core\plugininfo\base {
      * @param string $typeclass the name of the actually called class
      * @return array of plugintype classes, indexed by the plugin name
      */
-    public static function get_plugins($plugintype, $plugintyperootdir, $plugintypeclass) {
+    public static function get_plugins($type, $typerootdir, $typeclass, $pluginman) {
         global $CFG, $DB;
 
         // Track our method result.
@@ -87,15 +87,16 @@ class dhimport extends \core\plugininfo\base {
             }
 
             // Set up the main plugin information.
-            $instance = new $plugintypeclass();
-            $instance->type = $plugintype;
-            $instance->typerootdir = $plugintyperootdir;
+            $instance = new $typeclass();
+            $instance->type = $type;
+            $instance->typerootdir = $typerootdir;
             $instance->name = $pluginname;
             $instance->rootdir = $pluginpath;
-            $instance->displayname = get_string('pluginname', $plugintype.'_'.$pluginname);
+            $instance->pluginman = $pluginman;
+            $instance->displayname = get_string('pluginname', $type.'_'.$pluginname);
 
             // Track the current database version.
-            $versiondb = get_config($plugintype.'_'.$pluginname, 'version');
+            $versiondb = get_config($type.'_'.$pluginname, 'version');
             $instance->versiondb = ($versiondb !== false) ? $versiondb : null;
 
             // Track the proposed new version.
