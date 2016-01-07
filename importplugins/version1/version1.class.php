@@ -421,17 +421,13 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
      * Calculates a string that specifies which fields can be used to identify
      * a user record based on the import record provided
      *
-     * Can be called statically if $value_syntax is false
-     *
      * @param object $record
-     * @param boolean $value_syntax true if we want to use "field" value of
-     *                              "value" syntax, otherwise use field "value"
-     *                              syntax
+     * @param rlip_importplugin_version1 $obj the object for mappings (defaults to none).
      * @return string The description of identifying fields, as a
      *                comma-separated string
      * [field1] "value1", ...
      */
-    function get_user_descriptor($record, $value_syntax = false) {
+    public static function get_user_descriptor($record, $obj = null) {
         $fragments = array();
 
         // the fields we care to check
@@ -443,8 +439,8 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
                 $value = $record->$field;
 
                 //calculate syntax fragment
-                if ($value_syntax) {
-                    $identifier = $this->mappings[substr($field, 5)];
+                if (!is_null($obj)) {
+                    $identifier = $obj->mappings[substr($field, 5)];
                     $fragments[] = "{$identifier} value of \"{$value}\"";
                 } else {
                     $fragments[] = "{$field} \"{$value}\"";
@@ -462,8 +458,8 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
                     $value = $record->$field;
 
                     // calculate syntax fragment
-                    if ($value_syntax) {
-                        $identifier = $this->mappings[$field];
+                    if (!is_null($obj)) {
+                        $identifier = $obj->mappings[$field];
                         $fragments[] = "{$identifier} value of \"{$value}\"";
                     } else {
                         $fragments[] = "{$field} \"{$value}\"";
@@ -830,7 +826,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
         $event->trigger();
 
         //string to describe the user
-        $user_descriptor = $this->get_user_descriptor($record);
+        $user_descriptor = static::get_user_descriptor($record);
 
         // Set force password change if required.
         if ($requireforcepasswordchange) {
@@ -1141,7 +1137,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
         $event->trigger();
 
         //string to describe the user
-        $user_descriptor = $this->get_user_descriptor($record);
+        $user_descriptor = static::get_user_descriptor($record);
 
         // Set force password change if required.
         if ($requireforcepasswordchange) {
@@ -1189,7 +1185,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
             user_delete_user($user);
 
             //string to describe the user
-            $user_descriptor = $this->get_user_descriptor($record);
+            $user_descriptor = static::get_user_descriptor($record);
 
             //log success
             $this->fslogger->log_success("User with {$user_descriptor} successfully deleted.", 0, $filename, $this->linenumber);
@@ -1200,7 +1196,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
             return true;
         } else {
             // string to describe the user
-            $userdescriptor = $this->get_user_descriptor($record);
+            $userdescriptor = static::get_user_descriptor($record);
             // Generic error
             $this->fslogger->log_failure("Error deleting user with {$userdescriptor}", 0, $filename, $this->linenumber, $record, "user");
         }
@@ -2102,7 +2098,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
             }
 
             //get description of identifying fields
-            $user_descriptor = $this->get_user_descriptor((object)$params, true);
+            $user_descriptor = static::get_user_descriptor((object)$params, $this);
 
             $uniqidentifiers = $params;
             unset($uniqidentifiers['mnethostid']); // don't count this one
@@ -2439,7 +2435,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
         }
 
         //string to describe the user
-        $user_descriptor = $this->get_user_descriptor($record);
+        $user_descriptor = static::get_user_descriptor($record);
         //string to describe the context instance
         $context_descriptor = $this->get_context_descriptor($record);
 
@@ -2649,7 +2645,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
         $this->fslogger->set_enrolment_state(true, $track_enrolments);
 
         if (!$role_assignment_exists) {
-            $user_descriptor = $this->get_user_descriptor($record, false);
+            $user_descriptor = static::get_user_descriptor($record);
             $context_descriptor = $this->get_context_descriptor($record);
             $message = "User with {$user_descriptor} is not assigned role with ".
                        "shortname \"{$record->role}\" on {$context_descriptor}.";
@@ -2679,7 +2675,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
         }
 
         //string to describe the user
-        $user_descriptor = $this->get_user_descriptor($record);
+        $user_descriptor = static::get_user_descriptor($record);
         //string to describe the context instance
         $context_descriptor = $this->get_context_descriptor($record);
 
