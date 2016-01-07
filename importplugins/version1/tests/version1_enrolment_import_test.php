@@ -61,14 +61,10 @@ class version1enrolmentimport_testcase extends rlip_test {
         self::$coursecatroleid = self::create_test_role('coursecatname', 'coursecatshortname', 'coursecatdescription',
                 array(CONTEXT_COURSECAT));
         self::$userroleid = self::create_test_role('username', 'usershortname', 'userdescription', array(CONTEXT_USER));
-        self::$allcontextroleid = self::create_test_role('allname', 'allshortname', 'alldescription', array(
-            CONTEXT_SYSTEM,
-            CONTEXT_COURSE,
-            CONTEXT_COURSECAT,
-            CONTEXT_USER
-        ));
+        self::$allcontextroleid = self::create_test_role('allname', 'allshortname', 'alldescription',
+                array(CONTEXT_SYSTEM, CONTEXT_COURSE, CONTEXT_COURSECAT, CONTEXT_USER));
         self::$courseid = self::create_test_course();
-        self::$userid = self::create_test_user();
+        self::$userid = $this->create_test_user();
         self::get_csv_files();
         self::get_logfilelocation_files();
         self::get_zip_files();
@@ -707,10 +703,8 @@ class version1enrolmentimport_testcase extends rlip_test {
     public function test_version1importenrolmentsarecoursecontextspecific() {
         global $DB;
 
-        $this->create_test_role('globalstudentname', 'globalstudentshortname', 'globalstudentdescription', array(CONTEXT_SYSTEM,
-                                                                                                                 CONTEXT_COURSE,
-                                                                                                                 CONTEXT_COURSECAT,
-                                                                                                                 CONTEXT_USER));
+        self::create_test_role('globalstudentname', 'globalstudentshortname', 'globalstudentdescription',
+                array(CONTEXT_SYSTEM, CONTEXT_COURSE, CONTEXT_COURSECAT, CONTEXT_USER));
 
         // Run the system-level import.
         // $this->create_test_user();.
@@ -1254,7 +1248,7 @@ class version1enrolmentimport_testcase extends rlip_test {
         // Enable group / grouping creation.
         set_config('creategroupsandgroupings', 1, 'dhimport_version1');
 
-        $secondcourseid = $this->create_test_course(array('shortname' => 'allowduplicategroupsacrosscourses'));
+        $secondcourseid = self::create_test_course(array('shortname' => 'allowduplicategroupsacrosscourses'));
 
         // Set up the "pre-existing" group in another course.
         $this->create_test_group($secondcourseid);
@@ -1288,7 +1282,7 @@ class version1enrolmentimport_testcase extends rlip_test {
         set_config('creategroupsandgroupings', 1, 'dhimport_version1');
 
         // Setup.
-        $secondcourseid = $this->create_test_course(array('shortname' => 'allowduplicategroupsinaothercourse'));
+        $secondcourseid = self::create_test_course(array('shortname' => 'allowduplicategroupsinaothercourse'));
 
         // Set up two "pre-existing" groups with the same name in another course.
         $this->create_test_group($secondcourseid);
@@ -1406,7 +1400,7 @@ class version1enrolmentimport_testcase extends rlip_test {
         set_config('creategroupsandgroupings', 1, 'dhimport_version1');
 
         // Setup.
-        $secondcourseid = $this->create_test_course(array('shortname' => 'allowduplicategroupingsacrosscourses'));
+        $secondcourseid = self::create_test_course(array('shortname' => 'allowduplicategroupingsacrosscourses'));
 
         // Set up the "pre-existing" grouping in another course.
         $this->create_test_grouping($secondcourseid);
@@ -1442,7 +1436,7 @@ class version1enrolmentimport_testcase extends rlip_test {
         set_config('creategroupsandgroupings', 1, 'dhimport_version1');
 
         // Setup.
-        $secondcourseid = $this->create_test_course(array('shortname' => 'allowduplicategroupingsinanothercourse'));
+        $secondcourseid = self::create_test_course(array('shortname' => 'allowduplicategroupingsinanothercourse'));
 
         // Set up two "pre-existing" groupings in another course.
         $this->create_test_grouping($secondcourseid);
@@ -1590,8 +1584,7 @@ class version1enrolmentimport_testcase extends rlip_test {
         $starttime = time();
 
         // Data setup.
-        $this->create_test_course(array('shortname' => 'timestampcourse',
-                                        'startdate' => 12345));
+        self::create_test_course(array('shortname' => 'timestampcourse', 'startdate' => 12345));
 
         // Run the import.
         $data = $this->get_core_enrolment_data();
@@ -2233,8 +2226,8 @@ class version1enrolmentimport_testcase extends rlip_test {
         $this->assertEquals($DB->count_records('role_assignments'), 1);
         $this->assertEquals($DB->count_records('user_enrolments'), 1);
 
-        $this->create_test_role('noassignmentdeletionname', 'noassignmentdeletionshortname', 'noassignmentdeletiondescription');
-        $this->create_test_course(array('shortname' => 'noassignmentdeletionshort'));
+        self::create_test_role('noassignmentdeletionname', 'noassignmentdeletionshortname', 'noassignmentdeletiondescription');
+        self::create_test_course(array('shortname' => 'noassignmentdeletionshort'));
         $this->create_test_user(array('username' => 'noassignmentdeletionshortname'));
 
         // Perform the delete action.
@@ -2283,7 +2276,7 @@ class version1enrolmentimport_testcase extends rlip_test {
         // Set up our enrolment.
         $this->run_core_enrolment_import(array());
 
-        $roleid = $this->create_test_role('deletionrolespecificname', 'deletionrolespecificshortname',
+        $roleid = self::create_test_role('deletionrolespecificname', 'deletionrolespecificshortname',
                 'deletionrolespecificdescription');
         $syscontext = context_system::instance();
 
