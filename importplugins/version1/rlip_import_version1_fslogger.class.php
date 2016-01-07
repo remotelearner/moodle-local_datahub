@@ -125,7 +125,7 @@ class rlip_import_version1_fslogger extends rlip_fslogger_linebased {
                 $valid_contexts = array('coursecat', 'course', 'user');
 
                 // descriptive string for user and context
-                $user_descriptor = $plugin->get_user_descriptor($record);
+                $user_descriptor = rlip_importplugin_version1::get_user_descriptor($record);
                 $context_descriptor = $plugin->get_context_descriptor($record);
 
                 switch ($record->action) {
@@ -167,7 +167,7 @@ class rlip_import_version1_fslogger extends rlip_fslogger_linebased {
                 $missing_required_field = !$user_identifier_set || empty($record->instance);
 
                 // descriptive string for user
-                $user_descriptor = $plugin->get_user_descriptor($record);
+                $user_descriptor = rlip_importplugin_version1::get_user_descriptor($record);
 
                 switch ($record->action) {
                     case "create":
@@ -237,7 +237,7 @@ class rlip_import_version1_fslogger extends rlip_fslogger_linebased {
                     if (empty($record->username) || empty($record->email)) {
                         $msg = "User could not be created. " . $message;
                     } else {
-                        $user_descriptor = $plugin->get_user_descriptor($record);
+                        $user_descriptor = rlip_importplugin_version1::get_user_descriptor($record);
                         $msg =  "{$type} with {$user_descriptor} could not be created. " . $message;
                     }
                     break;
@@ -246,7 +246,7 @@ class rlip_import_version1_fslogger extends rlip_fslogger_linebased {
                     if (empty($record->username) && empty($record->email) && empty($record->idnumber)) {
                         $msg = "User could not be updated. " . $message;
                     } else {
-                        $user_descriptor = $plugin->get_user_descriptor($record);
+                        $user_descriptor = rlip_importplugin_version1::get_user_descriptor($record);
                         $msg = "{$type} with {$user_descriptor} could not be updated. " . $message;
                     }
                     break;
@@ -255,7 +255,7 @@ class rlip_import_version1_fslogger extends rlip_fslogger_linebased {
                     if (empty($record->username) && empty($record->email) && empty($record->idnumber)) {
                         $msg = "User could not be deleted. " . $message;
                     } else {
-                        $user_descriptor = $plugin->get_user_descriptor($record);
+                        $user_descriptor = rlip_importplugin_version1::get_user_descriptor($record);
                         $msg = "{$type} with {$user_descriptor} could not be deleted. " . $message;
                     }
                     break;
