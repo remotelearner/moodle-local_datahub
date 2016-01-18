@@ -2545,7 +2545,6 @@ class version1courseimport_testcase extends rlip_test {
         require_once($CFG->dirroot.'/user/lib.php');
         require_once($CFG->dirroot.'/lib/gradelib.php');
         require_once($CFG->dirroot.'/group/lib.php');
-        require_once($CFG->dirroot.'/lib/conditionlib.php');
         require_once($CFG->dirroot.'/lib/enrollib.php');
         require_once($CFG->dirroot.'/tag/lib.php');
         require_once($CFG->dirroot.'/lib/questionlib.php');
