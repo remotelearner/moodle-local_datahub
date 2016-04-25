@@ -1171,15 +1171,6 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
 
         $user = new user($uid);
         $user->load();
-        if ($user->idnumber !== '' && isset($record->idnumber) && $user->idnumber != $record->idnumber) {
-            // Attempt to change user's idnumber - not allowed.
-            $identifier = $this->get_field_mapping('idnumber');
-            if ($identifier != 'idnumber') {
-                $identifier = "idnumber ({$identifier})";
-            }
-            $this->fslogger->log_failure("User's $identifier cannot be modified from \"{$user->idnumber}\" to \"{$record->idnumber}\".", 0, $filename, $this->linenumber, $record, "user");
-            return false;
-        }
         $user->set_from_data($record);
         try {
             $user->save();
