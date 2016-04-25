@@ -964,6 +964,38 @@ class version1userimport_testcase extends rlip_test {
     }
 
     /**
+     * Validate the the import can set a user's idnumber value on user update (ELIS-9373)
+     */
+    public function test_version1importdoessetsuppliedidnumberonupdate() {
+        global $CFG;
+        require_once($CFG->dirroot.'/local/eliscore/lib/setup.php');
+
+        // Make sure we are not auto-assigning idnumbers.
+        set_config('auto_assign_user_idnumber', 0, 'local_elisprogram');
+        elis::$config = new elis_config();
+
+        // Disable idnumber as identifying field
+        set_config('identfield_idnumber', 0, 'dhimport_version1');
+
+        // Create the user.
+        $this->run_core_user_import(array());
+
+        // Run the import.
+        $this->run_core_user_import(array(
+            'action' => 'update',
+            'username' => 'rlipusername',
+            'idnumber' => 'rlipidnumber'
+        ));
+
+        // Make sure the idnumber was set.
+        $this->assert_record_exists('user', array(
+            'username' => 'rlipusername',
+            'mnethostid' => $CFG->mnet_localhost_id,
+            'idnumber' => 'rlipidnumber'
+        ));
+    }
+
+    /**
      * Validate that the import auto-assigns missing idnumbers when the column
      * is not supplied and the config setting is on
      */
