@@ -801,7 +801,7 @@ class elisuserfslogging_testcase extends rlip_elis_test {
         );
 
         $expectederror = "[user.csv line 2] User could not be created. Required fields customidnumber, customusername,";
-        $expectederror .= " customfirstname, customlastname, customemail, customcountry are unspecified or empty.\n";
+        $expectederror .= " customfirstname, customlastname, customemail are unspecified or empty.\n";
         $this->assert_data_produces_error($data, $expectederror, 'user');
 
         $data = array(
@@ -809,7 +809,7 @@ class elisuserfslogging_testcase extends rlip_elis_test {
             'customusername' => 'testusername'
         );
         $expectederror = "[user.csv line 2] User with username \"testusername\" could not be created. Required fields";
-        $expectederror .= " customidnumber, customfirstname, customlastname, customemail, customcountry are unspecified or";
+        $expectederror .= " customidnumber, customfirstname, customlastname, customemail are unspecified or";
         $expectederror .= " empty.\n";
         $this->assert_data_produces_error($data, $expectederror, 'user');
 
@@ -818,7 +818,7 @@ class elisuserfslogging_testcase extends rlip_elis_test {
             'customemail' => 'user@mail.com'
         );
         $expectederror = "[user.csv line 2] User with email \"user@mail.com\" could not be created. Required fields";
-        $expectederror .= " customidnumber, customusername, customfirstname, customlastname, customcountry are unspecified or";
+        $expectederror .= " customidnumber, customusername, customfirstname, customlastname are unspecified or";
         $expectederror .= " empty.\n";
         $this->assert_data_produces_error($data, $expectederror, 'user');
 
@@ -827,7 +827,7 @@ class elisuserfslogging_testcase extends rlip_elis_test {
             'customidnumber' => 'testidnumber'
         );
         $expectederror = "[user.csv line 2] User with idnumber \"testidnumber\" could not be created. Required fields";
-        $expectederror .= " customusername, customfirstname, customlastname, customemail, customcountry are unspecified or";
+        $expectederror .= " customusername, customfirstname, customlastname, customemail are unspecified or";
         $expectederror .= " empty.\n";
         $this->assert_data_produces_error($data, $expectederror, 'user');
 
@@ -838,8 +838,8 @@ class elisuserfslogging_testcase extends rlip_elis_test {
             'customidnumber' => 'testidnumber'
         );
         $expectederror = "[user.csv line 2] User with username \"testusername\", email \"user@mail.com\", idnumber";
-        $expectederror .= " \"testidnumber\" could not be created. Required fields customfirstname, customlastname, ";
-        $expectederror .= "customcountry are unspecified or empty.\n";
+        $expectederror .= " \"testidnumber\" could not be created. Required fields customfirstname, customlastname ";
+        $expectederror .= "are unspecified or empty.\n";
         $this->assert_data_produces_error($data, $expectederror, 'user');
 
         $data = array(
@@ -851,7 +851,7 @@ class elisuserfslogging_testcase extends rlip_elis_test {
             'customlastname' => 'sadfs'
         );
         $expectederror = "[user.csv line 2] User with username \"testusername\", email \"user@mail.com\", idnumber";
-        $expectederror .= " \"testidnumber\" could not be created. Required field customcountry is unspecified or empty.\n";
+        $expectederror .= " \"testidnumber\" successfully created.\n";
         $this->assert_data_produces_error($data, $expectederror, 'user');
     }
 

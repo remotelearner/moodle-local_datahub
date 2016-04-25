@@ -710,6 +710,22 @@ class elis_user_import_testcase extends rlip_elis_test {
             MDL_USER_DELETED
         );
 
+        // ELIS-9373: Update idnumber, ...
+        $testdata[] = array(
+            'update',
+            array(
+                'idnumber'      => 'newtestidnumber',
+                'user_username' => 'testusername',
+                'user_email'    => 'test@email.com',
+                'firstname'     => 'testfirstnamechange1',
+                'lastname'      => 'testlastnamechange1',
+                'country'       => 'US'
+            ),
+            0, // Test setup index.
+            ELIS_USER_EXISTS,
+            MDL_USER_EXISTS
+        );
+
         return $testdata;
     }
 
@@ -1365,5 +1381,67 @@ class elis_user_import_testcase extends rlip_elis_test {
                 $this->assertTrue(in_array($err, $errors));
             }
         }
+    }
+
+    /**
+     * ELIS-9373: Test version1elis import allows idnumber updating.
+     */
+    public function test_version1elis_allows_idnumber_update() {
+        global $CFG, $DB;
+        require_once($CFG->dirroot.'/local/eliscore/lib/setup.php');
+        $file = core_component::get_plugin_directory('dhimport', 'version1elis').'/version1elis.class.php';
+        require_once($file);
+
+        // Make sure we are not auto-assigning idnumbers.
+        set_config('auto_assign_user_idnumber', 0, 'local_elisprogram');
+        elis::$config = new elis_config();
+
+        // Enable idnumber as identifying field - won't allow idnumber update.
+        set_config('identfield_idnumber', 1, 'dhimport_version1elis');
+
+        // Create the user.
+        $data = [
+            'entity' => 'user',
+            'action' => 'create',
+            'username' => 'rlipusername',
+            'idnumber' => 'rlipuseridnumber',
+            'password' => 'Rlippassword!1234',
+            'firstname' => 'rlipfirstname',
+            'lastname' => 'rliplastname',
+            'email' => 'rlipuser@rlipdomain.com',
+            'city' => 'rlipcity',
+            'country' => 'CA'
+        ];
+        $provider = new rlipimport_version1elis_importprovider_mockuser($data);
+        $importplugin = new rlip_importplugin_version1elis($provider);
+        $importplugin->run();
+
+        // Attempt to update idnumber.
+        $test1 = array_merge($data, [
+            'action' => 'update',
+            'username' => 'rlipusername',
+            'idnumber' => 'newrlipidnumber'
+        ]);
+        $provider = new rlipimport_version1elis_importprovider_mockuser($test1);
+        $importplugin = new rlip_importplugin_version1elis($provider);
+        $importplugin->run();
+
+        $this->assertNotEmpty($DB->get_record('user', ['username' => 'rlipusername']));
+        $this->assertFalse($DB->get_record('user', ['idnumber' => 'newrlipidnumber']));
+
+        // Disable idnumber as identifying field
+        set_config('identfield_idnumber', 0, 'dhimport_version1elis');
+
+        // Attempt to update idnumber.
+        $test2 = array_merge($data, [
+            'action' => 'update',
+            'username' => 'rlipusername',
+            'idnumber' => 'newrlipidnumber'
+        ]);
+        $provider = new rlipimport_version1elis_importprovider_mockuser($test2);
+        $importplugin = new rlip_importplugin_version1elis($provider);
+        $importplugin->run();
+
+        $this->assertNotEmpty($DB->get_record('user', ['idnumber' => 'newrlipidnumber']));
     }
 }
