@@ -1095,16 +1095,6 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
         }
 
         if ($uid) {
-            $mdluseridnumber = $DB->get_field('user', 'idnumber', array('id' => $uid));
-            if ($mdluseridnumber != '' && isset($record->idnumber) && $mdluseridnumber != $record->idnumber) {
-                // Attempt to change user's idnumber - not allowed.
-                $identifier = $this->mappings['idnumber'];
-                if ($identifier != 'idnumber') {
-                    $identifier = "idnumber ({$identifier})";
-                }
-                $this->fslogger->log_failure("User's $identifier cannot be modified from \"{$mdluseridnumber}\" to \"{$record->idnumber}\".", 0, $filename, $this->linenumber, $record, "user");
-                return false;
-            }
             $record->id = $uid;
         }
 
