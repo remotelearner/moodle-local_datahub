@@ -171,7 +171,7 @@ class elis_createorupdate2_testcase extends rlip_elis_test {
         $record->action = 'update';
         $record->context = 'curriculum';
         $record->idnumber = 'testprogramidnumber';
-        $record->priority = '5';
+        $record->priority = '15000';
 
         $importplugin = rlip_dataplugin_factory::factory('dhimport_version1elis');
         $importplugin->fslogger = new silent_fslogger(null);
@@ -181,7 +181,7 @@ class elis_createorupdate2_testcase extends rlip_elis_test {
         $this->assertTrue($DB->record_exists(curriculum::TABLE, array(
             'name' => 'testprogramname',
             'idnumber' => 'testprogramidnumber',
-            'priority' => '5'
+            'priority' => '15000'
         )));
     }
 
@@ -522,7 +522,7 @@ class elis_createorupdate2_testcase extends rlip_elis_test {
         $this->assertTrue($DB->record_exists(student::TABLE, array(
             'classid' => $class->id,
             'userid' => $user->id,
-            'completetime' => rlip_timestamp(0, 0, 0, 1, 1, 2012)
+            'completetime' => 0
         )));
     }
 
@@ -577,6 +577,7 @@ class elis_createorupdate2_testcase extends rlip_elis_test {
         $record->context = 'class_testclassidnumber';
         $record->user_username = 'testuserusername';
         $record->completetime = 'Jan/02/2012';
+        $record->completestatusid = 'passed';
 
         $importplugin = rlip_dataplugin_factory::factory('dhimport_version1elis');
         $importplugin->fslogger = new silent_fslogger(null);
@@ -774,13 +775,14 @@ class elis_createorupdate2_testcase extends rlip_elis_test {
         $params = array(
             'classid'      => $class->id,
             'userid'       => $user->id,
-            'completetime' => rlip_timestamp(0, 0, 0, 1, 1, 2012)
+            'completetime' => 0
         );
 
         $this->assertTrue($DB->record_exists(student::TABLE, $params));
 
         // 2 Run the second student enrolment.
         $record->completetime = 'Jan/02/2012';
+        $record->completestatusid = 'passed';
         $importplugin->process_record('enrolment', clone($record), 'bogus');
         $params['completetime'] = rlip_timestamp(0, 0, 0, 1, 2, 2012);
         $this->assertTrue($DB->record_exists(student::TABLE, $params));
