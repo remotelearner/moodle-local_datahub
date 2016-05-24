@@ -173,12 +173,6 @@ class local_datahub_elis_program_update extends external_api {
             }
         }
 
-        if (isset($data->priority)) {
-            if ($data->priority < 0 || $data->priority > 10) {
-                throw new data_object_exception('ws_program_update_fail_invalid_priority', 'local_datahub', '', $data);
-            }
-        }
-
         $prg = new curriculum($curid);
         $prg->load();
         $prg->set_from_data($data);

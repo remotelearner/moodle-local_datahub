@@ -221,7 +221,7 @@ class elis_pmentity_field_mappings_testcase extends rlip_elis_test {
         $record->customreqcredits = '1';
         $record->customtimetocomplete = '2d';
         $record->customfrequency = '2d';
-        $record->custompriority = 1;
+        $record->custompriority = 11;
         $record->customtestfieldshortname = '1';
 
         $this->run_pmentity_import((array)$record);
@@ -233,7 +233,7 @@ class elis_pmentity_field_mappings_testcase extends rlip_elis_test {
             'reqcredits' => 1,
             'timetocomplete' => '2d',
             'frequency' => '2d',
-            'priority' => 1
+            'priority' => 11
         );
         $this->assertTrue($DB->record_exists(curriculum::TABLE, $data));
 

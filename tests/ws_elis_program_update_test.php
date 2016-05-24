@@ -151,15 +151,6 @@ class local_datahub_ws_elis_program_update_testcase extends rlip_test_ws {
                             'frequency' => '22x'
                         )
                 ),
-                // Test invalid priority.
-                array(
-                        array(
-                            'idnumber' => 'testprogram',
-                            'name' => 'test program name',
-                            'description' => 'test program description',
-                            'priority' => 22
-                        )
-                ),
                 // Test non-existant program.
                 array(
                         array(

@@ -475,11 +475,11 @@ class version1elisprogramfslog_testcase extends rlip_elis_test {
             'reqcredits' => '10',
             'timetocomplete' => '1d',
             'frequency' => '1d',
-            'custompriority' => 11
+            'custompriority' => 'NaN'
         );
 
         $expectederror = "[program.csv line 2] Program with idnumber \"testprogramidnumber\" could not be created. ";
-        $expectederror .= "custompriority value of \"11\" is not one of the available options (0 .. 10).\n";
+        $expectederror .= "custompriority value of \"NaN\" is not a recognized integer value.\n";
         $this->assert_data_produces_error($data, $expectederror, 'course');
     }
 
@@ -502,11 +502,11 @@ class version1elisprogramfslog_testcase extends rlip_elis_test {
             'reqcredits' => '10',
             'timetocomplete' => '1d',
             'frequency' => '1d',
-            'custompriority' => 11
+            'custompriority' => 'NaN'
         );
 
         $expectederror = "[program.csv line 2] Program with idnumber \"testprogramidnumber\" could not be updated. ";
-        $expectederror .= "custompriority value of \"11\" is not one of the available options (0 .. 10).\n";
+        $expectederror .= "custompriority value of \"NaN\" is not a recognized integer value.\n";
         $this->assert_data_produces_error($data, $expectederror, 'course');
     }
 
