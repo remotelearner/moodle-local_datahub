@@ -168,12 +168,6 @@ class local_datahub_elis_program_create extends external_api {
             }
         }
 
-        if (isset($data->priority)) {
-            if ($data->priority < 0 || $data->priority > 10) {
-                throw new data_object_exception('ws_program_create_fail_invalid_priority', 'local_datahub', '', $data);
-            }
-        }
-
         $prg = new curriculum();
         $prg->set_from_data($data);
         $prg->save();
