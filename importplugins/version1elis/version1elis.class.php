@@ -2140,11 +2140,11 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
      * on the import record
      *
      * @param string $action One of 'create' or 'update'
-     * @param object $record The import record
+     * @param object &$record The import record, passed by reference to update priority.
      *
      * @return boolean true if the record validates correctly, otherwise false
      */
-    function validate_program_data($action, $record, $filename) {
+    function validate_program_data($action, &$record, $filename) {
         global $CFG, $DB;
 
         require_once($CFG->dirroot.'/local/elisprogram/lib/datedelta.class.php');
@@ -2189,9 +2189,10 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
         }
 
         if (isset($record->priority)) {
-            if ($record->priority < 0 || $record->priority > 10) {
+            $record->priority = trim($record->priority);
+            if (strcmp($record->priority, (int)$record->priority)) {
                 $identifier = $this->get_field_mapping('priority');
-                $this->fslogger->log_failure("$identifier value of \"{$record->priority}\" is not one of the available options (0 .. 10).", 0, $filename, $this->linenumber, $record, "curriculum");
+                $this->fslogger->log_failure("$identifier value of \"{$record->priority}\" is not a recognized integer value.", 0, $filename, $this->linenumber, $record, "curriculum");
                 return false;
             }
         }
@@ -2384,10 +2385,6 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
 
         $id = $DB->get_field(curriculum::TABLE, 'id', array('idnumber' => $record->idnumber));
         $record->id = $id;
-
-        if (!$this->validate_program_data('update', $record, $filename)) {
-            return false;
-        }
 
         $cur = new curriculum();
         $cur->set_from_data($record);
