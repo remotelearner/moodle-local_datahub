@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * @package    dhimport_version1
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2013 Remote Learner.net Inc http://www.remote-learner.net
+ * @copyright  (C) 2008-2016 Remote Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -570,7 +570,8 @@ class version1enrolmentimport_testcase extends rlip_test {
 
         $this->run_core_enrolment_import(array('timemodified' => 12345,
                                                'modifierid' => 12345,
-                                               'timestart' => 12345));
+                                               'timestart' => 12345,
+                                               'status' => 'Suspended'));
 
         $this->assertEquals($DB->count_records('role_assignments'), 1);
         $this->assertEquals($DB->count_records('user_enrolments'), 1);
@@ -582,12 +583,15 @@ class version1enrolmentimport_testcase extends rlip_test {
 
         $exists = $DB->record_exists('user_enrolments', array('timestart' => 12345));
         $this->assertEquals($exists, false);
+
+        $exists = $DB->record_exists('user_enrolments', array('status' => ENROL_USER_SUSPENDED));
+        $this->assertEquals($exists, true);
     }
 
-      /**
-       * Validate that the import does not create duplicate role assignment
-       * records on creation
-       */
+    /**
+     * Validate that the import does not create duplicate role assignment
+     * records on creation
+     */
     public function test_version1importpreventsduplicateroleassignmentcreation() {
           global $DB;
 
@@ -678,14 +682,16 @@ class version1enrolmentimport_testcase extends rlip_test {
     public function test_version1importenrolsappropriateuserasstudent() {
         global $DB;
 
-        $this->run_core_enrolment_import(array());
+        $this->run_core_enrolment_import(array('status' => 'Suspended'));
 
         // Compare data.
         // User enrolment.
         $enrolid = $DB->get_field('enrol', 'id', array('enrol' => 'manual',
                                                        'courseid' => self::$courseid));
-        $this->assert_record_exists('user_enrolments', array('userid' => self::$userid,
-                                                             'enrolid' => $enrolid));
+        $this->assert_record_exists('user_enrolments', array(
+            'userid' => self::$userid,
+            'enrolid' => $enrolid,
+            'status' => ENROL_USER_SUSPENDED));
 
         // Role assignment.
         $coursecontext = context_course::instance(self::$courseid);

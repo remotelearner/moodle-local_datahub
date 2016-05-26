@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * @package    dhimport_version1
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -85,7 +85,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
                                             'password', 'visible', 'lang', 'category', 'link',
                                             'theme');
     static $available_fields_enrolment = array('username', 'email', 'idnumber', 'context',
-                                               'instance', 'role', 'group', 'grouping', 'enrolmenttime', 'completetime');
+                                               'instance', 'role', 'group', 'grouping', 'enrolmenttime', 'completetime', 'status');
 
     //store mappings for the current entity type
     var $mappings = array();
@@ -2280,6 +2280,42 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
     }
 
     /**
+     * Try to enrol user via default internal auth plugin.
+     *
+     * For now this is always using the manual enrol plugin...
+     * This is from Moodle lib/enrollib.php modified to add status param for ELIS-8394
+     * @see lib/enrollib.php
+     * @param int $courseid The course id.
+     * @param int $userid The user id.
+     * @param int $roleid The role id.
+     * @param int $timestart The start time.
+     * @param int $timeend The end time.
+     * @param int $status either: ENROL_USER_ACTIVE or ENROL_USER_SUSPENDED, defaults to ENROL_USER_ACTIVE.
+     * @return bool success
+     */
+    public static function enrol_try_internal_enrol($courseid, $userid, $roleid = null, $timestart = 0, $timeend = 0, $status = null) {
+        global $DB;
+
+        // Note: this is hardcoded to manual plugin for now!
+
+        if (!enrol_is_enabled('manual')) {
+            return false;
+        }
+
+        if (!$enrol = enrol_get_plugin('manual')) {
+            return false;
+        }
+        if (!$instances = $DB->get_records('enrol', array('enrol' => 'manual', 'courseid' => $courseid, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder,id ASC')) {
+            return false;
+        }
+        $instance = reset($instances);
+
+        $enrol->enrol_user($instance, $userid, $roleid, $timestart, $timeend, is_null($status) ? ENROL_USER_ACTIVE : $status);
+
+        return true;
+    }
+
+    /**
      * Create an enrolment
      *
      * @param object $record One record of import data
@@ -2328,6 +2364,20 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
                         "MM/DD/YYYY, DD-MM-YYYY, YYYY.MM.DD, or MMM/DD/YYYY format.", 0, $filename, $this->linenumber, $record, "enrolment");
                 return false;
             }
+        }
+
+        // Check for valid status field: active/suspended - ELIS-8394.
+        if (isset($record->status)) {
+            $record->status = core_text::strtolower($record->status);
+            if ($record->status != 'active' && $record->status != 'suspended') {
+                $identifier = $this->mappings['status'];
+                $this->fslogger->log_failure("$identifier value of \"{$record->status}\" is not a valid status, allowed values are: active or suspended.",
+                        0, $filename, $this->linenumber, $record, "enrolment");
+                return false;
+            }
+            $record->status = ($record->status == 'suspended') ? ENROL_USER_SUSPENDED : ENROL_USER_ACTIVE;
+        } else {
+            $record->status = ENROL_USER_ACTIVE;
         }
 
         //find existing user record
@@ -2440,21 +2490,21 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
             $enrolresult = true;
             if ($role_assignment_exists && !$enrolment_exists) {
                 // Role assignment already exists, so just enrol the user.
-                $enrolresult = enrol_try_internal_enrol($context->instanceid, $userid, null, $timestart, $timeend);
+                $enrolresult = static::enrol_try_internal_enrol($context->instanceid, $userid, null, $timestart, $timeend, $record->status);
             } else if (!$enrolment_exists) {
                 // Role assignment does not exist, so enrol and assign role.
-                if (($enrolresult = enrol_try_internal_enrol($context->instanceid, $userid, $roleid, $timestart, $timeend)) !== false) {
+                if (($enrolresult = static::enrol_try_internal_enrol($context->instanceid, $userid, $roleid, $timestart, $timeend, $record->status)) !== false) {
                     // Collect success message for logging at end of action.
                     $logmessages[] = "User with {$user_descriptor} successfully assigned role with shortname ".
                             "\"{$record->role}\" on {$context_descriptor}.";
                 }
             } else if (!$role_assignment_exists) {
-                //just assign the role
-                role_assign($roleid, $userid, $context->id);
-
-                //collect success message for logging at end of action
-                $logmessages[] = "User with {$user_descriptor} successfully assigned role with ".
-                                 "shortname \"{$record->role}\" on {$context_descriptor}.";
+                // Updates timestart/timeend/status fields in enrolment & creates role assignment!
+                if (($enrolresult = static::enrol_try_internal_enrol($context->instanceid, $userid, $roleid, $timestart, $timeend, $record->status)) !== false) {
+                    // Collect success message for logging at end of action.
+                    $logmessages[] = "User with {$user_descriptor} successfully updated enrolment and assigned role with ".
+                            "shortname \"{$record->role}\" on {$context_descriptor}.";
+                }
             } else {
                 //duplicate enrolment attempt
                 $this->fslogger->log_failure("User with {$user_descriptor} is already assigned role ".
