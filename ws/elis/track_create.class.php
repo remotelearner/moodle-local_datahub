@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @package    local_datahub
- * @copyright  (C) 2008-2013 Remote Learner.net Inc http://www.remote-learner.net
+ * @copyright  (C) 2008-2016 Remote Learner.net Inc (http://www.remote-learner.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -54,7 +54,7 @@ class local_datahub_elis_track_create extends external_api {
 
         if (static::require_elis_dependencies() === true) {
             // Get custom fields.
-            $sql = 'SELECT shortname, name, datatype, multivalued
+            $sql = 'SELECT f.id, shortname, name, datatype, multivalued
                       FROM {'.field::TABLE.'} f
                       JOIN {'.field_contextlevel::TABLE.'} fctx ON f.id = fctx.fieldid AND fctx.contextlevel = ?';
             $sqlparams = array(CONTEXT_ELIS_TRACK);
@@ -216,6 +216,8 @@ class local_datahub_elis_track_create extends external_api {
                 $record->enddate = $enddate;
             }
         }
+        $customfields = self::get_track_custom_fields();
+        $errors = rlip_importplugin_version1elis::convert_multivalued_customfields($customfields, $record);
 
         $record->name = !empty($data->name) ? $data->name : '';
         $record->description = !empty($data->description) ? $data->description : '';
@@ -225,13 +227,20 @@ class local_datahub_elis_track_create extends external_api {
         $track->set_from_data($record);
         $track->save();
 
+        if (!empty($errors)) {
+            rlip_importplugin_version1elis::log_customfield_errors($errors, $context, $track->id, get_class());
+            $msg = get_string('ws_track_create_partial_success_msg', 'local_datahub');
+        } else {
+            $msg = get_string('ws_track_create_success_msg', 'local_datahub');
+        }
+
         // Respond.
         if (!empty($track->id)) {
             $trackrec = (array)$DB->get_record(track::TABLE, array('id' => $track->id));
             $trackobj = $track->to_array();
             // convert multi-valued custom field arrays to comma-separated listing
-            $fields = self::get_track_custom_fields();
-            foreach ($fields as $field) {
+            reset($customfields);
+            foreach ($customfields as $field) {
                 // Generate name using custom field prefix.
                 $fullfieldname = data_object_with_custom_fields::CUSTOM_FIELD_PREFIX.$field->shortname;
 
@@ -241,7 +250,7 @@ class local_datahub_elis_track_create extends external_api {
             }
             return array(
                 'messagecode' => get_string('ws_track_create_success_code', 'local_datahub'),
-                'message' => get_string('ws_track_create_success_msg', 'local_datahub'),
+                'message' => $msg,
                 'record' => array_merge($trackrec, $trackobj)
             );
         } else {
