@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2013 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @package    local_datahub
- * @copyright  (C) 2008-2013 Remote Learner.net Inc http://www.remote-learner.net
+ * @copyright  (C) 2008-2016 Remote Learner.net Inc (http://www.remote-learner.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,6 +35,7 @@ class local_datahub_elis_userset_update extends external_api {
         if (file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php')) {
             require_once($CFG->dirroot.'/local/elisprogram/lib/setup.php');
             require_once(elispm::lib('data/userset.class.php'));
+            require_once(dirname(__FILE__).'/../../importplugins/version1elis/version1elis.class.php');
             return true;
         } else {
             return false;
@@ -50,7 +51,7 @@ class local_datahub_elis_userset_update extends external_api {
 
         if (static::require_elis_dependencies() === true) {
             // Get custom fields.
-            $sql = 'SELECT shortname, name, datatype, multivalued
+            $sql = 'SELECT f.id, shortname, name, datatype, multivalued
                       FROM {'.field::TABLE.'} f
                       JOIN {'.field_contextlevel::TABLE.'} fctx ON f.id = fctx.fieldid AND fctx.contextlevel = ?';
             $sqlparams = array(CONTEXT_ELIS_USERSET);
@@ -192,6 +193,15 @@ class local_datahub_elis_userset_update extends external_api {
             $record->parent = $usid;
         }
 
+        $customfields = self::get_userset_custom_fields();
+        $errors = rlip_importplugin_version1elis::convert_multivalued_customfields($customfields, $record);
+        if (!empty($errors)) {
+            rlip_importplugin_version1elis::log_customfield_errors($errors, $context, $usid, get_class());
+            $msg = get_string('ws_userset_update_partial_success_msg', 'local_datahub');
+        } else {
+            $msg = get_string('ws_userset_update_success_msg', 'local_datahub');
+        }
+
         $userset = new userset($usersetid);
         $userset->set_from_data($record);
         $userset->save();
@@ -201,8 +211,8 @@ class local_datahub_elis_userset_update extends external_api {
             $usrec = (array)$DB->get_record(userset::TABLE, array('id' => $userset->id));
             $usobj = $userset->to_array();
             // convert multi-valued custom field arrays to comma-separated listing
-            $fields = self::get_userset_custom_fields();
-            foreach ($fields as $field) {
+            reset($customfields);
+            foreach ($customfields as $field) {
                 // Generate name using custom field prefix.
                 $fullfieldname = data_object_with_custom_fields::CUSTOM_FIELD_PREFIX.$field->shortname;
 
@@ -212,7 +222,7 @@ class local_datahub_elis_userset_update extends external_api {
             }
             return array(
                 'messagecode' => get_string('ws_userset_update_success_code', 'local_datahub'),
-                'message' => get_string('ws_userset_update_success_msg', 'local_datahub'),
+                'message' => $msg,
                 'record' => array_merge($usrec, $usobj)
             );
         } else {
