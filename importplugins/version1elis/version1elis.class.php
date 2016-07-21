@@ -1,7 +1,7 @@
 <?php
 /**
  * ELIS(TM): Enterprise Learning Intelligence Suite
- * Copyright (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * Copyright (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * @package    dhimport_version1elis
  * @author     Remote-Learner.net Inc
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2008-2015 Remote-Learner.net Inc (http://www.remote-learner.net)
+ * @copyright  (C) 2008-2016 Remote-Learner.net Inc (http://www.remote-learner.net)
  *
  */
 
@@ -528,6 +528,78 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
         }*/
 
         return parent::process_record($entity, $record, $filename);
+    }
+
+    /**
+     * For ELIS WebServices to convert multi-valued custom fields CSV-strings to array.
+     *
+     * @param array $customfields the array of custom fields objects.
+     * @param object $record The input record to convert custom fields on, passed by reference to modify directly.
+     * @return array Custom fields with validation errors.
+     */
+    public static function convert_multivalued_customfields($customfields, &$record) {
+        global $CFG;
+        require_once($CFG->dirroot.'/local/eliscore/lib/data/customfield.class.php');
+        require_once($CFG->dirroot.'/local/eliscore/fields/manual/custom_fields.php');
+        $errors = [];
+        foreach ($customfields as $field) {
+            // Generate name using custom field prefix.
+            $fullfieldname = data_object_with_custom_fields::CUSTOM_FIELD_PREFIX.$field->shortname;
+            if ($field->multivalued && isset($record->$fullfieldname) && is_string($record->$fullfieldname)) {
+                $record->$fullfieldname = explode(',', $record->$fullfieldname);
+            }
+
+            // Validate menu-of-choices custom field values and convert multi-lang values too.
+            $fieldobj = new field($field->id);
+            if (isset($fieldobj->owners['manual']) && $fieldobj->owners['manual']->param_control == 'menu') {
+                $options = explode("\n", $fieldobj->owners['manual']->param_options);
+                // Remove carriage return characters.
+                array_walk($options, 'trim_cr');
+                $formatoptions = $options;
+                array_walk($formatoptions, function(&$item, $key) {
+                        $item = format_string($item);
+                    }
+                );
+                foreach ((array)$record->$fullfieldname as $key => $testval) {
+                    if (($optionkey = array_search($testval, $formatoptions)) === false &&
+                            ($optionkey = array_search($testval, $options)) === false) {
+                        $errors[$field->shortname] = $record->$fullfieldname;
+                        unset($record->$fullfieldname);
+                        break;
+                    }
+                    if (is_array($record->$fullfieldname)) {
+                        $record->$fullfieldname[$key] = $options[$optionkey];
+                    } else {
+                        $record->$fullfieldname = $options[$optionkey];
+                        break;
+                    }
+                }
+            }
+        }
+        return $errors;
+    }
+
+    /**
+     * For WebServices to log custom field validation errors.
+     * @param array $errros the array of custom field keys with invalid value.
+     * @param object $context the context.
+     * @param int $objectid the primary object's id.
+     * @param string $wsapi the Web Services API call.
+     */
+    public static function log_customfield_errors(array $errors, $context, $objectid, $wsapi) {
+        foreach ($errors as $customfield => $value) {
+            $eventdata = [
+                'context' => $context,
+                'other' => [
+                    'text' => "Invalid custom field value in Web Service call: {$wsapi}",
+                    'entityid' => $objectid,
+                    'customfield' => $customfield,
+                    'value' => $value
+                ]
+            ];
+            $event = \local_datahub\event\ws_customfield_error::create($eventdata);
+            $event->trigger();
+        }
     }
 
     /**
