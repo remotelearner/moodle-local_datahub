@@ -2447,7 +2447,7 @@ class version1userimport_testcase extends rlip_test {
         set_config('noemailever', true);
 
         // Set up a user tag.
-        tag_set('user', $userid, array('testtag'), 'user', context_user::instance($userid)->id);
+        core_tag_tag::set_item_tags(null, 'user', $userid, context_user::instance($userid), ['testtag']);
 
         // Create a new course-level role.
         $roleid = create_role('testrole', 'testrole', 'testrole');

@@ -2664,7 +2664,7 @@ class version1courseimport_testcase extends rlip_test {
         groups_assign_grouping($groupingid, $groupid);
 
         // Set up a user tag.
-        tag_set('course', $courseid, array('testtag'), 'course', $coursecontext->id);
+        core_tag_tag::set_item_tags(null, 'course', $courseid, $coursecontext, ['testtag']);
 
         // Set up the default course question category.
         $newcategory = question_make_default_categories(array($coursecontext));
