@@ -81,14 +81,10 @@ class local_datahub_ws_elis_track_enrolment_create_testcase extends rlip_test_ws
         );
 
         // Redirect emails.
-        $sink = $this->redirectEmails();
+        $sink = $this->redirectMessages();
 
         // Run track enrolment create.
         $response = local_datahub_elis_track_enrolment_create::track_enrolment_create($data);
-
-        // Assert we sent a message.
-        $this->assertEquals(1, count($sink->get_messages()));
-        $sink->close();
 
         $this->assertNotEmpty($response);
         $this->assertInternalType('array', $response);
@@ -109,6 +105,10 @@ class local_datahub_ws_elis_track_enrolment_create_testcase extends rlip_test_ws
             $this->assertArrayHasKey($param, $usertrack, $param);
             $this->assertEquals($val, $usertrack[$param], $param);
         }
+
+        // Assert we sent a message.
+        $this->assertEquals(1, count($sink->get_messages()));
+        $sink->close();
     }
 
     /**
