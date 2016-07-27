@@ -3179,6 +3179,7 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
      * @return boolean true on success, otherwise false
      */
     function enrolment_action($record, $action = '', $filename = '') {
+        global $DB;
         if ($action === '') {
             //set from param
             $action = isset($record->action) ? $record->action : '';
@@ -3191,16 +3192,17 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
         $context = substr($record->context, 0, $pos);
         $idnumber = substr($record->context, $pos + 1);
 
-        $valid_contexts = array(
-            'course',
-            'curriculum',
-            'cluster',
-            'track',
-            'class',
-            'user'
+        static $valid_contexts = array(
+            'course' => 'course',
+            'program' => 'curriculum',
+            'userset' => 'cluster',
+            'track' => 'track',
+            'pmclass' => 'class',
+            'user' => 'user',
+            'courseset' => 'courseset'
         );
 
-        $valid_actions = array('create', 'update', 'delete', 'enrol', 'enroll', 'unenrol', 'unenroll');
+        $valid_actions = array('create', 'update', 'delete', 'enrol', 'enroll', 'unenrol', 'unenroll', 'assign', 'unassign');
 
         if (!in_array($context, $valid_contexts)) {
             if (in_array($action, $valid_actions)) {
@@ -3240,11 +3242,71 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
             return false;
         }
 
+        if ($action == 'assign' || $action == 'unassign') {
+            // DATAHUB-2: Generic role [un]assignments.
+            $userid = $this->get_userid_from_record($record, $filename);
+            if (!$userid || !($pmuser = new user($userid)) || !($mdluser = $pmuser->get_moodleuser())) {
+                // Logging - invalid user.
+                $message = $userid ? 'No Moodle user for specified ELIS user.' : 'Specified ELIS user not found.';
+                $this->fslogger->log_failure($message, 0, $filename, $this->linenumber, $record, '');
+                return false;
+            }
+            $cls = array_search($context, $valid_contexts);
+            $ctxclass = '\\local_elisprogram\\context\\'.$cls;
+            if (!class_exists($ctxclass)) {
+                // Logging - invalid context.
+                $this->fslogger->log_failure("Invalid ELIS context \"{$context}\" specified.", 0, $filename, $this->linenumber, $record, '');
+                return false;
+            }
+            if (empty($record->role) || !($roleid = $DB->get_field('role', 'id', ['shortname' => $record->role]))) {
+                // Logging - invalid role.
+                $role = empty($record->role) ? '[empty]' : $record->role;
+                $this->fslogger->log_failure("Invalid role shortname \"{$role}\" specified.", 0, $filename, $this->linenumber, $record, '');
+                return false;
+            }
+            if (!class_exists($cls)) {
+                $cls = $context;
+                if (!class_exists($cls)) {
+                    $this->fslogger->log_failure("Invalid ELIS context class \"{$cls}\" encounterd.", 0, $filename, $this->linenumber,
+                            $record, '');
+                    return false;
+                }
+            }
+            $fld = ($cls == 'userset') ? 'name' : 'idnumber';
+            if (!($instid = $DB->get_field($cls::TABLE, 'id', [$fld => $idnumber])) && $idnumber == (int)$idnumber) {
+                $instid = $DB->get_field($cls::TABLE, 'id', ['id' => $idnumber]); // Back-up try actual element id.
+            }
+            if (!$instid || !($context = $ctxclass::instance($instid))) {
+                $this->fslogger->log_failure("Invalid ELIS context instance \"{$record->context}\" specified.", 0, $filename,
+                        $this->linenumber, $record, '');
+                return false;
+            }
+            if (!$DB->record_exists('role_context_levels', ['roleid' => $roleid, 'contextlevel' => $context->contextlevel])) {
+                // Logging - role not assignable on context.
+                $this->fslogger->log_failure("Specified role \"{$record->role}\" not assignable on specified context \"{$record->context}\".", 0,
+                        $filename, $this->linenumber, $record, '');
+                return false;
+            }
+            $fcn = 'role_'.$action;
+            try {
+                $fcn($roleid, $mdluser->id, $context->id);
+                // Log success.
+                $userdescriptor = static::get_user_descriptor($record, null, 'user_');
+                $successmessage = "User with {$userdescriptor} successfully {$action}ed role \"{$record->role}\" on context \"{$record->context}\".";
+                $this->fslogger->log_success($successmessage, 0, $filename, $this->linenumber);
+                return true;
+            } catch (Exception $e) {
+                // Logging - role assign/unassign failed.
+                $this->fslogger->log_failure("Error {$action}ing role: ".$e->getMessage(), 0, $filename, $this->linenumber, $record, '');
+            }
+            return false;
+        }
+
         $method = "{$context}_enrolment_{$action}";
         if (method_exists($this, $method)) {
             return $this->$method($record, $filename, $idnumber);
         } else {
-            //todo: add logging
+            $this->fslogger->log_failure('Action not supported for context.', 0, $filename, $this->linenumber, $record, '');
             return false;
         }
     }
