@@ -545,7 +545,10 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
         foreach ($customfields as $field) {
             // Generate name using custom field prefix.
             $fullfieldname = data_object_with_custom_fields::CUSTOM_FIELD_PREFIX.$field->shortname;
-            if ($field->multivalued && isset($record->$fullfieldname) && is_string($record->$fullfieldname)) {
+            if (!isset($record->$fullfieldname)) {
+                continue;
+            }
+            if ($field->multivalued && is_string($record->$fullfieldname)) {
                 $record->$fullfieldname = explode(',', $record->$fullfieldname);
             }
 

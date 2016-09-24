@@ -74,8 +74,13 @@ class behat_local_datahub extends behat_base implements SnippetAcceptingContext 
      */
     public function iShouldReceiveFromTheDatahubWebService(PyStringNode $string) {
         $string = $string->getRaw();
-        // Remove the dynamic userid parameter.
-        $this->received = preg_replace('#\"id\"\:([0-9]{6})\,#', '', $this->received);
+        // Remove the dynamic id parameters: curid, courseid, id, userid, classid, trackid, ...
+        $this->received = preg_replace('#\"[a-z]*id\"\:([0-9]{6})[,]*#', '', $this->received);
+        // Remove the dynamic parent userset parameter.
+        $this->received = preg_replace('#\"parent\"\:([0-9]{6})\,#', '', $this->received);
+        // Remove the timestamp parameters that are near impossible to predict.
+        $this->received = preg_replace('#\"[a-z]*time\"\:([0-9]{10})[,]*#', '', $this->received);
+        $this->received = preg_replace('#\"[a-z]*date\"\:([0-9]{10})[,]*#', '', $this->received);
         if ($this->received !== $string) {
             $msg = "Web Service call failed\n";
             $msg .= "Received ".$this->received."\n";
@@ -85,62 +90,199 @@ class behat_local_datahub extends behat_base implements SnippetAcceptingContext 
     }
 
     /**
-     * @Given A multi-valued custom field exists with name :arg1 for the :arg2 context with options :arg3
+     * @Given the following ELIS custom fields exist
      */
-    public function aMultiValuedCustomFieldExistsWithNameForTheContextWithOptions($arg1, $arg2, $arg3) {
-        global $DB;
+    public function theFollowingELIScustomfieldsexist(TableNode $table) {
+        global $CFG, $DB;
+        require_once($CFG->dirroot.'/local/elisprogram/lib/setup.php');
+        require_once($CFG->dirroot.'/local/eliscore/lib/data/customfield.class.php');
+        static $contextlevelmap = ['program' => 11, 'track' => 12, 'course' => 13, 'class' => 14, 'user' => 15, 'userset' => 16, 'courseset' => 17];
+        $data = $table->getHash();
+        foreach ($data as $datarow) {
+            $contextlevel = $contextlevelmap[$datarow['contextlevel']];
+            $catobj = field_category::ensure_exists_for_contextlevel($datarow['category'], $contextlevel);
+            $fieldrec = [
+                'shortname' => $datarow['name'],
+                'name' => $datarow['name'],
+                'datatype' => $datarow['datatype'],
+                'description' => '',
+                'categoryid' => $catobj->id,
+                'sortorder' => 0,
+                'multivalued' => $datarow['multi'],
+                'forceunique' => 0,
+                // 'params' => 'a:0:{}',
+            ];
+            $fieldobj = field::ensure_field_exists_for_context_level(new field($fieldrec), $contextlevel, $catobj);
 
-        $catrec = [
-            'name' => 'test',
-            'sortorder' => 0,
-        ];
-        $catrec['id'] = $DB->insert_record('local_eliscore_field_cats', (object)$catrec);
-
-        $catctxrec = [
-            'categoryid' => $catrec['id'],
-            'contextlevel' => 15,
-        ];
-        $catctxrec['id'] = $DB->insert_record('local_eliscore_fld_cat_ctx', (object)$catctxrec);
-
-        $fieldrec = [
-            'shortname' => $arg1,
-            'name' => $arg1,
-            'datatype' => 'char',
-            'description' => '',
-            'categoryid' => $catrec['id'],
-            'sortorder' => 0,
-            'multivalued' => 1,
-            'forceunique' => 0,
-            'params' => 'a:0:{}',
-        ];
-        $fieldrec['id'] = $DB->insert_record('local_eliscore_field', (object)$fieldrec);
-
-        $ownerrec = [
-            'fieldid' => $fieldrec['id'],
-            'plugin' => 'manual',
-            'exclude' => 0,
-            'params' => json_encode([
+            $ownerrec = [
                 'required' => 0,
                 'edit_capability' => '',
                 'view_capability' => '',
-                'control' => 'menu',
+                'control' => $datarow['control'],
                 'options_source' => '',
-                'options' => implode("\n", ['Option 1', 'Option 2', 'Option 3', 'Option 4']),
+                'options' => str_replace(',', "\n", $datarow['options']),
                 'columns' => 30,
                 'rows' => 10,
                 'maxlength' => 2048,
                 'startyear' => 1970,
                 'stopyear' => 2038,
                 'inctime' => '0',
-            ]),
-        ];
-        $ownerrec['id'] = $DB->insert_record('local_eliscore_field_owner', (object)$ownerrec);
+            ];
+            field_owner::ensure_field_owner_exists($fieldobj, 'manual', $ownerrec);
 
-        $fieldclevelsrec = [
-            'fieldid' => $fieldrec['id'],
-            'contextlevel' => 15,
-        ];
-        $fieldclevelsrec['id'] = $DB->insert_record('local_eliscore_field_clevels', (object)$fieldclevelsrec);
+            // Insert a default value for the field:
+            if (!empty($datarow['default'])) {
+                field_data::set_for_context_and_field(null, $fieldobj, empty($datarow['multi']) ? $datarow['default'] : [$datarow['default']]);
+            }
+        }
+    }
 
+    /**
+     * @Given the following ELIS programs exist
+     */
+    public function theFollowingElisProgramsExist(TableNode $table) {
+        global $CFG;
+        require_once($CFG->dirroot.'/local/elisprogram/lib/data/curriculum.class.php');
+        $data = $table->getHash();
+        foreach ($data as $datarow) {
+            $pgm = new curriculum();
+            $pgm->idnumber = $datarow['idnumber'];
+            $pgm->name = $datarow['name'];
+            $pgm->description = 'Description of the Program';
+            $pgm->reqcredits = $datarow['reqcredits'];
+            $pgm->save();
+        }
+    }
+
+    /**
+     * @Given the following ELIS tracks exist
+     */
+    public function theFollowingElisTracksExist(TableNode $table) {
+        global $CFG, $DB;
+        require_once($CFG->dirroot.'/local/elisprogram/lib/data/track.class.php');
+        $data = $table->getHash();
+        foreach ($data as $datarow) {
+            $trk = new track();
+            $trk->curid = $DB->get_field(curriculum::TABLE, 'id', ['idnumber' => $datarow['program_idnumber']]);
+            $trk->idnumber = $datarow['idnumber'];
+            $trk->name = $datarow['name'];
+            $trk->description = 'Description of the Track';
+            $trk->save();
+        }
+    }
+
+    /**
+     * @Given the following ELIS courses exist
+     */
+    public function theFollowingElisCoursesExist(TableNode $table) {
+        global $CFG, $DB;
+        require_once($CFG->dirroot.'/local/elisprogram/lib/data/course.class.php');
+        $data = $table->getHash();
+        foreach ($data as $datarow) {
+            $crs = new course();
+            $crs->idnumber = $datarow['idnumber'];
+            $crs->name = $datarow['name'];
+            $crs->credits = $datarow['credits'];
+            $crs->completion_grade = $datarow['completion_grade'];
+            $crs->syllabus = 'Description of the Course';
+            $crs->save();
+        }
+    }
+
+    /**
+     * @Given the following ELIS classes exist
+     */
+    public function theFollowingElisClassesExist(TableNode $table) {
+        global $CFG, $DB;
+        require_once($CFG->dirroot.'/local/elisprogram/lib/data/pmclass.class.php');
+        $data = $table->getHash();
+        foreach ($data as $datarow) {
+            $cls = new pmclass();
+            $cls->idnumber = $datarow['idnumber'];
+            $cls->courseid = $DB->get_field(course::TABLE, 'id', ['idnumber' => $datarow['course_idnumber']]);
+            $cls->save();
+        }
+    }
+
+    /**
+     * @Given the following ELIS usersets exist
+     */
+    public function theFollowingElisUsersetsExist(TableNode $table) {
+        global $CFG, $DB;
+        require_once($CFG->dirroot.'/local/elisprogram/lib/data/userset.class.php');
+        $data = $table->getHash();
+        foreach ($data as $datarow) {
+            $us = new userset();
+            $us->name = $datarow['name'];
+            $us->display = $datarow['name'];
+            $us->parent = ($datarow['parent_name'] == 'top') ? 0 : $DB->get_field(userset::TABLE, 'id', ['name' => $datarow['parent_name']]);
+            $us->save();
+        }
+    }
+
+    /**
+     * @Given the following ELIS program enrolments exist
+     */
+    public function theFollowingElisProgramEnrolmentsExist(TableNode $table) {
+        global $CFG, $DB;
+        require_once($CFG->dirroot.'/local/elisprogram/lib/data/curriculumstudent.class.php');
+        $data = $table->getHash();
+        foreach ($data as $datarow) {
+            $cs = new curriculumstudent();
+            $cs->userid = $DB->get_field(user::TABLE, 'id', ['idnumber' => $datarow['user_idnumber']]);
+            $cs->curriculumid = $DB->get_field(curriculum::TABLE, 'id', ['idnumber' => $datarow['program_idnumber']]);
+            $cs->save();
+        }
+    }
+
+    /**
+     * @Given the following ELIS track enrolments exist
+     */
+    public function theFollowingElisTrackEnrolmentsExist(TableNode $table) {
+        global $CFG, $DB;
+        require_once($CFG->dirroot.'/local/elisprogram/lib/data/usertrack.class.php');
+        $data = $table->getHash();
+        foreach ($data as $datarow) {
+            $ut = new usertrack();
+            $ut->userid = $DB->get_field(user::TABLE, 'id', ['idnumber' => $datarow['user_idnumber']]);
+            $ut->trackid = $DB->get_field(track::TABLE, 'id', ['idnumber' => $datarow['track_idnumber']]);
+            $ut->save();
+        }
+    }
+
+    /**
+     * @Given the following ELIS class enrolments exist
+     */
+    public function theFollowingElisClassEnrolmentsExist(TableNode $table) {
+        global $CFG, $DB;
+        require_once($CFG->dirroot.'/local/elisprogram/lib/data/student.class.php');
+        static $statusmap = ['notcompleted' => 0, 'failed' => 1, 'passed' => 2];
+        $data = $table->getHash();
+        foreach ($data as $datarow) {
+            $ce = new student();
+            $ce->userid = $DB->get_field(user::TABLE, 'id', ['idnumber' => $datarow['user_idnumber']]);
+            $ce->classid = $DB->get_field(pmclass::TABLE, 'id', ['idnumber' => $datarow['class_idnumber']]);
+            $ce->completestatusid = $statusmap[$datarow['completestatus']];
+            $ce->grade = $datarow['grade'];
+            $ce->credits = $datarow['credits'];
+            $ce->locked = $datarow['locked'];
+            $ce->save();
+        }
+    }
+
+    /**
+     * @Given the following ELIS userset enrolments exist
+     */
+    public function theFollowingElisUsersetEnrolmentsExist(TableNode $table) {
+        global $CFG, $DB;
+        require_once($CFG->dirroot.'/local/elisprogram/lib/data/clusterassignment.class.php');
+        $data = $table->getHash();
+        foreach ($data as $datarow) {
+            $ca = new clusterassignment();
+            $ca->userid = $DB->get_field(user::TABLE, 'id', ['idnumber' => $datarow['user_idnumber']]);
+            $ca->clusterid = $DB->get_field(userset::TABLE, 'id', ['name' => $datarow['userset_name']]);
+            $ca->plugin = $datarow['plugin'];;
+            $ca->save();
+        }
     }
 }

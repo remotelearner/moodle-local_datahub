@@ -184,19 +184,18 @@ class local_datahub_elis_userset_update extends external_api {
         // Capability checking.
         require_capability('local/elisprogram:userset_edit', \local_elisprogram\context\userset::instance($usersetid));
 
-        $usid = 0;
-        if (!empty($data->parent) && strtolower($data->parent) != 'top' && !($usid = $DB->get_field(userset::TABLE, 'id',
-                array('name' => $data->parent)))) {
-            throw new data_object_exception('ws_userset_update_fail_invalid_parent', 'local_datahub', '', $data);
-        }
-        if ($usid || strtolower($data->parent) == 'top') {
+        if (!empty($data->parent)) {
+            $usid = 0;
+            if (strtolower($data->parent) != 'top' && !($usid = $DB->get_field(userset::TABLE, 'id', ['name' => $data->parent]))) {
+                throw new data_object_exception('ws_userset_update_fail_invalid_parent', 'local_datahub', '', $data);
+            }
             $record->parent = $usid;
         }
 
         $customfields = self::get_userset_custom_fields();
         $errors = rlip_importplugin_version1elis::convert_multivalued_customfields($customfields, $record);
         if (!empty($errors)) {
-            rlip_importplugin_version1elis::log_customfield_errors($errors, $context, $usid, get_class());
+            rlip_importplugin_version1elis::log_customfield_errors($errors, $context, $usersetid, get_class());
             $msg = get_string('ws_userset_update_partial_success_msg', 'local_datahub');
         } else {
             $msg = get_string('ws_userset_update_success_msg', 'local_datahub');
