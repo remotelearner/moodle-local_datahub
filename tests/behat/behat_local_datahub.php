@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__.'/../../../../lib/behat/behat_base.php');
+require_once(__DIR__.'/../../../../lib/behat/behat_files.php');
 
 use Behat\Behat\Context\Step\Given as Given,
     Behat\Behat\Context\SnippetAcceptingContext,
@@ -10,7 +10,7 @@ use Behat\Behat\Context\Step\Given as Given,
     Behat\Mink\Exception\DriverException as DriverException,
     Behat\Mink\Exception\ElementNotFoundException as ElementNotFoundException;
 
-class behat_local_datahub extends behat_base implements SnippetAcceptingContext {
+class behat_local_datahub extends behat_files implements SnippetAcceptingContext {
     protected $sent = null;
 
     /**
@@ -283,6 +283,147 @@ class behat_local_datahub extends behat_base implements SnippetAcceptingContext 
             $ca->clusterid = $DB->get_field(userset::TABLE, 'id', ['name' => $datarow['userset_name']]);
             $ca->plugin = $datarow['plugin'];;
             $ca->save();
+        }
+    }
+
+    /**
+     * @Given I make a Datahub :arg1 manual :arg2 import with file :arg3
+     */
+    public function iMakeADatahubManualImportWithFile($arg1, $arg2, $arg3) {
+        $dhimportpage = '/local/datahub/importplugins/manualrun.php?plugin=dhimport_'.$arg1;
+        $this->getSession()->visit($this->locate_path($dhimportpage));
+        $this->upload_file_to_filemanager(__DIR__.'/fixtures/'.$arg3, ucwords($arg2).' file', new TableNode([]), false);
+        $this->find_button('Run Now')->press();
+    }
+
+    /**
+     * Uploads a file to filemanager
+     * @see: repository/upload/tests/behat/behat_repository_upload.php
+     *
+     * @throws ExpectationException Thrown by behat_base::find
+     * @param string $filepath Normally a path relative to $CFG->dirroot, but can be an absolute path too.
+     * @param string $filemanagerelement
+     * @param TableNode $data Data to fill in upload form
+     * @param false|string $overwriteaction false if we don't expect that file with the same name already exists,
+     *     or button text in overwrite dialogue ("Overwrite", "Rename to ...", "Cancel")
+     */
+    protected function upload_file_to_filemanager($filepath, $filemanagerelement, TableNode $data, $overwriteaction = false) {
+        global $CFG;
+
+        $filemanagernode = $this->get_filepicker_node($filemanagerelement);
+
+        // Opening the select repository window and selecting the upload repository.
+        $this->open_add_file_window($filemanagernode, get_string('pluginname', 'repository_upload'));
+
+        // Ensure all the form is ready.
+        $noformexception = new ExpectationException('The upload file form is not ready', $this->getSession());
+        $this->find(
+            'xpath',
+            "//div[contains(concat(' ', normalize-space(@class), ' '), ' file-picker ')]".
+                "[contains(concat(' ', normalize-space(@class), ' '), ' repository_upload ')]".
+                "/descendant::div[@class='fp-content']".
+                "/descendant::div[contains(concat(' ', normalize-space(@class), ' '), ' fp-upload-form ')]".
+                "/descendant::form",
+            $noformexception
+        );
+        // After this we have the elements we want to interact with.
+
+        // Form elements to interact with.
+        $file = $this->find_file('repo_upload_file');
+
+        // Attaching specified file to the node.
+        // Replace 'admin/' if it is in start of path with $CFG->admin .
+        if (substr($filepath, 0, 6) === 'admin/') {
+            $filepath = $CFG->dirroot.DIRECTORY_SEPARATOR.$CFG->admin.
+                    DIRECTORY_SEPARATOR.substr($filepath, 6);
+        }
+        $filepath = str_replace('/', DIRECTORY_SEPARATOR, $filepath);
+        if (!is_readable($filepath)) {
+            $filepath = $CFG->dirroot.DIRECTORY_SEPARATOR.$filepath;
+            if (!is_readable($filepath)) {
+                throw new ExpectationException('The file to be uploaded does not exist.', $this->getSession());
+            }
+        }
+        $file->attachFile($filepath);
+
+        // Fill the form in Upload window.
+        $datahash = $data->getRowsHash();
+
+        // The action depends on the field type.
+        foreach ($datahash as $locator => $value) {
+
+            $field = behat_field_manager::get_form_field_from_label($locator, $this);
+
+            // Delegates to the field class.
+            $field->set_value($value);
+        }
+
+        // Submit the file.
+        $submit = $this->find_button(get_string('upload', 'repository'));
+        $submit->press();
+
+        // We wait for all the JS to finish as it is performing an action.
+        $this->getSession()->wait(self::TIMEOUT, self::PAGE_READY_JS);
+
+        if ($overwriteaction !== false) {
+            $overwritebutton = $this->find_button($overwriteaction);
+            $this->ensure_node_is_visible($overwritebutton);
+            $overwritebutton->click();
+
+            // We wait for all the JS to finish.
+            $this->getSession()->wait(self::TIMEOUT, self::PAGE_READY_JS);
+        }
+
+    }
+
+    /**
+     * @Given I make a Datahub :arg1 manual export to file :arg2
+     */
+    public function iMakeADatahubManualExportToFile($arg1, $arg2) {
+        $dhimportpage = '/local/datahub/exportplugins/manualrun.php?plugin=dhexport_'.$arg1;
+        $this->getSession()->visit($this->locate_path($dhimportpage));
+        $this->find_button('Run Now')->press();
+        // ToDo: click "Save file" in browser dialog?
+        // Save/copy file contents to :arg2 ?
+    }
+
+    /**
+     * @Given The Datahub :arg1 log file should contain :arg2
+     * Where arg1 is the expected log file prefix: i.e. 'import_version1_manual_course_'
+     * and $arg2 is the RegEx expression the last file should contain.
+     */
+    public function theDatahubLogfileShouldContain($arg1, $arg2) {
+        global $CFG;
+        $parts = explode('_', $arg1);
+        $logfilepath = $CFG->dataroot.'/'.get_config('dh'.$parts[0].'_'.$parts[1], 'logfilelocation').'/'.$arg1;
+        $lasttime = 0;
+        $lastfile = null;
+        foreach (glob($logfilepath.'*.log') as $logfile) {
+            if ($lasttime < ($newtime = filemtime($logfile))) {
+                $lastfile = $logfile;
+                $lasttime = $newtime;
+            }
+        }
+        if (empty($lastfile)) {
+            // No log file found!
+            throw new \Exception('No log file found with prefix: '.$logfilepath);
+        }
+        $contents = file_get_contents($lastfile);
+        if (!preg_match('|'.$arg2.'|', $contents)) {
+            // No match found!
+            throw new \Exception("No matching lines in log file {$lastfile} to '{$arg2}' in {$contents}");
+        }
+    }
+
+    /**
+     * @Given a :arg1 record with :arg2 :arg3 exist
+     * Note: arg2 json encoded row object for table arg1
+     * arg3 = "should" | "should not" ...
+     */
+    public function aRecordWithExist($arg1, $arg2, $arg3) {
+        global $DB;
+        if ($DB->record_exists($arg1, (array)json_decode($arg2)) == ($arg3 != "should")) {
+            throw new \Exception("Fail: record matching '{$arg2}' in table {$arg1} ".($arg3 == "should" ? 'not ' : '').'found!');
         }
     }
 }
