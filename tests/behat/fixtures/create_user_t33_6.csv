@@ -1,0 +1,3 @@
+action,username,password,firstname,lastname,email,city,country,idnumber
+create,testuser,Testuser!0,Test,User,test@user.com,testcity,CA,testuser
+create,testuser2,Testuser!0,Test,User2,test@user2.com,testcity,CA,
