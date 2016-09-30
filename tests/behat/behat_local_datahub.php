@@ -423,7 +423,221 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     public function aRecordWithExist($arg1, $arg2, $arg3) {
         global $DB;
         if ($DB->record_exists($arg1, (array)json_decode($arg2)) == ($arg3 != "should")) {
+            ob_start();
+            var_dump($DB->get_records($arg1));
+            $tmp = ob_get_contents();
+            ob_end_clean();
+            error_log("\nTABLE {$arg1} => {$tmp}\n");
             throw new \Exception("Fail: record matching '{$arg2}' in table {$arg1} ".($arg3 == "should" ? 'not ' : '').'found!');
+        }
+    }
+
+    /**
+     * Check checkbox
+     * @param string $id base element name.
+     */
+    public function checkCheckbox($id) {
+        $page = $this->getSession()->getPage();
+        if (($chkbox = $page->find('xpath', "//input[@id='{$id}']"))) {
+            $chkbox->check();
+            $chkbox->setValue(true);
+        } else {
+            throw new \Exception("The expected '{$fullid}' checkbox was not found!");
+        }
+    }
+
+    /**
+     * Click radio
+     * @param string $id base element name.
+     ^ @param string $val the value to set/click.
+     */
+    public function clickRadio($id, $val) {
+        $page = $this->getSession()->getPage();
+        $fullid = "id_{$id}_{$val}";
+        $radio = $page->find('xpath', "//input[@id='{$fullid}']");
+        if (!empty($radio)) {
+            $radio->click();
+        } else {
+            throw new \Exception("The expected '{$fullid}' radio button was not found!");
+        }
+    }
+
+    /**
+     * Select option.
+     * @param string $id base element name.
+     * @param string $val the option to select.
+     * @param bool $ignoremissing if true no exception for missing element.
+     */
+    public function selectOption($id, $val, $ignoremissing = false) {
+        $page = $this->getSession()->getPage();
+        $sel = $page->find('xpath', "//select[@id='{$id}']");
+        if (!empty($sel)) {
+            $sel->selectOption($val);
+        } else if (!$ignoremissing) {
+            throw new \Exception("The expected '{$id}' select element was not found!");
+        }
+    }
+
+    /**
+     * Fillout scheduling date fields: month, day, year, ...
+     * @param string $baseid the base element id (prefix) for all components.
+     * @param string|object $dateobj ->month, ->day, ->year [, ->hour, ->minute ], or string to strtotime()
+     */
+    public function filloutScheduleDateField($baseid, $dateobj) {
+        $page = $this->getSession()->getPage();
+        if (is_string($dateobj)) {
+            if (($ts = strtotime($dateobj)) === false) {
+                throw new \Exception("Could not parse date string: {$dateobj}");
+            }
+            // Minute must be on 5 min boundary for UI selector.
+            $minute = (int)date('i', $ts);
+            $minute -= ($minute % 5);
+            if ($minute < 0) {
+                $minute = 0;
+            }
+            $dateobj = [
+                'day'    => date('j', $ts),
+                'month'  => date('n', $ts),
+                'year'   => date('Y', $ts),
+                'hour'   => date('G', $ts),
+                'minute' => $minute,
+            ];
+        }
+        // Check for enable checkbox.
+        $enable = $page->find('xpath', "//input[@id='{$baseid}enabled']");
+        if (!empty($enable)) {
+            $enable->check();
+            $enable->setValue(true);
+        }
+        foreach ($dateobj as $comp => $val) {
+            $this->selectOption("{$baseid}{$comp}", $val, true);
+        }
+    }
+
+    /**
+     * @Given the following scheduled datahub jobs exist
+     */
+    public function theFollowingScheduledDatahubJobsExist(TableNode $table) {
+        $page = $this->getSession()->getPage();
+        $data = $table->getHash();
+        foreach ($data as $datarow) {
+            $plugin = $datarow['plugin'];
+            $dhschedpage = '/local/datahub/schedulepage.php?plugin='.$plugin.'&action=list';
+            $this->getSession()->visit($this->locate_path($dhschedpage));
+            $this->find_button('New job')->press();
+            $this->getSession()->wait(self::TIMEOUT * 1000, self::PAGE_READY_JS);
+            // Enter label.
+            $page->fillField('id_label', $datarow['label']);
+            $this->find_button('Next')->press();
+            $this->getSession()->wait(self::TIMEOUT * 1000, self::PAGE_READY_JS);
+            // Select schedule type: period | advanced (default)
+            if ($datarow['type'] == 'period') {
+                $this->find_link('Basic Period Scheduling')->click();
+                $page->fillField('idperiod', $datarow['params']);
+            } else {
+                $params = json_decode($datarow['params']);
+                if (!empty($params->startdate)) {
+                    $this->clickRadio('starttype', '1');
+                    $this->filloutScheduleDateField('id_startdate_', $params->startdate);
+                }
+                if (isset($params->recurrence) && $params->recurrence == 'calendar') {
+                    $this->clickRadio('recurrencetype', 'calendar');
+                    // enddate(enable checkbox), time, days(radio), months.
+                    if (!empty($params->enddate)) {
+                        $this->filloutScheduleDateField('id_calenddate_', $params->enddate);
+                    }
+                    if (!empty($params->hour)) {
+                        $this->selectOption('id_time_hour', $params->hour);
+                    }
+                    if (!empty($params->minute)) {
+                        $this->selectOption('id_time_minute', $params->minute);
+                    }
+                    if (!empty($params->weekdays)) {
+                        $this->clickRadio('caldaystype', '1');
+                        foreach (explode(',', $params->weekdays) as $day) {
+                            $this->checkCheckbox("id_dayofweek_{$day}");
+                        }
+                    } else if (!empty($params->monthdays)) {
+                        $this->clickRadio('caldaystype', '2');
+                        $page->fillField('id_monthdays', $params->monthdays);
+                    }
+                    if (!empty($params->months)) {
+                        foreach (explode(',', $params->months) as $month) {
+                            $this->checkCheckbox("id_month_{$month}");
+                        }
+                    } else {
+                        $this->checkCheckbox('id_allmonths');
+                    }
+                } else { // Recurrence simple.
+                    if (!empty($params->enddate)) {
+                        $this->clickRadio('runtype', '1');
+                        $this->filloutScheduleDateField('id_enddate_', $params->enddate);
+                    } else if (!empty($params->runs) && !empty($params->frequency) && !empty($params->units)) {
+                        $this->clickRadio('runtype', '2');
+                        $page->fillField('id_runsremaining', $params->runs);
+                        $page->fillField('id_frequency', $params->frequency);
+                        $this->selectOption('id_frequencytype', $params->units);
+                    }
+                }
+            }
+            $this->find_button('Save')->press();
+            if (($cntlink = $this->find_link('Continue'))) {
+                $cntlink->click();
+            }
+        }
+    }
+
+    /**
+     * @Given I wait :arg1 minutes and run cron
+     */
+    public function iWaitMinutesAndRunCron($arg1) {
+        sleep((int)(60.0 * $arg1));
+        set_config('cronclionly', 0);
+        $this->getSession()->visit($this->locate_path('/admin/cron.php'));
+    }
+
+    /**
+     * @Given I wait until :arg1 and run cron
+     * @param string $arg1 string to pass to strtotime()
+     */
+    public function iWaitUntilAndRunCron($arg1) {
+        if (($ts = strtotime($arg1)) === false) {
+            throw new \Exception("Could not parse date string: {$arg1}");
+        }
+        sleep($ts - time());
+        set_config('cronclionly', 0);
+        $this->getSession()->visit($this->locate_path('/admin/cron.php'));
+    }
+
+    /**
+     * @Given I upload file :arg1 for :arg2 :arg3 import
+     * @param string $arg1 file in ./fixtures/ to copy to dh import area.
+     * @param string $arg2 the dhimport_ plugin type: version1 or version1elis
+     * @param string $arg3 the type of import file: user, course or enrolment.
+     */
+    public function iUploadFileForImport($arg1, $arg2, $arg3) {
+        global $CFG;
+        $fpath = __DIR__.'/fixtures/'.$arg1;
+        $dest = $CFG->dataroot.'/'.get_config('dhimport_'.$arg2, 'schedule_files_path');
+        @mkdir($dest, 0777, true);
+        $dest = $dest.'/'.get_config('dhimport_'.$arg2, $arg3.'_schedule_file');
+        if (!copy($fpath, $dest)) {
+            throw new \Exception("Failed copying '{$fpath}' to '{$dest}'");
+        }
+    }
+
+    /**
+     * @Then the following enrolments should exist
+     */
+    public function theFollowingEnrolmentsShouldExist(TableNode $table) {
+        global $DB;
+        $data = $table->getHash();
+        foreach ($data as $datarow) {
+            if (!is_enrolled(\context_course::instance(
+                    $DB->get_field('course', 'id', ['shortname' => $datarow['course']])),
+                    $DB->get_field('user', 'id', ['username' => $datarow['user']]))) {
+                throw new \Exception("Missing enrolment of {$datarow['user']} in course {$datarow['course']}");
+            }
         }
     }
 }
