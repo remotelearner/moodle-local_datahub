@@ -1,3 +1,2 @@
 action,username,email,password,firstname,lastname,city,country
 create,testusername,test@user.com,Testpassword-0,test,user,Waterloo,CA
-

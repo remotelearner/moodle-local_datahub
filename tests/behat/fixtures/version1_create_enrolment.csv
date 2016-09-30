@@ -1,0 +1,2 @@
+action,username,context,instance,role
+create,testuser,course,testcourse2,student
