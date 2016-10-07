@@ -467,6 +467,8 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
      * @param string $id base element name.
      * @param string $val the option to select.
      * @param bool $ignoremissing if true no exception for missing element.
+     * @return bool true if element found (default), false if not found and $ignoremissing true;
+     *         Otherwise throws exception if element not found.
      */
     public function selectOption($id, $val, $ignoremissing = false) {
         $page = $this->getSession()->getPage();
@@ -475,13 +477,17 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
             $sel->selectOption($val);
         } else if (!$ignoremissing) {
             throw new \Exception("The expected '{$id}' select element was not found!");
+        } else {
+            return false;
         }
+        return true;
     }
 
     /**
      * Fillout scheduling date fields: month, day, year, ...
      * @param string $baseid the base element id (prefix) for all components.
      * @param string|object $dateobj ->month, ->day, ->year [, ->hour, ->minute ], or string to strtotime()
+     * #return object $dateobj components (i.e. hour, minute for other fields).
      */
     public function filloutScheduleDateField($baseid, $dateobj) {
         $page = $this->getSession()->getPage();
@@ -495,7 +501,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
             if ($minute < 0) {
                 $minute = 0;
             }
-            $dateobj = [
+            $dateobj = (object)[
                 'day'    => date('j', $ts),
                 'month'  => date('n', $ts),
                 'year'   => date('Y', $ts),
@@ -512,6 +518,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
         foreach ($dateobj as $comp => $val) {
             $this->selectOption("{$baseid}{$comp}", $val, true);
         }
+        return $dateobj;
     }
 
     /**
@@ -538,7 +545,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
                 $params = json_decode($datarow['params']);
                 if (!empty($params->startdate)) {
                     $this->clickRadio('starttype', '1');
-                    $this->filloutScheduleDateField('id_startdate_', $params->startdate);
+                    $dateobj = $this->filloutScheduleDateField('id_startdate_', $params->startdate);
                 }
                 if (isset($params->recurrence) && $params->recurrence == 'calendar') {
                     $this->clickRadio('recurrencetype', 'calendar');
@@ -546,8 +553,14 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
                     if (!empty($params->enddate)) {
                         $this->filloutScheduleDateField('id_calenddate_', $params->enddate);
                     }
+                    if (!empty($dateobj->hour) && empty($params->hour)) {
+                        $params->hour = $dateobj->hour;
+                    }
                     if (!empty($params->hour)) {
                         $this->selectOption('id_time_hour', $params->hour);
+                    }
+                    if (!empty($dateobj->minute) && empty($params->minute)) {
+                        $params->minute = $dateobj->minute;
                     }
                     if (!empty($params->minute)) {
                         $this->selectOption('id_time_minute', $params->minute);
@@ -560,8 +573,13 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
                     } else if (!empty($params->monthdays)) {
                         $this->clickRadio('caldaystype', '2');
                         $page->fillField('id_monthdays', $params->monthdays);
+                    } else {
+                        $this->clickRadio('caldaystype', '0');
                     }
                     if (!empty($params->months)) {
+                        if ((int)$params->months < 1) {
+                            $params->month = date('n');
+                        }
                         foreach (explode(',', $params->months) as $month) {
                             $this->checkCheckbox("id_month_{$month}");
                         }
@@ -638,6 +656,72 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
                     $DB->get_field('user', 'id', ['username' => $datarow['user']]))) {
                 throw new \Exception("Missing enrolment of {$datarow['user']} in course {$datarow['course']}");
             }
+        }
+    }
+
+    /**
+     * @Then the DataHub :arg1 export file :arg2 contain lines:
+     * @param string $arg1 version1 or version1elis
+     * #param string $arg2 "should" or "should not" ...
+     */
+    public function theDatahubExportFileShouldContainLines($arg1, $arg2, TableNode $table) {
+        global $CFG;
+        $exportfilepath = $CFG->dataroot.'/'.get_config('dhexport'.'_'.$arg1, 'export_path').'/'.
+                basename(get_config('dhexport'.'_'.$arg1, 'export_file'), '.csv');
+        $lasttime = 0;
+        $lastfile = null;
+        foreach (glob($exportfilepath.'_*.csv') as $exportfile) {
+            if ($lasttime < ($newtime = filemtime($exportfile))) {
+                $lastfile = $exportfile;
+                $lasttime = $newtime;
+            }
+        }
+        $exportfile = $lastfile;
+        if (empty($exportfile)) {
+            // No export file found!
+            throw new \Exception("Export file '{$exportfile}' not found!");
+        }
+        $contents = file_get_contents($exportfile);
+        $data = $table->getHash();
+        foreach ($data as $datarow) {
+            if (preg_match('|'.$datarow['line'].'|', $contents) != ($arg2 == 'should')) {
+                // No matching line found!
+                throw new \Exception('Matching line '.(($arg2 == 'should') ? 'not ' :'').
+                        "found in export file {$exportfile} to '{$datarow['line']}' in {$contents}");
+            }
+        }
+    }
+
+    /**
+     * @Given I visit Moodle Course :arg1
+     * @param string $arg1 course shortname
+     */
+    public function iVisitMoodleCourse($arg1) {
+        global $DB;
+        $crsid = $DB->get_field('course', 'id', ['shortname' => $arg1]);
+        if (empty($crsid)) {
+            throw new \Exception("Moodle Course with shortname '{$arg1}' not found!");
+        }
+        $this->getSession()->visit($this->locate_path("/course/view.php?id={$crsid}"));
+    }
+
+    /**
+     * @Given I update the timemodified for:
+     */
+    public function iUpdateTheTimemodifiedFor(TableNode $table) {
+        global $DB;
+        $data = $table->getHash();
+        foreach ($data as $datarow) {
+            $crsid = $DB->get_field('course', 'id', ['shortname' => $datarow['gradeitem']]);
+            if (empty($crsid)) {
+                $giid = $DB->get_field('grade_items', 'id', ['itemname' => $datarow['gradeitem']]);
+            } else {
+                $giid = $DB->get_field('grade_items', 'id', ['itemtype' => 'course', 'courseid' => $crsid]);
+            }
+            if (empty($giid)) {
+                throw new \Exception("No course or grade item found matching {$datarow['gradeitem']}");
+            }
+            $DB->execute('UPDATE {grade_grades} SET timemodified = '.time().' WHERE itemid = '.$giid);
         }
     }
 }
