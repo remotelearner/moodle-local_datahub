@@ -6,16 +6,16 @@ Feature: Web service requests can be made to delete a track enrolment.
         Given the following config values are set as admin:
           | enablewebservices | 1 |
           | webserviceprotocols | rest |
-        And the following ELIS users exist
+        And the following ELIS users exist:
           | username | idnumber |
           | testreco22 | testreco22 |
-        And the following ELIS programs exist
+        And the following ELIS programs exist:
           | name | idnumber | reqcredits |
           | testProgramName | PRG-1 | 32.14 |
-        And the following ELIS tracks exist
+        And the following ELIS tracks exist:
           | name | idnumber | program_idnumber |
           | testTrackName | TRK-1 | PRG-1 |
-        And the following ELIS track enrolments exist
+        And the following ELIS track enrolments exist:
           | user_idnumber | track_idnumber |
           | testreco22 | TRK-1 |
 

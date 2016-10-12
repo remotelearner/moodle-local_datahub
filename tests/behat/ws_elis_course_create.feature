@@ -9,7 +9,7 @@ Feature: Web service requests can be made to create an ELIS Course Description.
         And the following "courses" exist:
           | fullname | shortname | format | enablecompletion |
           | MoodleCourse 1 |  MDLCRS-1 | topics | 1 |
-        And the following ELIS programs exist
+        And the following ELIS programs exist:
           | name | idnumber | reqcredits |
           | PROGRAM-1 | PRG-1 | 12.34 |
 
@@ -124,7 +124,7 @@ Feature: Web service requests can be made to create an ELIS Course Description.
 
     # T33.26.16 #11
     Scenario: Create with invalid multi-valued custom field parameters.
-        Given the following ELIS custom fields exist
+        Given the following ELIS custom fields exist:
         | category | name | contextlevel | datatype | control | multi | options | default |
         | cat1 | custom1 | course | text | menu | 1 | Option 1,Option 2,Option 3,Option 4 | Option 4 |
         And I make a datahub webservice request to the "local_datahub_elis_course_create" method with body:
@@ -138,7 +138,7 @@ Feature: Web service requests can be made to create an ELIS Course Description.
 
     # T33.26.16 #11.1
     Scenario: Create with valid multi-valued custom field parameters.
-        Given the following ELIS custom fields exist
+        Given the following ELIS custom fields exist:
         | category | name | contextlevel | datatype | control | multi | options | default |
         | cat1 | custom1 | course | text | menu | 1 | Option 1,Option 2,Option 3,Option 4 | Option 4 |
         And I make a datahub webservice request to the "local_datahub_elis_course_create" method with body:
