@@ -6,7 +6,7 @@ Feature: Web service requests can be made to delete a user.
         Given the following config values are set as admin:
           | enablewebservices | 1 |
           | webserviceprotocols | rest |
-        And the following ELIS users exist
+        And the following ELIS users exist:
           | username | idnumber |
           | T33262a | T33262a |
           | T33262b | T33262b |

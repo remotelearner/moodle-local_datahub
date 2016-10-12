@@ -6,7 +6,7 @@ Feature: Web service requests can be made to update a userset.
         Given the following config values are set as admin:
           | enablewebservices | 1 |
           | webserviceprotocols | rest |
-         And the following ELIS usersets exist
+         And the following ELIS usersets exist:
           | name | parent_name |
           | TestUserset | top |
 
@@ -77,7 +77,7 @@ Feature: Web service requests can be made to update a userset.
 
     # T33.26.29 #7
     Scenario: Create with invalid multi-valued custom field parameters.
-        Given the following ELIS custom fields exist
+        Given the following ELIS custom fields exist:
         | category | name | contextlevel | datatype | control | multi | options | default |
         | cat1 | custom1 | userset | text | menu | 1 | Option 1,Option 2,Option 3,Option 4 | Option 4 |
         And I make a datahub webservice request to the "local_datahub_elis_userset_update" method with body:
@@ -91,7 +91,7 @@ Feature: Web service requests can be made to update a userset.
 
     # T33.26.29 #7.1
     Scenario: Create with invalid multi-valued custom field parameters.
-        Given the following ELIS custom fields exist
+        Given the following ELIS custom fields exist:
         | category | name | contextlevel | datatype | control | multi | options | default |
         | cat1 | custom1 | userset | text | menu | 1 | Option 1,Option 2,Option 3,Option 4 | Option 4 |
         And I make a datahub webservice request to the "local_datahub_elis_userset_update" method with body:

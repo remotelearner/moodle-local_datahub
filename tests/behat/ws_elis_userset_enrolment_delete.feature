@@ -6,13 +6,13 @@ Feature: Web service requests can be made to delete a userset enrolment.
         Given the following config values are set as admin:
           | enablewebservices | 1 |
           | webserviceprotocols | rest |
-        And the following ELIS users exist
+        And the following ELIS users exist:
           | username | idnumber |
           | testreco27 | testreco27 |
-        And the following ELIS usersets exist
+        And the following ELIS usersets exist:
           | name | parent_name |
           | US-1 | top |
-        And the following ELIS userset enrolments exist
+        And the following ELIS userset enrolments exist:
           | userset_name | user_idnumber | plugin |
           | US-1 | testreco27 | manual |
 
