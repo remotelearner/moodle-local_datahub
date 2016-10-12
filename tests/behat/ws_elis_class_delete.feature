@@ -6,10 +6,10 @@ Feature: Web service requests can be made to delete an ELIS Class Instance.
         Given the following config values are set as admin:
           | enablewebservices | 1 |
           | webserviceprotocols | rest |
-        And the following ELIS courses exist
+        And the following ELIS courses exist:
           | name | idnumber | credits | completion_grade |
           | Test Course A | T332621CRSa | 1.74 | 58 |
-        And the following ELIS classes exist
+        And the following ELIS classes exist:
           | idnumber | course_idnumber |
           | T332621CLSa | T332621CRSa |
 

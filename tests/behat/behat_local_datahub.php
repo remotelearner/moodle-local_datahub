@@ -14,7 +14,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     protected $sent = null;
 
     /**
-     * @Given the following ELIS users exist
+     * @Given the following ELIS users exist:
      */
     public function theFollowingElisUsersExist(TableNode $table) {
         global $CFG;
@@ -90,7 +90,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following ELIS custom fields exist
+     * @Given the following ELIS custom fields exist:
      */
     public function theFollowingELIScustomfieldsexist(TableNode $table) {
         global $CFG, $DB;
@@ -138,7 +138,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following ELIS programs exist
+     * @Given the following ELIS programs exist:
      */
     public function theFollowingElisProgramsExist(TableNode $table) {
         global $CFG;
@@ -155,7 +155,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following ELIS tracks exist
+     * @Given the following ELIS tracks exist:
      */
     public function theFollowingElisTracksExist(TableNode $table) {
         global $CFG, $DB;
@@ -172,7 +172,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following ELIS courses exist
+     * @Given the following ELIS courses exist:
      */
     public function theFollowingElisCoursesExist(TableNode $table) {
         global $CFG, $DB;
@@ -190,7 +190,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following ELIS classes exist
+     * @Given the following ELIS classes exist:
      */
     public function theFollowingElisClassesExist(TableNode $table) {
         global $CFG, $DB;
@@ -205,7 +205,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following ELIS usersets exist
+     * @Given the following ELIS usersets exist:
      */
     public function theFollowingElisUsersetsExist(TableNode $table) {
         global $CFG, $DB;
@@ -221,7 +221,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following ELIS program enrolments exist
+     * @Given the following ELIS program enrolments exist:
      */
     public function theFollowingElisProgramEnrolmentsExist(TableNode $table) {
         global $CFG, $DB;
@@ -236,7 +236,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following ELIS track enrolments exist
+     * @Given the following ELIS track enrolments exist:
      */
     public function theFollowingElisTrackEnrolmentsExist(TableNode $table) {
         global $CFG, $DB;
@@ -251,7 +251,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following ELIS class enrolments exist
+     * @Given the following ELIS class enrolments exist:
      */
     public function theFollowingElisClassEnrolmentsExist(TableNode $table) {
         global $CFG, $DB;
@@ -262,7 +262,12 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
             $ce = new student();
             $ce->userid = $DB->get_field(user::TABLE, 'id', ['idnumber' => $datarow['user_idnumber']]);
             $ce->classid = $DB->get_field(pmclass::TABLE, 'id', ['idnumber' => $datarow['class_idnumber']]);
-            $ce->completestatusid = $statusmap[$datarow['completestatus']];
+            $completestatusid = $statusmap[$datarow['completestatus']];
+            $ce->completestatusid = $completestatusid;
+            if ($completestatusid) {
+                $ce->completetime = time();
+            }
+            $ce->enrolmenttime = strtotime('-1 day');
             $ce->grade = $datarow['grade'];
             $ce->credits = $datarow['credits'];
             $ce->locked = $datarow['locked'];
@@ -271,7 +276,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following ELIS userset enrolments exist
+     * @Given the following ELIS userset enrolments exist:
      */
     public function theFollowingElisUsersetEnrolmentsExist(TableNode $table) {
         global $CFG, $DB;
@@ -522,7 +527,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following scheduled datahub jobs exist
+     * @Given the following scheduled datahub jobs exist:
      */
     public function theFollowingScheduledDatahubJobsExist(TableNode $table) {
         $page = $this->getSession()->getPage();
@@ -645,7 +650,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Then the following enrolments should exist
+     * @Then the following enrolments should exist:
      */
     public function theFollowingEnrolmentsShouldExist(TableNode $table) {
         global $DB;

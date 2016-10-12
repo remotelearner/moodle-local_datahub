@@ -6,7 +6,7 @@ Feature: Web service requests can be made to delete a userset.
         Given the following config values are set as admin:
           | enablewebservices | 1 |
           | webserviceprotocols | rest |
-         And the following ELIS usersets exist
+         And the following ELIS usersets exist:
           | name | parent_name |
           | TestUserset | top |
 

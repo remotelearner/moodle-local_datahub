@@ -6,16 +6,16 @@ Feature: Web service requests can be made to update an ELIS Class enrolment.
         Given the following config values are set as admin:
           | enablewebservices | 1 |
           | webserviceprotocols | rest |
-        And the following ELIS users exist
+        And the following ELIS users exist:
           | username | idnumber |
           | testreco24 | testreco24 |
-        And the following ELIS courses exist
+        And the following ELIS courses exist:
           | name | idnumber | credits | completion_grade |
           | Test Course | CRS-1 | 2.65 | 58 |
-        And the following ELIS classes exist
+        And the following ELIS classes exist:
           | idnumber | course_idnumber |
           | CLASS-1 | CRS-1 |
-        And the following ELIS class enrolments exist
+        And the following ELIS class enrolments exist:
           | user_idnumber | class_idnumber | completestatus | grade | credits | locked |
           | testreco24 | CLASS-1 | notcompleted | 0 | 0 | 0 |
 

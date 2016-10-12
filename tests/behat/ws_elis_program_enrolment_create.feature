@@ -6,10 +6,10 @@ Feature: Web service requests can be made to create a program enrolment.
         Given the following config values are set as admin:
           | enablewebservices | 1 |
           | webserviceprotocols | rest |
-        And the following ELIS users exist
+        And the following ELIS users exist:
           | username | idnumber |
           | testreco19 | testreco19 |
-        And the following ELIS programs exist
+        And the following ELIS programs exist:
           | name | idnumber | reqcredits |
           | testProgramName | PRG-1 | 32.14 |
 

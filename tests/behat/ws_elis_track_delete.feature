@@ -6,10 +6,10 @@ Feature: Web service requests can be made to delete a track.
         Given the following config values are set as admin:
           | enablewebservices | 1 |
           | webserviceprotocols | rest |
-        And the following ELIS programs exist
+        And the following ELIS programs exist:
           | name | idnumber | reqcredits |
           | TestProgram | TestProgramIdnumber | 12.34 |
-        And the following ELIS tracks exist
+        And the following ELIS tracks exist:
           | program_idnumber | name | idnumber |
           | TestProgramIdnumber | TestTrack | TestTrackIdnumber | 
 

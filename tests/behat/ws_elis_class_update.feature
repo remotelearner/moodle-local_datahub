@@ -9,16 +9,16 @@ Feature: Web service requests can be made to update an ELIS Class Instance.
         And the following "courses" exist:
           | fullname | shortname | format | enablecompletion |
           | Test MoodleCourse A | T332620MCa | topics | 1 |
-        And the following ELIS programs exist
+        And the following ELIS programs exist:
           | name | idnumber | reqcredits |
           | PROGRAM-A | T332620PGMa | 12.34 |
-        And the following ELIS tracks exist
+        And the following ELIS tracks exist:
           | idnumber | name | program_idnumber |
           | T332620TRKa | Test Track A | T332620PGMa |
-        And the following ELIS courses exist
+        And the following ELIS courses exist:
           | name | idnumber | credits | completion_grade |
           | Test Course A | T332620CRSa | 1.34 | 55 |
-        And the following ELIS classes exist
+        And the following ELIS classes exist:
           | idnumber | course_idnumber |
           | T332620CLSa | T332620CRSa |
 
@@ -123,7 +123,7 @@ Feature: Web service requests can be made to update an ELIS Class Instance.
 
     # T33.26.20 #10
     Scenario: Create with invalid multi-valued custom field parameters.
-        Given the following ELIS custom fields exist
+        Given the following ELIS custom fields exist:
         | category | name | contextlevel | datatype | control | multi | options | default |
         | cat1 | custom1 | class | text | menu | 1 | Option 1,Option 2,Option 3,Option 4 | Option 4 |
         And I make a datahub webservice request to the "local_datahub_elis_class_update" method with body:
@@ -137,7 +137,7 @@ Feature: Web service requests can be made to update an ELIS Class Instance.
 
     # T33.26.20 #10.1
     Scenario: Create with valid multi-valued custom field parameters.
-        Given the following ELIS custom fields exist
+        Given the following ELIS custom fields exist:
         | category | name | contextlevel | datatype | control | multi | options | default |
         | cat1 | custom1 | class | text | menu | 1 | Option 1,Option 2,Option 3,Option 4 | Option 4 |
         And I make a datahub webservice request to the "local_datahub_elis_class_update" method with body:

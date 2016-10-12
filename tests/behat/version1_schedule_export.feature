@@ -44,7 +44,7 @@ Feature: version1 export.
         And I give the grade "76.89" to the user "Test User2" for the grade item "gradeitem2"
         And I give the grade "76.89" to the user "Test User2" for the grade item "Course total"
         And I click on "Save changes" "button"
-        And  the following scheduled Datahub jobs exist
+        And  the following scheduled Datahub jobs exist:
           | label | plugin | type | params |
           | dh1b | dhexport_version1 | period | 5m |
         Then a "local_datahub_schedule" record with '{"plugin":"dhexport_version1"}' "should" exist
@@ -74,6 +74,10 @@ Feature: version1 export.
           | line |
           | "First Name","Last Name",Username,"User Idnumber","Course Idnumber","Start Date","End Date",Grade,Letter |
           | Test,User,testuser,testuser,testcourse3,.*,.*,98.25000,A |
+        And the Datahub "version1" export file "should not" contain lines:
+          | line |
+          | Test,User,testuser,testuser,testcourse1,.*,.*,85.76000,B |
+          | Test,User2,testuser2,testuser2,testcourse2,.*,.*,76.89000,C |
 
     # T33.15.2 ~ 3b
     Scenario: version1 advanced schedule non-incremenatal export succeeds.
@@ -111,7 +115,7 @@ Feature: version1 export.
         And I click on "Save changes" "button"
         And the following config values are set as admin:
           | nonincremental | 1 | dhexport_version1 |
-        And the following scheduled Datahub jobs exist
+        And the following scheduled Datahub jobs exist:
           | label | plugin | type | params |
           | dh2c | dhexport_version1 | advanced | {"runs":3,"frequency":5,"units":"minute"} |
         Then a "local_datahub_schedule" record with '{"plugin":"dhexport_version1"}' "should" exist
@@ -165,7 +169,7 @@ Feature: version1 export.
         And I give the grade "56.89" to the user "Test User2" for the grade item "gradeitem2"
         And I give the grade "56.89" to the user "Test User2" for the grade item "Course total"
         And I click on "Save changes" "button"
-        And the following scheduled Datahub jobs exist
+        And the following scheduled Datahub jobs exist:
           | label | plugin | type | params |
           | dh3b | dhexport_version1 | advanced | {"startdate":"-3 days +5 minutes","recurrence":"calendar",enddate:"+2 days","weekdays":"1,2,3,4,5,6,7","months":"this"} |
         Then a "local_datahub_schedule" record with '{"plugin":"dhexport_version1"}' "should" exist
