@@ -9,10 +9,10 @@ Feature: Web service requests can be made to delete an ELIS Course Description.
         And the following "courses" exist:
           | fullname | shortname | format | enablecompletion |
           | MoodleCourse 1 |  MDLCRS-1 | topics | 1 |
-        And the following ELIS programs exist
+        And the following ELIS programs exist:
           | name | idnumber | reqcredits |
           | PROGRAM-1 | PRG-1 | 12.34 |
-        And the following ELIS courses exist
+        And the following ELIS courses exist:
           | name | idnumber | credits | completion_grade |
           | Test Course | CRS-1 | 2.34 | 53 |
 

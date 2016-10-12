@@ -6,13 +6,13 @@ Feature: Web service requests can be made to create a track enrolment.
         Given the following config values are set as admin:
           | enablewebservices | 1 |
           | webserviceprotocols | rest |
-        And the following ELIS users exist
+        And the following ELIS users exist:
           | username | idnumber |
           | testreco21 | testreco21 |
-        And the following ELIS programs exist
+        And the following ELIS programs exist:
           | name | idnumber | reqcredits |
           | testProgramName | PRG-1 | 32.14 |
-        And the following ELIS tracks exist
+        And the following ELIS tracks exist:
           | name | idnumber | program_idnumber |
           | testTrackName | TRK-1 | PRG-1 |
 
