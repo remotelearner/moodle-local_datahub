@@ -6,7 +6,7 @@ Feature: Web service requests can be made to update a user.
         Given the following config values are set as admin:
           | enablewebservices | 1 |
           | webserviceprotocols | rest |
-        And the following ELIS users exist
+        And the following ELIS users exist:
           | username | idnumber |
           | T33262a | T33262a |
           | T33262b | T33262b |
@@ -111,7 +111,7 @@ Feature: Web service requests can be made to update a user.
 
     # T33.26.2 #10
     Scenario: Update invalid multi-valued custom field parameters.
-        Given the following ELIS custom fields exist
+        Given the following ELIS custom fields exist:
         | category | name | contextlevel | datatype | control | multi | options | default |
         | cat1 | custom1 | user | text | menu | 1 | Option 1,Option 2,Option 3,Option 4 | Option 4 |
         And I make a datahub webservice request to the "local_datahub_elis_user_update" method with body:
@@ -125,7 +125,7 @@ Feature: Web service requests can be made to update a user.
 
     # T33.26.2 #10.1
     Scenario: Update valid multi-valued custom field parameters.
-        Given the following ELIS custom fields exist
+        Given the following ELIS custom fields exist:
         | category | name | contextlevel | datatype | control | multi | options | default |
         | cat1 | custom1 | user | text | menu | 1 | Option 1,Option 2,Option 3,Option 4 | Option 4 |
         And I make a datahub webservice request to the "local_datahub_elis_user_update" method with body:

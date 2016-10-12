@@ -6,10 +6,10 @@ Feature: Web service requests can be made to create a userset enrolment.
         Given the following config values are set as admin:
           | enablewebservices | 1 |
           | webserviceprotocols | rest |
-        And the following ELIS users exist
+        And the following ELIS users exist:
           | username | idnumber |
           | testreco26 | testreco26 |
-        And the following ELIS usersets exist
+        And the following ELIS usersets exist:
           | name | parent_name |
           | US-1 | top |
 

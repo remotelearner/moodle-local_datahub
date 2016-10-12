@@ -6,7 +6,7 @@ Feature: Web service requests can be made to update a user identifiers.
         Given the following config values are set as admin:
           | enablewebservices | 1 |
           | webserviceprotocols | rest |
-        And the following ELIS users exist
+        And the following ELIS users exist:
           | username | idnumber |
           | T33263a | T33263a |
           | T33263b | T33263b |
