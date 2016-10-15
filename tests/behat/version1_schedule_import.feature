@@ -51,9 +51,3 @@ Feature: Import a version1 file.
            | course | user |
            | testcourse2 | testuser |
 
-    # T3?
-    #    Given the following scheduled Datahub jobs exist:
-    #      | label | plugin | type | params |
-    #      | dh4 | dhimport_version1 | advanced | {"startdate":"now","recurrence":"calendar","enddate":"+1 day","hour":23,"minute":55,"weekdays":"2,3,4,5,6"} |
-    #    Then a "local_datahub_schedule" record with '{"plugin":"dhimport_version1"}' "should not" exist
-
