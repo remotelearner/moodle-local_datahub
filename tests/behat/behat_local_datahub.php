@@ -90,16 +90,25 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
+     * Context name to level
+     * @param string $contextname context name: user, userset, program, track, class, course, courseset
+     * @return int the context level
+     */
+    public function contextname_2_level($contextname) {
+        static $contextlevelmap = ['program' => 11, 'track' => 12, 'course' => 13, 'class' => 14, 'user' => 15, 'userset' => 16, 'courseset' => 17];
+        return $contextlevelmap[$contextname];
+    }
+
+    /**
      * @Given the following ELIS custom fields exist:
      */
     public function theFollowingELIScustomfieldsexist(TableNode $table) {
         global $CFG, $DB;
         require_once($CFG->dirroot.'/local/elisprogram/lib/setup.php');
         require_once($CFG->dirroot.'/local/eliscore/lib/data/customfield.class.php');
-        static $contextlevelmap = ['program' => 11, 'track' => 12, 'course' => 13, 'class' => 14, 'user' => 15, 'userset' => 16, 'courseset' => 17];
         $data = $table->getHash();
         foreach ($data as $datarow) {
-            $contextlevel = $contextlevelmap[$datarow['contextlevel']];
+            $contextlevel = $this->contextname_2_level($datarow['contextlevel']);
             $catobj = field_category::ensure_exists_for_contextlevel($datarow['category'], $contextlevel);
             $fieldrec = [
                 'shortname' => $datarow['name'],
@@ -727,6 +736,151 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
                 throw new \Exception("No course or grade item found matching {$datarow['gradeitem']}");
             }
             $DB->execute('UPDATE {grade_grades} SET timemodified = '.time().' WHERE itemid = '.$giid);
+        }
+    }
+
+    /**
+     * Select version1 export field and optionally set export name.
+     * @param object $fieldrec the user_info_field record.
+     * @param string $exportname optional name for column in export.
+     */
+    public function select_version1_exportfield($fieldrec, $exportname = '') {
+        $page = $this->getSession()->getPage();
+        $sel = $page->find('xpath', '//select[@name="field"]');
+        if (!empty($sel)) {
+            $sel->selectOption($fieldrec->id);
+        } else {
+            throw new \Exception("The expected select element 'field' was not found!");
+        }
+        $this->getSession()->wait(self::TIMEOUT * 1000);
+        if (!empty($exportname)) {
+            $colname = $page->find('xpath', "//input[@value='{$fieldrec->name}']");
+            if (!empty($colname)) {
+                $colname->setValue($exportname);
+            } else {
+                throw new \Exception("The expected text input for fieldname={$fieldrec->name} was not found!");
+            }
+        }
+    }
+
+    /**
+     * @Given I add the following fields for version1 export:
+     * Required table column 'field' for field shortname,
+     * optional column 'export' for string to usse in export file heading.
+     */
+    public function iAddTheFollowingFieldsForVersion1Export(TableNode $table) {
+        global $DB;
+        $this->getSession()->visit($this->locate_path('/local/datahub/exportplugins/version1/config_fields.php'));
+        $this->getSession()->wait(self::TIMEOUT * 1000, self::PAGE_READY_JS);
+        $data = $table->getHash();
+        foreach ($data as $datarow) {
+            $fieldrec = $DB->get_record('user_info_field', ['shortname' => $datarow['field']]);
+            if (empty($fieldrec)) {
+                throw new \Exception("The expected option for field={$datarow['field']} was not found!");
+            }
+            $this->select_version1_exportfield($fieldrec, isset($datarow['export']) ? $datarow['export'] : '');
+        }
+        $this->find_button('Save changes')->press();
+    }
+
+    /**
+     * Select version1 export field and optionally set export name.
+     * @param string $clevel the context level.
+     * @param int $fieldid the field id.
+     * @param string $exportname optional name for column in export.
+     */
+    public function select_version1elis_exportfield($clevel, $fieldid, $exportname = '') {
+        $page = $this->getSession()->getPage();
+        $fset = $page->find('xpath', "//li[@data-fieldset='{$clevel}']");
+        if (!empty($fset)) {
+            $fset->click();
+        } else {
+            throw new \Exception("The expected '{$clevel}' fieldset was not found!");
+        }
+        $generalcontext = behat_context_helper::get('behat_general');
+        $generalcontext->i_drag_and_i_drop_it_in("//li[@data-field='{$fieldid}']", 'xpath_element',
+                '//div[@class="active_fields"]/ul[@class="fieldlist ui-sortable"]', 'xpath_element');
+        if (!empty($exportname)) {
+            $this->getSession()->wait(self::TIMEOUT * 1000);
+            $page = $this->getSession()->getPage(); // Update page?
+            $colenable = $page->find('xpath', "//li[@data-field='{$fieldid}']/a[@class='rename']");
+            if (!empty($colenable)) {
+                $colenable->click();
+            } else {
+                throw new \Exception("The expected link to rename fieldid={$fieldid} column was not found!");
+            }
+            $colname = $page->find('xpath', "//li[@data-field='{$fieldid}']/input[@class='fieldname_textbox']");
+            if (!empty($colname)) {
+                $colname->setValue($exportname);
+            } else {
+                throw new \Exception("The expected text input for fieldid={$fieldid} column was not found!");
+            }
+        }
+    }
+
+    /**
+     * @Given I add the following fields for version1elis export:
+     * Required table columns 'contextlevel' (user,class,course,program,...), 'field' for field shortname,
+     * optional column 'export' for string to usse in export file heading.
+     */
+    public function iAddTheFollowingFieldsForVersion1ElisExport(TableNode $table) {
+        global $DB;
+        $this->getSession()->visit($this->locate_path('/local/datahub/exportplugins/version1elis/config_fields.php'));
+        $data = $table->getHash();
+        foreach ($data as $datarow) {
+            $fieldid = false;
+            if ($datarow['contextlevel'] != 'student') {
+                $clevel = $this->contextname_2_level($datarow['contextlevel']);
+                $sql = 'SELECT fld.id
+                          FROM {local_eliscore_field} fld
+                          JOIN {local_eliscore_field_clevels} cl ON fld.id = cl.fieldid
+                               AND cl.contextlevel = ?
+                         WHERE fld.shortname = ?';
+                $fieldid = $DB->get_field_sql($sql, [$clevel, $datarow['field']]);
+            }
+            $fieldid = empty($fieldid) ? $datarow['field'] : "field_{$fieldid}";
+            $this->select_version1elis_exportfield($datarow['contextlevel'], $fieldid, isset($datarow['export']) ? $datarow['export'] : '');
+        }
+        $this->find_button('Save changes')->press();
+    }
+
+    /**
+     * @Given I map the following fields for :arg1 :arg2 import:
+     * @param string $arg1 plugin either: version1 or version1elis
+     * @param string $arg2 import type: user, course or enrolment
+     * Required table columns: 'field' , 'column' (in import file)
+     */
+    public function iMapTheFollowingFieldsForImport($arg1, $arg2, TableNode $table) {
+        global $DB;
+        $this->getSession()->visit($this->locate_path('/local/datahub/importplugins/'.$arg1.'/config_fields.php?tab='.$arg2));
+        $page = $this->getSession()->getPage();
+        $data = $table->getHash();
+        foreach ($data as $datarow) {
+            $page->fillField('id_'.$datarow['field'], $datarow['column']);
+        }
+        $this->find_button('Save changes')->press();
+    }
+
+    /**
+     * @Given the following Moodle user profile fields exist:
+     */
+    public function theFollowingMoodleUserProfileFieldsExist(TableNode $table) {
+        global $DB;
+        $data = $table->getHash();
+        foreach ($data as $datarow) {
+            $cat = new \stdClass;
+            $cat->name = $datarow['category'];
+            if (!($catid = $DB->get_field('user_info_category', 'id', ['name' => $cat->name]))) {
+                $catid = $DB->insert_record('user_info_category', $cat);
+            }
+            $rec = new \stdClass;
+            $rec->categoryid = $catid;
+            $rec->shortname = $datarow['name'];
+            $rec->name = $datarow['name'];
+            $rec->datatype = $datarow['type'];
+            $rec->defaultdata = $datarow['default'];
+            $rec->param1 = str_replace(',', "\n", $datarow['options']);
+            $DB->insert_record('user_info_field', $rec);
         }
     }
 }
