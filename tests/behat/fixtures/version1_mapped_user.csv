@@ -1,0 +1,2 @@
+action,"User Name",password,firstname,lastname,email,city,country,MyID,"Custom text 1","Custom menu 1"
+create,testuser,Testuser!0,Test,User,test@user.com,testcity,CA,testuser,"User text","Option D"
