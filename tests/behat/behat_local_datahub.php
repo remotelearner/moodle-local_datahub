@@ -3,18 +3,18 @@
 require_once(__DIR__.'/../../../../lib/behat/behat_files.php');
 
 use Behat\Behat\Context\Step\Given as Given,
-    Behat\Behat\Context\SnippetAcceptingContext,
+    Behat\Behat\Context\ContextInterface as ContextInterface,
     Behat\Gherkin\Node\PyStringNode as PyStringNode,
     Behat\Gherkin\Node\TableNode as TableNode,
     Behat\Mink\Exception\ExpectationException as ExpectationException,
     Behat\Mink\Exception\DriverException as DriverException,
     Behat\Mink\Exception\ElementNotFoundException as ElementNotFoundException;
 
-class behat_local_datahub extends behat_files implements SnippetAcceptingContext {
+class behat_local_datahub extends behat_files implements ContextInterface {
     protected $sent = null;
 
     /**
-     * @Given the following ELIS users exist:
+     * @Given /^the following ELIS users exist:$/
      */
     public function theFollowingElisUsersExist(TableNode $table) {
         global $CFG;
@@ -32,7 +32,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given I make a datahub webservice request to the :arg1 method with body:
+     * @Given /^I make a datahub webservice request to the "(?P<arg1_string>(?:[^"]|\\")*)" method with body:$/
      */
     public function iMakeADatahubWebserviceRequestToTheMethodWithBody($arg1, PyStringNode $string) {
         require_once(__DIR__.'/../../../../lib/filelib.php');
@@ -70,7 +70,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Then I should receive from the datahub web service:
+     * @Then /^I should receive from the datahub web service:$/
      */
     public function iShouldReceiveFromTheDatahubWebService(PyStringNode $string) {
         $string = $string->getRaw();
@@ -100,7 +100,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following ELIS custom fields exist:
+     * @Given /^the following ELIS custom fields exist:$/
      */
     public function theFollowingELIScustomfieldsexist(TableNode $table) {
         global $CFG, $DB;
@@ -147,7 +147,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following ELIS programs exist:
+     * @Given /^the following ELIS programs exist:$/
      */
     public function theFollowingElisProgramsExist(TableNode $table) {
         global $CFG;
@@ -164,7 +164,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following ELIS tracks exist:
+     * @Given /^the following ELIS tracks exist:$/
      */
     public function theFollowingElisTracksExist(TableNode $table) {
         global $CFG, $DB;
@@ -181,7 +181,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following ELIS courses exist:
+     * @Given /^the following ELIS courses exist:$/
      */
     public function theFollowingElisCoursesExist(TableNode $table) {
         global $CFG, $DB;
@@ -199,7 +199,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following ELIS classes exist:
+     * @Given /^the following ELIS classes exist:$/
      */
     public function theFollowingElisClassesExist(TableNode $table) {
         global $CFG, $DB;
@@ -214,7 +214,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following ELIS usersets exist:
+     * @Given /^the following ELIS usersets exist:$/
      */
     public function theFollowingElisUsersetsExist(TableNode $table) {
         global $CFG, $DB;
@@ -230,7 +230,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following ELIS program enrolments exist:
+     * @Given /^the following ELIS program enrolments exist:$/
      */
     public function theFollowingElisProgramEnrolmentsExist(TableNode $table) {
         global $CFG, $DB;
@@ -245,7 +245,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following ELIS track enrolments exist:
+     * @Given /^the following ELIS track enrolments exist:$/
      */
     public function theFollowingElisTrackEnrolmentsExist(TableNode $table) {
         global $CFG, $DB;
@@ -260,7 +260,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following ELIS class enrolments exist:
+     * @Given /^the following ELIS class enrolments exist:$/
      */
     public function theFollowingElisClassEnrolmentsExist(TableNode $table) {
         global $CFG, $DB;
@@ -285,7 +285,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following ELIS userset enrolments exist:
+     * @Given /^the following ELIS userset enrolments exist:$/
      */
     public function theFollowingElisUsersetEnrolmentsExist(TableNode $table) {
         global $CFG, $DB;
@@ -301,12 +301,12 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given I make a Datahub :arg1 manual :arg2 import with file :arg3
+     * @Given /^I make a Datahub "(?P<arg1_string>(?:[^"]|\\")*)" manual "(?P<arg2_string>(?:[^"]|\\")*)" import with file "(?P<arg3_string>(?:[^"]|\\")*)"$/
      */
     public function iMakeADatahubManualImportWithFile($arg1, $arg2, $arg3) {
         $dhimportpage = '/local/datahub/importplugins/manualrun.php?plugin=dhimport_'.$arg1;
         $this->getSession()->visit($this->locate_path($dhimportpage));
-        $this->upload_file_to_filemanager(__DIR__.'/fixtures/'.$arg3, ucwords($arg2).' file', new TableNode([]), false);
+        $this->upload_file_to_filemanager(__DIR__.'/fixtures/'.$arg3, ucwords($arg2).' file');
         $this->find_button('Run Now')->press();
     }
 
@@ -321,7 +321,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
      * @param false|string $overwriteaction false if we don't expect that file with the same name already exists,
      *     or button text in overwrite dialogue ("Overwrite", "Rename to ...", "Cancel")
      */
-    protected function upload_file_to_filemanager($filepath, $filemanagerelement, TableNode $data, $overwriteaction = false) {
+    protected function upload_file_to_filemanager($filepath, $filemanagerelement, TableNode $data = null, $overwriteaction = false) {
         global $CFG;
 
         $filemanagernode = $this->get_filepicker_node($filemanagerelement);
@@ -360,16 +360,18 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
         }
         $file->attachFile($filepath);
 
-        // Fill the form in Upload window.
-        $datahash = $data->getRowsHash();
+        if (!empty($data)) {
+            // Fill the form in Upload window.
+            $datahash = $data->getRowsHash();
 
-        // The action depends on the field type.
-        foreach ($datahash as $locator => $value) {
+            // The action depends on the field type.
+            foreach ($datahash as $locator => $value) {
 
-            $field = behat_field_manager::get_form_field_from_label($locator, $this);
+                $field = behat_field_manager::get_form_field_from_label($locator, $this);
 
-            // Delegates to the field class.
-            $field->set_value($value);
+                // Delegates to the field class.
+                $field->set_value($value);
+            }
         }
 
         // Submit the file.
@@ -391,7 +393,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given I make a Datahub :arg1 manual export to file :arg2
+     * @Given /^I make a Datahub "(?P<arg1_string>(?:[^"]|\\")*)" manual export to file "(?P<arg2_string>(?:[^"]|\\")*)"$/
      */
     public function iMakeADatahubManualExportToFile($arg1, $arg2) {
         $dhimportpage = '/local/datahub/exportplugins/manualrun.php?plugin=dhexport_'.$arg1;
@@ -402,7 +404,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given The Datahub :arg1 log file should contain :arg2
+     * @Given /^the Datahub "(?P<arg1_string>(?:[^"]|\\")*)" log file should contain "(?P<arg2_string>(?:[^"]|\\")*)"$/
      * Where arg1 is the expected log file prefix: i.e. 'import_version1_manual_course_'
      * and $arg2 is the RegEx expression the last file should contain.
      */
@@ -430,7 +432,17 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given a :arg1 record with :arg2 :arg3 exist
+     * @Given /^the Datahub "(?P<arg1_string>(?:[^"]|\\")*)" log file should contain \'(?P<arg2_string>(?:[^\']|\\')*)\'$/
+     * Where arg1 is the expected log file prefix: i.e. 'import_version1_manual_course_'
+     * and $arg2 is the RegEx expression the last file should contain.
+     */
+    public function theDatahubLogfileShouldContain2($arg1, $arg2) {
+        $this->theDatahubLogfileShouldContain($arg1, $arg2);
+    }
+
+    /**
+     * @Given /^a "([^"]*)" record with \'([^\']*)\' "([^"]*)" exist$/
+     * Given /^a "(?P<arg1_string>(?:[^"]|\\")*)" record with \'?P<arg2_string>(?:[^\']|\\')*)\' "(?P<arg3_string>(?:[^"]|\\")*)" exist$/
      * Note: arg2 json encoded row object for table arg1
      * arg3 = "should" | "should not" ...
      */
@@ -536,7 +548,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following scheduled datahub jobs exist:
+     * @Given /^the following scheduled Datahub jobs exist:$/
      */
     public function theFollowingScheduledDatahubJobsExist(TableNode $table) {
         $page = $this->getSession()->getPage();
@@ -620,7 +632,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given I wait :arg1 minutes and run cron
+     * @Given /^I wait "(?P<arg1_string>(?:[^"]|\\")*)" minutes and run cron$/
      */
     public function iWaitMinutesAndRunCron($arg1) {
         sleep((int)(60.0 * $arg1));
@@ -629,7 +641,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given I wait until :arg1 and run cron
+     * @Given /^I wait until "(?P<arg1_string>(?:[^"]|\\")*)" and run cron$/
      * @param string $arg1 string to pass to strtotime()
      */
     public function iWaitUntilAndRunCron($arg1) {
@@ -642,7 +654,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given I upload file :arg1 for :arg2 :arg3 import
+     * @Given /^I upload file "(?P<arg1_string>(?:[^"]|\\")*)" for "(?P<arg2_string>(?:[^"]|\\")*)" "(?P<arg3_string>(?:[^"]|\\")*)" import$/
      * @param string $arg1 file in ./fixtures/ to copy to dh import area.
      * @param string $arg2 the dhimport_ plugin type: version1 or version1elis
      * @param string $arg3 the type of import file: user, course or enrolment.
@@ -659,7 +671,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Then the following enrolments should exist:
+     * @Then /^the following enrolments should exist:$/
      */
     public function theFollowingEnrolmentsShouldExist(TableNode $table) {
         global $DB;
@@ -674,7 +686,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Then the DataHub :arg1 export file :arg2 contain lines:
+     * @Then /^the Datahub "(?P<arg1_string>(?:[^"]|\\")*)" export file "(?P<arg2_string>(?:[^"]|\\")*)" contain lines:$/
      * @param string $arg1 version1 or version1elis
      * #param string $arg2 "should" or "should not" ...
      */
@@ -707,7 +719,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given I visit Moodle Course :arg1
+     * @Given /^I visit Moodle course "(?P<arg1_string>(?:[^"]|\\")*)"$/
      * @param string $arg1 course shortname
      */
     public function iVisitMoodleCourse($arg1) {
@@ -720,7 +732,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given I update the timemodified for:
+     * @Given /^I update the timemodified for:$/
      */
     public function iUpdateTheTimemodifiedFor(TableNode $table) {
         global $DB;
@@ -764,7 +776,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given I add the following fields for version1 export:
+     * @Given /^I add the following fields for version1 export:$/
      * Required table column 'field' for field shortname,
      * optional column 'export' for string to usse in export file heading.
      */
@@ -819,7 +831,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given I add the following fields for version1elis export:
+     * @Given /^I add the following fields for version1elis export:$/
      * Required table columns 'contextlevel' (user,class,course,program,...), 'field' for field shortname,
      * optional column 'export' for string to usse in export file heading.
      */
@@ -845,7 +857,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given I map the following fields for :arg1 :arg2 import:
+     * @Given /^I map the following fields for "(?P<arg1_string>(?:[^"]|\\")*)" "(?P<arg2_string>(?:[^"]|\\")*)" import:$/
      * @param string $arg1 plugin either: version1 or version1elis
      * @param string $arg2 import type: user, course or enrolment
      * Required table columns: 'field' , 'column' (in import file)
@@ -862,7 +874,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
     }
 
     /**
-     * @Given the following Moodle user profile fields exist:
+     * @Given /^the following Moodle user profile fields exist:$/
      */
     public function theFollowingMoodleUserProfileFieldsExist(TableNode $table) {
         global $DB;
