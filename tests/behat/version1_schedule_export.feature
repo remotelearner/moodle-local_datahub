@@ -1,5 +1,4 @@
-@local @local_datahub @javascript
-
+@local @local_datahub @javascript @dhexport_version1
 Feature: version1 export.
 
     Background:
