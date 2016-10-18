@@ -1,5 +1,4 @@
-@local @local_datahub @javascript
-
+@local @local_datahub @javascript @dhimport_version1elis
 Feature: Import a version1elis file.
 
     Background:
@@ -11,7 +10,7 @@ Feature: Import a version1elis file.
         Given I make a Datahub "version1elis" manual "user" import with file "user_create_t37_2.csv"
         Then I should see "All lines from import file user_create_t37_2.csv were successfully processed. (1 of 1)"
         Then the Datahub "import_version1elis_manual_user_" log file should contain '\[user_create_t37_2.csv line 2\] User with username "testusername", email "test@user.com", idnumber "testidnumber" successfully created.'
-        Then a "local_elisprogram_usr" record with '{"idnumber":"testidnumber","username":"testusername","firstname":"testfirstname","lastname":"testlastname","country":"CA"}' should exist
+        Then a "local_elisprogram_usr" record with '{"idnumber":"testidnumber","username":"testusername","firstname":"testfirstname","lastname":"testlastname","country":"CA"}' "should" exist
         Then a "user" record with '{"idnumber":"testidnumber","username":"testusername","firstname":"testfirstname","lastname":"testlastname","country":"CA"}' "should" exist
 
         # T37.2 #2

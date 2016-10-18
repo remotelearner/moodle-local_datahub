@@ -1,5 +1,4 @@
 @local @local_datahub
-
 Feature: Web service requests can be made to delete an ELIS Course Description.
 
     Background:
