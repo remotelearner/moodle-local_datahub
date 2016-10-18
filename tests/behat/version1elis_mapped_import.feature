@@ -1,5 +1,4 @@
-@local @local_datahub @javascript
-
+@local @local_datahub @javascript @dhimport_version1elis
 Feature: Import a version1elis file with column mappings.
 
     Background:
@@ -20,7 +19,7 @@ Feature: Import a version1elis file with column mappings.
         And I make a Datahub "version1elis" manual "user" import with file "version1elis_mapped_user.csv"
         Then I should see "All lines from import file version1elis_mapped_user.csv were successfully processed. (1 of 1)"
         And the Datahub "import_version1elis_manual_user_" log file should contain '\[version1elis_mapped_user.csv line 2\] User with username "testusername", email "test@user.com", idnumber "testidnumber" successfully created.'
-        And a "local_elisprogram_usr" record with '{"idnumber":"testidnumber","username":"testusername","firstname":"testfirstname","lastname":"testlastname","country":"CA"}' should exist
+        And a "local_elisprogram_usr" record with '{"idnumber":"testidnumber","username":"testusername","firstname":"testfirstname","lastname":"testlastname","country":"CA"}' "should" exist
         And a "user" record with '{"idnumber":"testidnumber","username":"testusername","firstname":"testfirstname","lastname":"testlastname","country":"CA"}' "should" exist
 
     # T37.?b

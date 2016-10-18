@@ -1,5 +1,4 @@
 @local @local_datahub
-
 Feature: Web service requests can be made to update a user.
 
     Background:

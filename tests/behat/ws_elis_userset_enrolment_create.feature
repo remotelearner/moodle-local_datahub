@@ -1,5 +1,4 @@
 @local @local_datahub
-
 Feature: Web service requests can be made to create a userset enrolment.
 
     Background:
