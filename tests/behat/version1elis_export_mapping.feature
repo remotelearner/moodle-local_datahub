@@ -1,5 +1,4 @@
-@local @local_datahub @javascript
-
+@local @local_datahub @javascript @dhexport_version1elis
 Feature: version1elis export mapping.
 
     Background:

@@ -1,5 +1,4 @@
-@local @local_datahub @javascript
-
+@local @local_datahub @javascript @dhimport_version1 @dhexport_version1 @dhimport_version1elis @dhexport_version1elis
 Feature: Datahub custom menu items in Moodle Site Administration tree-menu.
 
     Background:
