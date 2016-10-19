@@ -34,7 +34,7 @@ class behat_local_datahub extends behat_files implements ContextInterface {
     /**
      * @Given /^I make a datahub webservice request to the "(?P<arg1_string>(?:[^"]|\\")*)" method with body:$/
      */
-    public function iMakeADatahubWebserviceRequestToTheMethodWithBody($arg1, PyStringNode $string) {
+    public function iMakeADatahubWebserviceRequestToTheMethodWithBody($arg1, TableNode $tab) {
         require_once(__DIR__.'/../../../../lib/filelib.php');
         global $DB;
 
@@ -57,12 +57,19 @@ class behat_local_datahub extends behat_files implements ContextInterface {
             'moodlewsrestformat' => 'json',
         ];
         $serverurl = new \moodle_url('/webservice/rest/server.php', $urlparams);
-
-        $params = $string->getRaw();
-        if (!empty($params)) {
-            $params = json_decode($string->getRaw(), true);
-            $params = http_build_query($params, '', '&');
+        $params = '';
+        if (!empty($tab)) {
+            $data = $tab->getHash();
+            foreach ($data as $datarow) {
+                $encodedparams = $datarow['body'];
+                break;
+            }
+            if (!empty($encodedparams)) {
+                $params = json_decode($encodedparams, true);
+                $params = http_build_query($params, '', '&');
+            }
         }
+        // error_log("\niMakeADatahubWebserviceRequestToTheMethodWithBody:: encodedparams = {$encodedparams}; params = {$params}");
 
         $curl = new \curl;
         $resp = $curl->post($serverurl->out(false), $params);
@@ -72,16 +79,26 @@ class behat_local_datahub extends behat_files implements ContextInterface {
     /**
      * @Then /^I should receive from the datahub web service:$/
      */
-    public function iShouldReceiveFromTheDatahubWebService(PyStringNode $string) {
-        $string = $string->getRaw();
+    public function iShouldReceiveFromTheDatahubWebService(TableNode $tab) {
+        $str = '';
+        if (!empty($tab)) {
+            $data = $tab->getHash();
+            foreach ($data as $datarow) {
+                $str = $datarow['expected'];
+                break;
+            }
+        }
+        $received = $this->received;
+        // error_log("\niShouldReceiveFromTheDatahubWebService:: exp = {$str}; Rx = {$received}");
+
         // Remove the dynamic id parameters: curid, courseid, id, userid, classid, trackid, ...
-        $this->received = preg_replace('#\"[a-z]*id\"\:([0-9]{6})[,]*#', '', $this->received);
+        $received = preg_replace('#\"[a-z]*id\"\:([0-9]{6})[,]*#', '', $received);
         // Remove the dynamic parent userset parameter.
-        $this->received = preg_replace('#\"parent\"\:([0-9]{6})\,#', '', $this->received);
+        $received = preg_replace('#\"parent\"\:([0-9]{6})\,#', '', $received);
         // Remove the timestamp parameters that are near impossible to predict.
-        $this->received = preg_replace('#\"[a-z]*time\"\:([0-9]{10})[,]*#', '', $this->received);
-        $this->received = preg_replace('#\"[a-z]*date\"\:([0-9]{10})[,]*#', '', $this->received);
-        if ($this->received !== $string) {
+        $received = preg_replace('#\"[a-z]*time\"\:([0-9]{10})[,]*#', '', $received);
+        $received = preg_replace('#\"[a-z]*date\"\:([0-9]{10})[,]*#', '', $received);
+        if ($received !== $str) {
             $msg = "Web Service call failed\n";
             $msg .= "Received ".$this->received."\n";
             $msg .= "Expected ".$string."\n";
