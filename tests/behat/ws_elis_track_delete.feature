@@ -15,54 +15,45 @@ Feature: Web service requests can be made to delete a track.
     #T33.26.27 #1
     Scenario: Sending no data returns an error.
        Given I make a datahub webservice request to the "local_datahub_elis_track_delete" method with body:
-         """
-         """
+         | body |
+         | |
        Then I should receive from the datahub web service:
-         """
-         {"exception":"invalid_parameter_exception","errorcode":"invalidparameter","message":"Invalid parameter value detected","debuginfo":"Missing required key in single structure: data"}
-         """
+         | expected |
+         | {"exception":"invalid_parameter_exception","errorcode":"invalidparameter","message":"Invalid parameter value detected","debuginfo":"Missing required key in single structure: data"} |
 
     #T33.26.27 #2
     Scenario: Sending empty JSON data returns an error.
        Given I make a datahub webservice request to the "local_datahub_elis_track_delete" method with body:
-         """
-         {}
-         """
+         | body |
+         | {} |
        Then I should receive from the datahub web service:
-         """
-         {"exception":"invalid_parameter_exception","errorcode":"invalidparameter","message":"Invalid parameter value detected","debuginfo":"Missing required key in single structure: data"}
-         """
+         | expected |
+         | {"exception":"invalid_parameter_exception","errorcode":"invalidparameter","message":"Invalid parameter value detected","debuginfo":"Missing required key in single structure: data"} |
 
     #T33.26.27 #3
     Scenario: Sending empty data structure returns an error.
        Given I make a datahub webservice request to the "local_datahub_elis_track_delete" method with body:
-         """
-         {"data":{}}
-         """
+         | body |
+         | {"data":{}} |
        Then I should receive from the datahub web service:
-         """
-         {"exception":"invalid_parameter_exception","errorcode":"invalidparameter","message":"Invalid parameter value detected","debuginfo":"Missing required key in single structure: data"}
-         """
+         | expected |
+         | {"exception":"invalid_parameter_exception","errorcode":"invalidparameter","message":"Invalid parameter value detected","debuginfo":"Missing required key in single structure: data"} |
 
     # T33.26.27 #4
     Scenario: Invalid idnumber field returns an error.
        Given I make a datahub webservice request to the "local_datahub_elis_track_delete" method with body:
-         """
-         {"data":{"idnumber":"BogusTrackIdnumber"}}
-         """
+         | body |
+         | {"data":{"idnumber":"BogusTrackIdnumber"}} |
        Then I should receive from the datahub web service:
-         """
-         {"exception":"data_object_exception","errorcode":"ws_track_delete_fail_invalid_idnumber","message":"Track idnumber: 'BogusTrackIdnumber' is not a valid track."}
-         """
+         | expected |
+         | {"exception":"data_object_exception","errorcode":"ws_track_delete_fail_invalid_idnumber","message":"Track idnumber: 'BogusTrackIdnumber' is not a valid track."} |
 
     # T33.26.27 #5
     Scenario: Successfully delete track.
        Given I make a datahub webservice request to the "local_datahub_elis_track_delete" method with body:
-         """
-         {"data":{"idnumber":"TestTrackIdnumber"}}
-         """
+         | body |
+         | {"data":{"idnumber":"TestTrackIdnumber"}} |
        Then I should receive from the datahub web service:
-         """
-         {"messagecode":"track_deleted","message":"Track deleted successfully"}
-         """
+         | expected |
+         | {"messagecode":"track_deleted","message":"Track deleted successfully"} |
 

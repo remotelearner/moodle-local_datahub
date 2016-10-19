@@ -13,87 +13,72 @@ Feature: Web service requests can be made to delete a user.
     #T33.26.4 #1
     Scenario: Sending no data returns an error.
        Given I make a datahub webservice request to the "local_datahub_elis_user_delete" method with body:
-         """
-         """
+         | body |
+         | |
        Then I should receive from the datahub web service:
-         """
-         {"exception":"invalid_parameter_exception","errorcode":"invalidparameter","message":"Invalid parameter value detected","debuginfo":"Missing required key in single structure: data"}
-         """
+         | expected |
+         | {"exception":"invalid_parameter_exception","errorcode":"invalidparameter","message":"Invalid parameter value detected","debuginfo":"Missing required key in single structure: data"} |
 
     #T33.26.4 #2
     Scenario: Sending empty JSON data returns an error.
        Given I make a datahub webservice request to the "local_datahub_elis_user_delete" method with body:
-         """
-         {}
-         """
+         | body |
+         | {} |
        Then I should receive from the datahub web service:
-         """
-         {"exception":"invalid_parameter_exception","errorcode":"invalidparameter","message":"Invalid parameter value detected","debuginfo":"Missing required key in single structure: data"}
-         """
+         | expected |
+         | {"exception":"invalid_parameter_exception","errorcode":"invalidparameter","message":"Invalid parameter value detected","debuginfo":"Missing required key in single structure: data"} |
 
     #T33.26.4 #3
     Scenario: Sending empty data structure returns an error.
        Given I make a datahub webservice request to the "local_datahub_elis_user_delete" method with body:
-         """
-         {"data":{}}
-         """
+         | body |
+         | {"data":{}} |
        Then I should receive from the datahub web service:
-         """
-         {"exception":"invalid_parameter_exception","errorcode":"invalidparameter","message":"Invalid parameter value detected","debuginfo":"Missing required key in single structure: data"}
-         """
+         | expected |
+         | {"exception":"invalid_parameter_exception","errorcode":"invalidparameter","message":"Invalid parameter value detected","debuginfo":"Missing required key in single structure: data"} |
 
     # T33.26.4 #4
     Scenario: Sending no identifying fields returns an error.
        Given I make a datahub webservice request to the "local_datahub_elis_user_delete" method with body:
-         """
-         {"data":{"firstname":"NewFirstName"}}
-         """
+         | body |
+         | {"data":{"firstname":"NewFirstName"}} |
        Then I should receive from the datahub web service:
-         """
-         {"exception":"invalid_parameter_exception","errorcode":"invalidparameter","message":"Invalid parameter value detected","debuginfo":"data => Invalid parameter value detected: Unexpected keys (firstname) detected in parameter array."}
-         """
+         | expected |
+         | {"exception":"invalid_parameter_exception","errorcode":"invalidparameter","message":"Invalid parameter value detected","debuginfo":"data => Invalid parameter value detected: Unexpected keys (firstname) detected in parameter array."} |
 
     # T33.26.4 #5
     Scenario: Sending invalid identifying fields returns an error.
        Given I make a datahub webservice request to the "local_datahub_elis_user_delete" method with body:
-         """
-         {"data":{"username":"T33262c"}}
-         """
+         | body |
+         | {"data":{"username":"T33262c"}} |
        Then I should receive from the datahub web service:
-         """
-         {"exception":"moodle_exception","errorcode":"ws_user_delete_fail_noidfields","message":"No valid identifying fields received"}
-         """
+         | expected |
+         | {"exception":"moodle_exception","errorcode":"ws_user_delete_fail_noidfields","message":"No valid identifying fields received"} |
 
     # T33.26.4 #6
     Scenario: Sending conflicting identifying fields returns an error.
        Given I make a datahub webservice request to the "local_datahub_elis_user_delete" method with body:
-         """
-         {"data":{"username":"T33262b","idnumber":"T33262a"}}
-         """
+         | body |
+         | {"data":{"username":"T33262b","idnumber":"T33262a"}} |
        Then I should receive from the datahub web service:
-         """
-         {"exception":"moodle_exception","errorcode":"ws_user_delete_fail_conflictingidfields","message":"Conflicting identifying fields received"}
-         """
+         | expected |
+         | {"exception":"moodle_exception","errorcode":"ws_user_delete_fail_conflictingidfields","message":"Conflicting identifying fields received"} |
 
     # T33.26.4 #7
     Scenario: Success with single identifying field.
        Given I make a datahub webservice request to the "local_datahub_elis_user_delete" method with body:
-         """
-         {"data":{"username":"T33262a"}}
-         """
+         | body |
+         | {"data":{"username":"T33262a"}} |
        Then I should receive from the datahub web service:
-         """
-         {"messagecode":"user_deleted","message":"User deleted successfully"}
-         """
+         | expected |
+         | {"messagecode":"user_deleted","message":"User deleted successfully"} |
 
     # T33.26.4 #8
     Scenario: Success with 2 identifying fields.
        Given I make a datahub webservice request to the "local_datahub_elis_user_delete" method with body:
-         """
-         {"data":{"username":"T33262b","idnumber":"T33262b"}}
-         """
+         | body |
+         | {"data":{"username":"T33262b","idnumber":"T33262b"}} |
        Then I should receive from the datahub web service:
-         """
-         {"messagecode":"user_deleted","message":"User deleted successfully"}
-         """
+         | expected |
+         | {"messagecode":"user_deleted","message":"User deleted successfully"} |
 
