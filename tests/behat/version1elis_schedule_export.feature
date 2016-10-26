@@ -1,4 +1,4 @@
-@local @local_datahub @javascript @dhexport_version1elis
+@local @local_datahub @javascript @dhexport_version1elis @dh_nophantom
 Feature: version1elis scheduled export.
 
     Background:
