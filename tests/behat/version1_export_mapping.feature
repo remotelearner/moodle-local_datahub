@@ -1,4 +1,4 @@
-@local @local_datahub @javascript @dhexport_version1
+@local @local_datahub @javascript @dhexport_version1 @dh_nophantom @dh_nochrome
 Feature: version1 export field mapping
 
     Background:
@@ -13,8 +13,8 @@ Feature: version1 export field mapping
           | Other fields | custommenu1 | menu | Option C | Option A,Option B,Option C,Option D |
         And I add the following fields for version1 export:
           | field | export |
-          | customtext1 | Custom text 1 |
-          | custommenu1 | Custom menu 1 |
+          | customtext1 | |
+          | custommenu1 | |
         And the following "users" exist:
           | username | firstname | lastname | email |
           | testuser | Test | User | testuser@email.com |
@@ -37,17 +37,18 @@ Feature: version1 export field mapping
           | testuser2 | testcourse2 | student |
         And I visit Moodle course "testcourse1"
         And I navigate to "Grades" node in "Course administration"
+        And I follow "Grader report"
         And I turn editing mode on
         And I give the grade "85.76" to the user "Test User" for the grade item "gradeitem1"
-        And I give the grade "85.76" to the user "Test User" for the grade item "Course total"
+      # And I give the grade "85.76" to the user "Test User" for the grade item "Course total"
         And I click on "Save changes" "button"
         And I visit Moodle course "testcourse2"
         And I navigate to "Grades" node in "Course administration"
         And I turn editing mode on
         And I give the grade "76.89" to the user "Test User2" for the grade item "gradeitem2"
-        And I give the grade "76.89" to the user "Test User2" for the grade item "Course total"
+      # And I give the grade "76.89" to the user "Test User2" for the grade item "Course total"
         And I click on "Save changes" "button"
-        And  the following scheduled Datahub jobs exist:
+        And the following scheduled Datahub jobs exist:
           | label | plugin | type | params |
           | dh1b | dhexport_version1 | period | 5m |
         Then a "local_datahub_schedule" record with '{"plugin":"dhexport_version1"}' "should" exist
@@ -56,8 +57,7 @@ Feature: version1 export field mapping
         And the Datahub "export_version1_scheduled_" log file should contain "Export file .* successfully created"
         And the Datahub "version1" export file "should" contain lines:
           | line |
-          | "First Name","Last Name",Username,"User Idnumber","Course Idnumber","Start Date","End Date",Grade,Letter,customtext1,"Custom menu 1" |
+          | "First Name","Last Name",Username,"User Idnumber","Course Idnumber","Start Date","End Date",Grade,Letter,customtext1,custommenu1 |
           | Test,User,testuser,testuser,testcourse1,.*,.*,85.76000,B,"Custom 1 default","Option C" |
           | Test,User2,testuser2,testuser2,testcourse2,.*,.*,76.89000,C,"Custom 1 default","Option C" |
-       # NOTE: the heading column customtext1 should really be "Custom text 1", above ^
 
