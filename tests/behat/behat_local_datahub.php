@@ -574,17 +574,22 @@ class behat_local_datahub extends behat_files implements ContextInterface {
             $plugin = $datarow['plugin'];
             $dhschedpage = '/local/datahub/schedulepage.php?plugin='.$plugin.'&action=list';
             $this->getSession()->visit($this->locate_path($dhschedpage));
+            $this->getSession()->wait(self::TIMEOUT * 1000, self::PAGE_READY_JS);
             $this->find_button('New job')->press();
             $this->getSession()->wait(self::TIMEOUT * 1000, self::PAGE_READY_JS);
             // Enter label.
+            $page = $this->getSession()->getPage();
             $page->fillField('id_label', $datarow['label']);
             $this->find_button('Next')->press();
             $this->getSession()->wait(self::TIMEOUT * 1000, self::PAGE_READY_JS);
             // Select schedule type: period | advanced (default)
             if ($datarow['type'] == 'period') {
                 $this->find_link('Basic Period Scheduling')->click();
+                $this->getSession()->wait(self::TIMEOUT * 1000, self::PAGE_READY_JS);
+                $page = $this->getSession()->getPage();
                 $page->fillField('idperiod', $datarow['params']);
             } else {
+                $page = $this->getSession()->getPage();
                 $params = json_decode($datarow['params']);
                 if (!empty($params->startdate)) {
                     $this->clickRadio('starttype', '1');
@@ -781,8 +786,9 @@ class behat_local_datahub extends behat_files implements ContextInterface {
         } else {
             throw new \Exception("The expected select element 'field' was not found!");
         }
-        $this->getSession()->wait(self::TIMEOUT * 1000);
+        $this->getSession()->wait(self::TIMEOUT * 1000, self::PAGE_READY_JS);
         if (!empty($exportname)) {
+            $page = $this->getSession()->getPage();
             $colname = $page->find('xpath', "//input[@value='{$fieldrec->name}']");
             if (!empty($colname)) {
                 $colname->setValue($exportname);
