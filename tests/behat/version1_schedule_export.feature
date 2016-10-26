@@ -1,4 +1,4 @@
-@local @local_datahub @javascript @dhexport_version1
+@local @local_datahub @javascript @dhexport_version1 @dh_nophantom
 Feature: version1 export.
 
     Background:
@@ -35,15 +35,15 @@ Feature: version1 export.
         And I navigate to "Grades" node in "Course administration"
         And I turn editing mode on
         And I give the grade "85.76" to the user "Test User" for the grade item "gradeitem1"
-        And I give the grade "85.76" to the user "Test User" for the grade item "Course total"
+        # And I give the grade "85.76" to the user "Test User" for the grade item "Course total"
         And I click on "Save changes" "button"
         And I visit Moodle course "testcourse2"
         And I navigate to "Grades" node in "Course administration"
         And I turn editing mode on
         And I give the grade "76.89" to the user "Test User2" for the grade item "gradeitem2"
-        And I give the grade "76.89" to the user "Test User2" for the grade item "Course total"
+        # And I give the grade "76.89" to the user "Test User2" for the grade item "Course total"
         And I click on "Save changes" "button"
-        And  the following scheduled Datahub jobs exist:
+        And the following scheduled Datahub jobs exist:
           | label | plugin | type | params |
           | dh1b | dhexport_version1 | period | 5m |
         Then a "local_datahub_schedule" record with '{"plugin":"dhexport_version1"}' "should" exist
@@ -61,7 +61,7 @@ Feature: version1 export.
         And I navigate to "Grades" node in "Course administration"
         And I turn editing mode on
         And I give the grade "98.25" to the user "Test User" for the grade item "gradeitem3"
-        And I give the grade "98.25" to the user "Test User" for the grade item "Course total"
+        # And I give the grade "98.25" to the user "Test User" for the grade item "Course total"
         And I click on "Save changes" "button"
         And I update the timemodified for:
           | gradeitem |
@@ -104,13 +104,13 @@ Feature: version1 export.
         And I navigate to "Grades" node in "Course administration"
         And I turn editing mode on
         And I give the grade "95.76" to the user "Test User" for the grade item "gradeitem1"
-        And I give the grade "95.76" to the user "Test User" for the grade item "Course total"
+        # And I give the grade "95.76" to the user "Test User" for the grade item "Course total"
         And I click on "Save changes" "button"
         And I visit Moodle course "testcourse2"
         And I navigate to "Grades" node in "Course administration"
         And I turn editing mode on
         And I give the grade "16.89" to the user "Test User2" for the grade item "gradeitem2"
-        And I give the grade "16.89" to the user "Test User2" for the grade item "Course total"
+        # And I give the grade "16.89" to the user "Test User2" for the grade item "Course total"
         And I click on "Save changes" "button"
         And the following config values are set as admin:
           | nonincremental | 1 | dhexport_version1 |
@@ -160,13 +160,13 @@ Feature: version1 export.
         And I navigate to "Grades" node in "Course administration"
         And I turn editing mode on
         And I give the grade "45.76" to the user "Test User" for the grade item "gradeitem1"
-        And I give the grade "45.76" to the user "Test User" for the grade item "Course total"
+        # And I give the grade "45.76" to the user "Test User" for the grade item "Course total"
         And I click on "Save changes" "button"
         And I visit Moodle course "testcourse2"
         And I navigate to "Grades" node in "Course administration"
         And I turn editing mode on
         And I give the grade "56.89" to the user "Test User2" for the grade item "gradeitem2"
-        And I give the grade "56.89" to the user "Test User2" for the grade item "Course total"
+        # And I give the grade "56.89" to the user "Test User2" for the grade item "Course total"
         And I click on "Save changes" "button"
         And the following scheduled Datahub jobs exist:
           | label | plugin | type | params |

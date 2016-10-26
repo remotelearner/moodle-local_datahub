@@ -1,4 +1,4 @@
-@local @local_datahub @javascript @dhimport_version1
+@local @local_datahub @javascript @dhimport_version1 @dh_nophantom
 Feature: Import a version1 file with column mappings.
 
     Background:
