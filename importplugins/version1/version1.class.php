@@ -77,7 +77,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
             'lastname', 'email', 'maildigest', 'autosubscribe',
             'trackforums', 'screenreader', 'city', 'country',
             'timezone', 'theme', 'lang', 'description',
-            'idnumber', 'institution', 'department', 'user_idnumber', 'user_username', 'user_email');
+            'idnumber', 'institution', 'department', 'user_idnumber', 'user_username', 'user_email', 'suspended');
 
     static $available_fields_course = array('shortname', 'fullname', 'idnumber', 'summary',
                                             'format', 'numsections', 'startdate', 'newsitems',
@@ -666,6 +666,14 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
             return false;
         }
 
+        // Make sure binary 'suspended' field is valid.
+        if (!$this->validate_fixed_list($record, 'suspended', array(0, 1), array('no' => 0, 'yes' => 1))) {
+            $identifier = $this->mappings['suspended'];
+            $this->fslogger->log_failure("{$identifier} value of \"{$record->suspended}\" is not one of the available options (0, 1).", 0,
+                    $filename, $this->linenumber, $record, "user");
+            return false;
+        }
+
         return true;
     }
 
@@ -813,6 +821,12 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
         //make sure the user is confirmed!
         $record->confirmed = 1;
 
+        $suspended = null;
+        if (isset($record->suspended)) {
+            $suspended = $record->suspended; // This would force current user logout???
+            unset($record->suspended);
+        }
+
         $record->id = $DB->insert_record('user', $record);
         $record = uu_pre_process_custom_profile_data($record);
         profile_save_data($record);
@@ -824,6 +838,10 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
         );
         $event = \core\event\user_created::create($eventdata);
         $event->trigger();
+
+        if (!is_null($suspended)) {
+            $DB->set_field('user', 'suspended', $suspended, ['id' => $record->id]);
+        }
 
         //string to describe the user
         $user_descriptor = static::get_user_descriptor($record);
@@ -1114,6 +1132,12 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
             $record->password = hash_internal_user_password($record->password);
         }
 
+        $suspended = null;
+        if (isset($record->suspended)) {
+            $suspended = $record->suspended; // This would force current user logout???
+            unset($record->suspended);
+        }
+
         $record->timemodified = time();
         $DB->update_record('user', $record);
         $record = uu_pre_process_custom_profile_data($record);
@@ -1125,6 +1149,10 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
         );
         $event = \core\event\user_updated::create($eventdata);
         $event->trigger();
+
+        if (!is_null($suspended)) {
+            $DB->set_field('user', 'suspended', $suspended, ['id' => $record->id]);
+        }
 
         //string to describe the user
         $user_descriptor = static::get_user_descriptor($record);
