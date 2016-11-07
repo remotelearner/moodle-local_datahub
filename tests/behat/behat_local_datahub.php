@@ -657,7 +657,9 @@ class behat_local_datahub extends behat_files implements ContextInterface {
      * @Given /^I wait "(?P<arg1_string>(?:[^"]|\\")*)" minutes and run cron$/
      */
     public function iWaitMinutesAndRunCron($arg1) {
-        sleep((int)(60.0 * $arg1));
+        if (!empty($arg1)) {
+            sleep((int)(60.0 * $arg1));
+        }
         set_config('cronclionly', 0);
         $this->getSession()->visit($this->locate_path('/admin/cron.php'));
     }
@@ -670,7 +672,10 @@ class behat_local_datahub extends behat_files implements ContextInterface {
         if (($ts = strtotime($arg1)) === false) {
             throw new \Exception("Could not parse date string: {$arg1}");
         }
-        sleep($ts - time());
+        $ts -= time();
+        if ($ts > 0) {
+            sleep($ts);
+        }
         set_config('cronclionly', 0);
         $this->getSession()->visit($this->locate_path('/admin/cron.php'));
     }
@@ -832,11 +837,13 @@ class behat_local_datahub extends behat_files implements ContextInterface {
         } else {
             throw new \Exception("The expected '{$clevel}' fieldset was not found!");
         }
+        $this->getSession()->wait(self::TIMEOUT * 1000, self::PAGE_READY_JS);
         $generalcontext = behat_context_helper::get('behat_general');
         $generalcontext->i_drag_and_i_drop_it_in("//li[@data-field='{$fieldid}']", 'xpath_element',
-                '//div[@class="active_fields"]/ul[@class="fieldlist ui-sortable"]', 'xpath_element');
+                '//div[contains(@class, "active_fields")]/ul[contains(@class, "fieldlist") and contains(@class, "ui-sortable")]',
+                'xpath_element');
         if (!empty($exportname)) {
-            $this->getSession()->wait(self::TIMEOUT * 1000);
+            $this->getSession()->wait(self::TIMEOUT * 1000, self::PAGE_READY_JS);
             $page = $this->getSession()->getPage(); // Update page?
             $colenable = $page->find('xpath', "//li[@data-field='{$fieldid}']/a[@class='rename']");
             if (!empty($colenable)) {
@@ -876,6 +883,7 @@ class behat_local_datahub extends behat_files implements ContextInterface {
             $fieldid = empty($fieldid) ? $datarow['field'] : "field_{$fieldid}";
             $this->select_version1elis_exportfield($datarow['contextlevel'], $fieldid, isset($datarow['export']) ? $datarow['export'] : '');
         }
+        //$this->getSession()->wait(self::TIMEOUT * 1000, self::PAGE_READY_JS);
         $this->find_button('Save changes')->press();
     }
 
