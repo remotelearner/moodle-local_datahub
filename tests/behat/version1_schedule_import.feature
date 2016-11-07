@@ -44,7 +44,7 @@ Feature: Import a version1 file.
         Then a "local_datahub_schedule" record with '{"plugin":"dhimport_version1"}' "should" exist
         And I wait "0" minutes and run cron
         And I upload file "version1_create_enrolment.csv" for "version1" "enrolment" import
-        And I wait "5" minutes and run cron
+        And I wait "5.5" minutes and run cron
         Then I should see "Running s:9:\"run_ipjob\";(ipjob_"
         And the following enrolments should exist:
            | course | user |
