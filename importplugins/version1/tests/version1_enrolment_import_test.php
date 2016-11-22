@@ -266,7 +266,7 @@ class version1enrolmentimport_testcase extends rlip_test {
      */
     public function test_version1importsupportsenrolmentactions() {
         $supports = plugin_supports('dhimport', 'version1', 'enrolment');
-        $this->assertEquals($supports, array('create', 'add', 'delete'));
+        $this->assertEquals($supports, array('create', 'add', 'update', 'delete'));
     }
 
     /**
@@ -309,6 +309,20 @@ class version1enrolmentimport_testcase extends rlip_test {
                 'context',
                 'instance',
                 'role'
+        );
+
+        $this->assertEquals($supports, $requiredfields);
+    }
+
+    /**
+     * Validate that the version 1 plugin supports the enrolment update action
+     */
+    public function test_version1importsupportsenrolmentupdate() {
+        $supports = plugin_supports('dhimport', 'version1', 'enrolment_update');
+        $requiredfields = array(
+                array('username', 'email', 'idnumber'),
+                'context',
+                'instance'
         );
 
         $this->assertEquals($supports, $requiredfields);
@@ -700,6 +714,44 @@ class version1enrolmentimport_testcase extends rlip_test {
             'roleid' => self::$courseroleid,
             'contextid' => $coursecontext->id
         ));
+    }
+
+    /**
+     * Validate the enrolment import update.
+     */
+    public function test_version1importenrolupdate() {
+        global $DB;
+
+        $this->run_core_enrolment_import(['status' => 'Suspended']);
+
+        // Compare data.
+        // User enrolment.
+        $enrolid = $DB->get_field('enrol', 'id', ['enrol' => 'manual', 'courseid' => self::$courseid]);
+        $this->assert_record_exists('user_enrolments', [
+            'userid' => self::$userid,
+            'enrolid' => $enrolid,
+            'status' => ENROL_USER_SUSPENDED
+        ]);
+
+        // Role assignment.
+        $coursecontext = context_course::instance(self::$courseid);
+        $this->assert_record_exists('role_assignments', [
+            'userid' => self::$userid,
+            'roleid' => self::$courseroleid,
+            'contextid' => $coursecontext->id
+        ]);
+
+        // Run status update & verify.
+        $timestart = $DB->get_field('user_enrolments', 'timestart', ['userid' => self::$userid, 'enrolid' => $enrolid]);
+        $timeend = $DB->get_field('user_enrolments', 'timeend', ['userid' => self::$userid, 'enrolid' => $enrolid]);
+        $this->run_core_enrolment_import(['action' => 'update', 'status' => 'ACTIVE', 'role' => '']);
+        $this->assert_record_exists('user_enrolments', [
+            'userid' => self::$userid,
+            'enrolid' => $enrolid,
+            'timestart' => $timestart,
+            'timeend' => $timeend,
+            'status' => ENROL_USER_ACTIVE
+        ]);
     }
 
     /**

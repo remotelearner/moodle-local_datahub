@@ -72,6 +72,9 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
                                                   'instance',
                                                   'role');
 
+    public static $import_fields_enrolment_update = array(array('username', 'email', 'idnumber'),
+            'context', 'instance');
+
     //available fields
     static $available_fields_user = array('username', 'auth', 'password', 'firstname',
             'lastname', 'email', 'maildigest', 'autosubscribe',
@@ -2308,6 +2311,29 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
     }
 
     /**
+     * Get manual enrolment instance.
+     * @param int $courseid The course id.
+     * @return bool|array ['plugin' => , 'instance' => ] or false on failure.
+     */
+    public static function get_manual_enrolment_instance($courseid) {
+        global $DB;
+        if (!enrol_is_enabled('manual')) {
+            return false;
+        }
+
+        if (!$enrol = enrol_get_plugin('manual')) {
+            return false;
+        }
+
+        if (!$instances = $DB->get_records('enrol', ['enrol' => 'manual', 'courseid' => $courseid, 'status' => ENROL_INSTANCE_ENABLED],
+                'sortorder,id ASC')) {
+            return false;
+        }
+        $instance = reset($instances);
+        return ['plugin' => $enrol, 'instance' => $instance];
+    }
+
+    /**
      * Try to enrol user via default internal auth plugin.
      *
      * For now this is always using the manual enrol plugin...
@@ -2322,24 +2348,12 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
      * @return bool success
      */
     public static function enrol_try_internal_enrol($courseid, $userid, $roleid = null, $timestart = 0, $timeend = 0, $status = null) {
-        global $DB;
-
         // Note: this is hardcoded to manual plugin for now!
-
-        if (!enrol_is_enabled('manual')) {
+        if (!($enrolinstance = static::get_manual_enrolment_instance($courseid)) || count($enrolinstance) != 2) {
             return false;
         }
-
-        if (!$enrol = enrol_get_plugin('manual')) {
-            return false;
-        }
-        if (!$instances = $DB->get_records('enrol', array('enrol' => 'manual', 'courseid' => $courseid, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder,id ASC')) {
-            return false;
-        }
-        $instance = reset($instances);
-
-        $enrol->enrol_user($instance, $userid, $roleid, $timestart, $timeend, is_null($status) ? ENROL_USER_ACTIVE : $status);
-
+        $enrolinstance['plugin']->enrol_user($enrolinstance['instance'], $userid, $roleid, $timestart, $timeend,
+                is_null($status) ? ENROL_USER_ACTIVE : $status);
         return true;
     }
 
@@ -2364,11 +2378,13 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
         }
 
         //data checking
-        if (!$roleid = $DB->get_field('role', 'id', array('shortname' => $record->role))) {
+        $roleid = null;
+        if ((empty($record->role) && $record->action != 'update') ||
+                (!empty($record->role) && !($roleid = $DB->get_field('role', 'id', ['shortname' => $record->role])))) {
             $identifier = $this->mappings['role'];
-            $this->fslogger->log_failure("{$identifier} value of \"{$record->role}\" does not refer ".
-                                         "to a valid role.", 0, $filename, $this->linenumber,
-                                         $record, 'enrolment');
+            $message = empty($record->role) ? "Required column {$identifier} must be specified for {$record->action}." :
+                    "{$identifier} value of \"{$record->role}\" does not refer to a valid role.";
+            $this->fslogger->log_failure($message, 0, $filename, $this->linenumber, $record, 'enrolment');
             return false;
         }
 
@@ -2395,7 +2411,8 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
         }
 
         // Check for valid status field: active/suspended - ELIS-8394.
-        if (isset($record->status)) {
+        if (!empty($record->status)) {
+            $hasstatus = true;
             $record->status = core_text::strtolower($record->status);
             if ($record->status != 'active' && $record->status != 'suspended') {
                 $identifier = $this->mappings['status'];
@@ -2405,6 +2422,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
             }
             $record->status = ($record->status == 'suspended') ? ENROL_USER_SUSPENDED : ENROL_USER_ACTIVE;
         } else {
+            $hasstatus = false;
             $record->status = ENROL_USER_ACTIVE;
         }
 
@@ -2421,11 +2439,10 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
         list($contextlevel, $context) = $contextinfo;
 
         //make sure the role is assignable at the course context level
-        if (!$DB->record_exists('role_context_levels', array('roleid' => $roleid,
-                                                             'contextlevel' => $contextlevel))) {
-            $this->fslogger->log_failure("The role with shortname \"{$record->role}\" is not assignable ".
-                                         "on the {$record->context} context level.",
-                                         0, $filename, $this->linenumber, $record, "enrolment");
+        if (!empty($roleid) && !$DB->record_exists('role_context_levels', ['roleid' => $roleid, 'contextlevel' => $contextlevel])) {
+            $this->fslogger->log_failure(
+                    "The role with shortname \"{$record->role}\" is not assignable on the {$record->context} context level.",
+                    0, $filename, $this->linenumber, $record, "enrolment");
             return false;
         }
 
@@ -2435,7 +2452,7 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
                         'userid' => $userid,
                         'component' => '',
                         'itemid' => 0);
-        $role_assignment_exists = $DB->record_exists('role_assignments', $params);
+        $role_assignment_exists = empty($roleid) || $DB->record_exists('role_assignments', $params);
 
         //track whether an enrolment exists
         $enrolment_exists = false;
@@ -2511,10 +2528,19 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
         $logmessages = array();
         $enrolresult = null;
         if ($record->context == 'course') {
-
             // Set enrolment start and end time if specified, otherwise set enrolment time to 'now' to allow immediate access.
-            $timestart = empty($record->enrolmenttime) ? time() : $this->parse_date($record->enrolmenttime);
-            $timeend = empty($record->completetime) ? 0 : $this->parse_date($record->completetime);
+            $updateok = false;
+            if ($enrolment_exists && ($enrolinstance = static::get_manual_enrolment_instance($context->instanceid)) &&
+                    count($enrolinstance) == 2) {
+                $updateok = true;
+                $timestart = empty($record->enrolmenttime) ? $DB->get_field('user_enrolments', 'timestart',
+                        ['enrolid' => $enrolinstance['instance']->id, 'userid' => $userid]) : $this->parse_date($record->enrolmenttime);
+                $timeend = empty($record->completetime) ? $DB->get_field('user_enrolments', 'timeend',
+                        ['enrolid' => $enrolinstance['instance']->id, 'userid' => $userid]) : $this->parse_date($record->completetime);
+            } else {
+                $timestart = empty($record->enrolmenttime) ? time() : $this->parse_date($record->enrolmenttime);
+                $timeend = empty($record->completetime) ? 0 : $this->parse_date($record->completetime);
+            }
             $enrolresult = true;
             if ($role_assignment_exists && !$enrolment_exists) {
                 // Role assignment already exists, so just enrol the user.
@@ -2532,6 +2558,13 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
                     // Collect success message for logging at end of action.
                     $logmessages[] = "User with {$user_descriptor} successfully updated enrolment and assigned role with ".
                             "shortname \"{$record->role}\" on {$context_descriptor}.";
+                }
+            } else if ($updateok && ($hasstatus || !empty($record->enrolmenttime) || !empty($record->completetime))) {
+                // Updates time and/or status field(s) in enrolment ...
+                if (($enrolresult = static::enrol_try_internal_enrol($context->instanceid, $userid, $roleid, $timestart, $timeend,
+                        $record->status)) !== false) {
+                    // Collect success message for logging at end of action.
+                    $logmessages[] = "User with {$user_descriptor} successfully updated enrolment on {$context_descriptor}.";
                 }
             } else {
                 //duplicate enrolment attempt
@@ -2652,6 +2685,17 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
      */
     function enrolment_add($record, $filename) {
         //note: this is only here due to legacy 1.9 weirdness
+        return $this->enrolment_create($record, $filename);
+    }
+
+    /**
+     * Update an enrolment
+     *
+     * @param object $record One record of import data
+     * @param string $filename The import file name, used for logging
+     * @return boolean true on success, otherwise false
+     */
+    public function enrolment_update($record, $filename) {
         return $this->enrolment_create($record, $filename);
     }
 
@@ -2942,7 +2986,8 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
         //get list of required fields
         //note: for now, assuming that the delete action is available for
         //all entity types and requires the bare minimum in terms of fields
-        $required_fields = $this->plugin_supports_action($entity, 'delete');
+        // Min. required fields for enrolment is 'update':
+        $required_fields = $this->plugin_supports_action($entity, ($entity == 'enrolment') ? 'update' : 'delete');
 
         //handle context / instance fix
         if ($entity == 'enrolment') {
