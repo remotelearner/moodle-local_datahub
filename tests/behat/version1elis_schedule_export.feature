@@ -42,12 +42,16 @@ Feature: version1elis scheduled export.
           | "First Name","Last Name",Username,"User Idnumber","Course Idnumber","Start Date","End Date",Status,Grade,Letter |
           | Student,Test,testuser,testuser,testcourse1,.*,.*,COMPLETED,85.76000,B |
           | Student,Test,testuser2,testuser2,testcourse2,.*,.*,COMPLETED,76.89000,C |
-        And I wait "180" seconds
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "30" seconds
         # Add new class completions
         And the following ELIS class enrolments exist:
           | user_idnumber | class_idnumber | completestatus | grade | credits | locked |
           | testuser | testclass3 | passed | 98.25 | 3.6 | 1 |
-        And I wait "2" minutes and run cron
+        And I wait "60" seconds
+        And I wait "1" minutes and run cron
         Then I should see "Running s:9:\"run_ipjob\";(ipjob_"
         And the Datahub "version1elis" export file "should" contain lines:
           | line |
@@ -70,14 +74,22 @@ Feature: version1elis scheduled export.
           | label | plugin | type | params |
           | dh2c | dhexport_version1elis | advanced | {"runs":3,"frequency":5,"units":"minute"} |
         Then a "local_datahub_schedule" record with '{"plugin":"dhexport_version1elis"}' "should" exist
-        And I wait "5" minutes and run cron
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "1" minutes and run cron
         Then I should see "Running s:9:\"run_ipjob\";(ipjob_"
         And the Datahub "export_version1elis_scheduled_" log file should contain "Export file .*csv successfully created"
         And the Datahub "version1elis" export file "should" contain lines:
           | line |
           | "First Name","Last Name",Username,"User Idnumber","Course Idnumber","Start Date","End Date",Status,Grade,Letter |
           | Student,Test,testuser,testuser,testcourse1,.*,.*,95.76000,A |
-        And I wait "5" minutes and run cron
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "1" minutes and run cron
         Then I should see "Running s:9:\"run_ipjob\";(ipjob_"
         And the Datahub "version1elis" export file "should" contain lines:
           | line |
@@ -94,7 +106,11 @@ Feature: version1elis scheduled export.
           | label | plugin | type | params |
           | dh3b | dhexport_version1elis | advanced | {"startdate":"-3 days +5 minutes","recurrence":"calendar",enddate:"+2 days","weekdays":"1,2,3,4,5,6,7","months":"this"} |
         Then a "local_datahub_schedule" record with '{"plugin":"dhexport_version1elis"}' "should" exist
-        And I wait "5" minutes and run cron
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "1" minutes and run cron
         Then I should see "Running s:9:\"run_ipjob\";(ipjob_"
         And the Datahub "export_version1elis_scheduled_" log file should contain "Export file .* successfully created"
         And the Datahub "version1elis" export file "should" contain lines:

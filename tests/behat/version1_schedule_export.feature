@@ -56,7 +56,9 @@ Feature: version1 export.
           | "First Name","Last Name",Username,"User Idnumber","Course Idnumber","Start Date","End Date",Grade,Letter |
           | Test,User,testuser,testuser,testcourse1,.*,.*,85.76000,B |
           | Test,User2,testuser2,testuser2,testcourse2,.*,.*,76.89000,C |
-        And I wait "180" seconds
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "30" seconds
         # Add new class completions
         And I visit Moodle course "testcourse3"
         And I navigate to "Grades" node in "Course administration"
@@ -68,7 +70,8 @@ Feature: version1 export.
           | gradeitem |
           | gradeitem3 |
           | testcourse3 |
-        And I wait "2" minutes and run cron
+        And I wait "60" seconds
+        And I wait "1" minutes and run cron
         Then I should see "Running s:9:\"run_ipjob\";(ipjob_"
         And the Datahub "version1" export file "should" contain lines:
           | line |
@@ -119,7 +122,11 @@ Feature: version1 export.
           | label | plugin | type | params |
           | dh2c | dhexport_version1 | advanced | {"runs":3,"frequency":5,"units":"minute"} |
         Then a "local_datahub_schedule" record with '{"plugin":"dhexport_version1"}' "should" exist
-        And I wait "5" minutes and run cron
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "1" minutes and run cron
         Then I should see "Running s:9:\"run_ipjob\";(ipjob_"
         And the Datahub "export_version1_scheduled_" log file should contain "Export file .*csv successfully created"
         And the Datahub "version1" export file "should" contain lines:
@@ -127,7 +134,11 @@ Feature: version1 export.
           | "First Name","Last Name",Username,"User Idnumber","Course Idnumber","Start Date","End Date",Grade,Letter |
           | Test,User,testuser,testuser,testcourse1,.*,.*,95.76000,A |
           | Test,User2,testuser2,testuser2,testcourse2,.*,.*,16.89000,F |
-        And I wait "5" minutes and run cron
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "1" minutes and run cron
         Then I should see "Running s:9:\"run_ipjob\";(ipjob_"
         And the Datahub "version1" export file "should" contain lines:
           | line |
@@ -135,7 +146,7 @@ Feature: version1 export.
           | Test,User,testuser,testuser,testcourse1,.*,.*,95.76000,A |
           | Test,User2,testuser2,testuser2,testcourse2,.*,.*,16.89000,F |
 
-    # T33.15.2 ~ 
+    # T33.15.2 ~
     Scenario: version1 advanced calendar schedule export succeeds.
         Given the following "users" exist:
           | username | firstname | lastname | email |
@@ -173,7 +184,11 @@ Feature: version1 export.
           | label | plugin | type | params |
           | dh3b | dhexport_version1 | advanced | {"startdate":"-3 days +5 minutes","recurrence":"calendar",enddate:"+2 days","weekdays":"1,2,3,4,5,6,7","months":"this"} |
         Then a "local_datahub_schedule" record with '{"plugin":"dhexport_version1"}' "should" exist
-        And I wait "5" minutes and run cron
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "1" minutes and run cron
         Then I should see "Running s:9:\"run_ipjob\";(ipjob_"
         And the Datahub "export_version1_scheduled_" log file should contain "Export file .* successfully created"
         And the Datahub "version1" export file "should" contain lines:

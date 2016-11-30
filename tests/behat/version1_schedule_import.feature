@@ -14,7 +14,12 @@ Feature: Import a version1 file.
         Then a "local_datahub_schedule" record with '{"plugin":"dhimport_version1"}' "should" exist
         And I wait "0" minutes and run cron
         And I upload file "create_user_t33_6.csv" for "version1" "user" import
-        And I wait "5" minutes and run cron
+        # We do multiple smaller waits instead of one longer wait to provide frequent feedback.
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "1" minutes and run cron
         Then I should see "Running s:9:\"run_ipjob\";(ipjob_"
         And a "user" record with '{"idnumber":"testuser","username":"testuser","firstname":"Test","lastname":"User","city":"testcity","country":"CA"}' "should" exist
         And a "user" record with '{"username":"testuser2","firstname":"Test","lastname":"User2","city":"testcity","country":"CA"}' "should" exist
@@ -27,7 +32,12 @@ Feature: Import a version1 file.
         Then a "local_datahub_schedule" record with '{"plugin":"dhimport_version1"}' "should" exist
         And I wait "0" minutes and run cron
         And I upload file "create_course_t33_6.csv" for "version1" "course" import
-        And I wait "5" minutes and run cron
+        # We do multiple smaller waits instead of one longer wait to provide frequent feedback.
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "1" minutes and run cron
         Then I should see "Running s:9:\"run_ipjob\";(ipjob_"
         And a "course" record with '{"shortname":"testcourse2","fullname":"testcourse2"}' "should" exist
 
@@ -45,7 +55,13 @@ Feature: Import a version1 file.
         Then a "local_datahub_schedule" record with '{"plugin":"dhimport_version1"}' "should" exist
         And I wait "0" minutes and run cron
         And I upload file "version1_create_enrolment.csv" for "version1" "enrolment" import
-        And I wait "5" minutes and run cron
+        # We do multiple smaller waits instead of one longer wait to provide frequent feedback.
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "60" seconds
+        And I wait "30" seconds
+        And I wait "1" minutes and run cron
         Then I should see "Running s:9:\"run_ipjob\";(ipjob_"
         And the following enrolments should exist:
            | course | user |
