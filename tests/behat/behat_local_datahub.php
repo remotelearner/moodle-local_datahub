@@ -92,16 +92,16 @@ class behat_local_datahub extends behat_files implements ContextInterface {
         // error_log("\niShouldReceiveFromTheDatahubWebService:: exp = {$str}; Rx = {$received}");
 
         // Remove the dynamic id parameters: curid, courseid, id, userid, classid, trackid, ...
-        $received = preg_replace('#\"[a-z]*id\"\:([0-9]{6})[,]*#', '', $received);
+        $received = preg_replace('#\"[a-z]*id\"\:([0-9]{1})[,]*#', '', $received);
         // Remove the dynamic parent userset parameter.
-        $received = preg_replace('#\"parent\"\:([0-9]{6})\,#', '', $received);
+        $received = preg_replace('#\"parent\"\:([0-9]{1})\,#', '', $received);
         // Remove the timestamp parameters that are near impossible to predict.
         $received = preg_replace('#\"[a-z]*time\"\:([0-9]{10})[,]*#', '', $received);
         $received = preg_replace('#\"[a-z]*date\"\:([0-9]{10})[,]*#', '', $received);
         if ($received !== $str) {
             $msg = "Web Service call failed\n";
-            $msg .= "Received ".$this->received."\n";
-            $msg .= "Expected ".$string."\n";
+            $msg .= "Received ".$received."\n";
+            $msg .= "Expected ".$str."\n";
             throw new \Exception($msg);
         }
     }
@@ -804,23 +804,27 @@ class behat_local_datahub extends behat_files implements ContextInterface {
     }
 
     /**
+     * @Given /^I navigate to the datahub version1 export field config page$/
+     */
+    public function iNavigateToTheDatahubVersion1ExportFieldConfigPage() {
+        $this->getSession()->visit($this->locate_path('/local/datahub/exportplugins/version1/config_fields.php'));
+    }
+
+    /**
      * @Given /^I add the following fields for version1 export:$/
      * Required table column 'field' for field shortname,
      * optional column 'export' for string to usse in export file heading.
      */
     public function iAddTheFollowingFieldsForVersion1Export(TableNode $table) {
         global $DB;
-        $this->getSession()->visit($this->locate_path('/local/datahub/exportplugins/version1/config_fields.php'));
-        $this->getSession()->wait(self::TIMEOUT * 1000, self::PAGE_READY_JS);
+        $steps = [];
+        $steps[] = new Given('I navigate to the datahub version1 export field config page');
         $data = $table->getHash();
         foreach ($data as $datarow) {
-            $fieldrec = $DB->get_record('user_info_field', ['shortname' => $datarow['field']]);
-            if (empty($fieldrec)) {
-                throw new \Exception("The expected option for field={$datarow['field']} was not found!");
-            }
-            $this->select_version1_exportfield($fieldrec, isset($datarow['export']) ? $datarow['export'] : '');
+            $steps[] = new Given('I select "'.$datarow['field'].'" from the "field" singleselect');
         }
-        $this->find_button('Save changes')->press();
+        $steps[] = new Given('I press "Save changes"');
+        return $steps;
     }
 
     /**

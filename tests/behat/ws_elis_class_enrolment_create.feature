@@ -86,5 +86,5 @@ Feature: Web service requests can be made to create an ELIS Class enrolment.
          | {"data":{"class_idnumber":"CLASS-1","user_idnumber":"testreco23","credits":1.1,"locked":1}} |
        Then I should receive from the datahub web service:
          | expected |
-         | {"messagecode":"class_enrolment_created","message":"User successfully enrolled into Class","record":{"completetime":0,"endtime":0,"completestatusid":0,"grade":0,"credits":1.1,"locked":true}} |
+         | {"messagecode":"class_enrolment_created","message":"User successfully enrolled into Class","record":{"completetime":0,"endtime":0,"grade":0,"credits":1.1,"locked":true}} |
 

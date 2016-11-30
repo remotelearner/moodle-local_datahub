@@ -107,5 +107,5 @@ Feature: Web service requests can be made to update an ELIS Class enrolment.
          | {"data":{"class_idnumber":"CLASS-1","user_idnumber":"testreco24","grade":51,"credits":1.1,"locked":1,"enrolmenttime":"May/10/2013"}}	 |
        Then I should receive from the datahub web service:
          | expected |
-         | {"messagecode":"class_enrolment_updated","message":"User class enrolment successfully updated","record":{"completetime":0,"endtime":0,"completestatusid":0,"grade":51,"credits":1.1,"locked":true}} |
+         | {"messagecode":"class_enrolment_updated","message":"User class enrolment successfully updated","record":{"completetime":0,"endtime":0,"grade":51,"credits":1.1,"locked":true}} |
 

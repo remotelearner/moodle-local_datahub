@@ -1,4 +1,4 @@
-@local @local_datahub
+@local @local_datahub @dh_ws
 Feature: Web service requests can be made to update an ELIS Class Instance.
 
     Background:
@@ -83,7 +83,7 @@ Feature: Web service requests can be made to update an ELIS Class Instance.
          | {"data":{"idnumber":"T332620CLSa","enrol_from_waitlist":true}} |
        Then I should receive from the datahub web service:
          | expected |
-         | {"messagecode":"class_updated","message":"Class updated successfully","record":{"idnumber":"T332620CLSa","startdate":0,"enddate":0,"duration":0,"starttimehour":0,"starttimeminute":0,"endtimehour":0,"endtimeminute":0,"maxstudents":0,"environmentid":0,"enrol_from_waitlist":true}} |
+         | {"messagecode":"class_updated","message":"Class updated successfully","record":{"idnumber":"T332620CLSa","startdate":0,"enddate":0,"duration":0,"starttimehour":0,"starttimeminute":0,"endtimehour":0,"endtimeminute":0,"maxstudents":0,"enrol_from_waitlist":true}} |
 
     # T33.26.20 #8
     Scenario: Successfully update ELIS Class track assignment.
@@ -92,7 +92,7 @@ Feature: Web service requests can be made to update an ELIS Class Instance.
          | {"data":{"idnumber":"T332620CLSa","track":"T332620TRKa"}} |
        Then I should receive from the datahub web service:
          | expected |
-         | {"messagecode":"class_updated","message":"Class updated successfully","record":{"idnumber":"T332620CLSa","startdate":0,"enddate":0,"duration":0,"starttimehour":0,"starttimeminute":0,"endtimehour":0,"endtimeminute":0,"maxstudents":0,"environmentid":0,"enrol_from_waitlist":false}} |
+         | {"messagecode":"class_updated","message":"Class updated successfully","record":{"idnumber":"T332620CLSa","startdate":0,"enddate":0,"duration":0,"starttimehour":0,"starttimeminute":0,"endtimehour":0,"endtimeminute":0,"maxstudents":0,"enrol_from_waitlist":false}} |
 
     # T33.26.20 #9
     Scenario: Successfully update ELIS Class Moodle course assignment.
@@ -101,7 +101,7 @@ Feature: Web service requests can be made to update an ELIS Class Instance.
          | {"data":{"idnumber":"T332620CLSa","link":"T332620MCa"}} |
        Then I should receive from the datahub web service:
          | expected |
-         | {"messagecode":"class_updated","message":"Class updated successfully","record":{"idnumber":"T332620CLSa","startdate":0,"enddate":0,"duration":0,"starttimehour":0,"starttimeminute":0,"endtimehour":0,"endtimeminute":0,"maxstudents":0,"environmentid":0,"enrol_from_waitlist":false}} |
+         | {"messagecode":"class_updated","message":"Class updated successfully","record":{"idnumber":"T332620CLSa","startdate":0,"enddate":0,"duration":0,"starttimehour":0,"starttimeminute":0,"endtimehour":0,"endtimeminute":0,"maxstudents":0,"enrol_from_waitlist":false}} |
 
     # T33.26.20 #10
     Scenario: Create with invalid multi-valued custom field parameters.
@@ -113,7 +113,7 @@ Feature: Web service requests can be made to update an ELIS Class Instance.
          | {"data":{"idnumber":"T332620CLSa","field_custom1":"Option E"}} |
         Then I should receive from the datahub web service:
          | expected |
-         | {"messagecode":"class_updated","message":"Class updated with custom field errors - see logs for details.","record":{"idnumber":"T332620CLSa","startdate":0,"enddate":0,"duration":0,"starttimehour":0,"starttimeminute":0,"endtimehour":0,"endtimeminute":0,"maxstudents":0,"environmentid":0,"enrol_from_waitlist":false,"field_custom1":"Option 4"}} |
+         | {"messagecode":"class_updated","message":"Class updated with custom field errors - see logs for details.","record":{"idnumber":"T332620CLSa","startdate":0,"enddate":0,"duration":0,"starttimehour":0,"starttimeminute":0,"endtimehour":0,"endtimeminute":0,"maxstudents":0,"enrol_from_waitlist":false,"field_custom1":"Option 4"}} |
 
     # T33.26.20 #10.1
     Scenario: Create with valid multi-valued custom field parameters.
@@ -125,5 +125,5 @@ Feature: Web service requests can be made to update an ELIS Class Instance.
          | {"data":{"idnumber":"T332620CLSa","field_custom1":"Option 1,Option 3"}} |
         Then I should receive from the datahub web service:
          | expected |
-         | {"messagecode":"class_updated","message":"Class updated successfully","record":{"idnumber":"T332620CLSa","startdate":0,"enddate":0,"duration":0,"starttimehour":0,"starttimeminute":0,"endtimehour":0,"endtimeminute":0,"maxstudents":0,"environmentid":0,"enrol_from_waitlist":false,"field_custom1":"Option 1,Option 3"}} |
+         | {"messagecode":"class_updated","message":"Class updated successfully","record":{"idnumber":"T332620CLSa","startdate":0,"enddate":0,"duration":0,"starttimehour":0,"starttimeminute":0,"endtimehour":0,"endtimeminute":0,"maxstudents":0,"enrol_from_waitlist":false,"field_custom1":"Option 1,Option 3"}} |
 

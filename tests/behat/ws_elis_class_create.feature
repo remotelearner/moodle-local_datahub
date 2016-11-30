@@ -1,4 +1,4 @@
-@local @local_datahub
+@local @local_datahub @dh_ws
 Feature: Web service requests can be made to create an ELIS Class Instance.
 
     Background:
@@ -101,7 +101,7 @@ Feature: Web service requests can be made to create an ELIS Class Instance.
          | {"data":{"idnumber":"T332619CLSb","assignment":"T332619CRSa"}} |
        Then I should receive from the datahub web service:
          | expected |
-         | {"messagecode":"class_created","message":"Class created successfully","record":{"idnumber":"T332619CLSb","startdate":0,"enddate":0,"duration":0,"starttimehour":0,"starttimeminute":0,"endtimehour":0,"endtimeminute":0,"maxstudents":0,"environmentid":0,"enrol_from_waitlist":false}} |
+         | {"messagecode":"class_created","message":"Class created successfully","record":{"idnumber":"T332619CLSb","startdate":0,"enddate":0,"duration":0,"starttimehour":0,"starttimeminute":0,"endtimehour":0,"endtimeminute":0,"maxstudents":0,"enrol_from_waitlist":false}} |
 
     # T33.26.19 #10
     Scenario: Assignment to Track.
@@ -110,7 +110,7 @@ Feature: Web service requests can be made to create an ELIS Class Instance.
          | {"data":{"startdate":"Jan/01/2013","enddate":"Feb/01/2013","idnumber":"T332619CLSc","assignment":"T332619CRSa","track":"T332619TRKa"}} |
        Then I should receive from the datahub web service:
          | expected |
-         | {"messagecode":"class_created","message":"Class created successfully","record":{"idnumber":"T332619CLSc","duration":0,"starttimehour":0,"starttimeminute":0,"endtimehour":0,"endtimeminute":0,"maxstudents":0,"environmentid":0,"enrol_from_waitlist":false}} |
+         | {"messagecode":"class_created","message":"Class created successfully","record":{"idnumber":"T332619CLSc","duration":0,"starttimehour":0,"starttimeminute":0,"endtimehour":0,"endtimeminute":0,"maxstudents":0,"enrol_from_waitlist":false}} |
 
     # T33.26.19 #11
     Scenario: Assignment to Moodle Course.
@@ -119,7 +119,7 @@ Feature: Web service requests can be made to create an ELIS Class Instance.
          | {"data":{"startdate":"Jan/01/2013","enddate":"Feb/01/2013","idnumber":"T332619CLSd","assignment":"T332619CRSa","link":"T332619MCa"}} |
        Then I should receive from the datahub web service:
          | expected |
-         | {"messagecode":"class_created","message":"Class created successfully","record":{"idnumber":"T332619CLSd","duration":0,"starttimehour":0,"starttimeminute":0,"endtimehour":0,"endtimeminute":0,"maxstudents":0,"environmentid":0,"enrol_from_waitlist":false}} |
+         | {"messagecode":"class_created","message":"Class created successfully","record":{"idnumber":"T332619CLSd","duration":0,"starttimehour":0,"starttimeminute":0,"endtimehour":0,"endtimeminute":0,"maxstudents":0,"enrol_from_waitlist":false}} |
 
     # T33.26.19 #12
     Scenario: Create with invalid multi-valued custom field parameters.
@@ -131,7 +131,7 @@ Feature: Web service requests can be made to create an ELIS Class Instance.
          | {"data":{"startdate":"Jan/01/2013","enddate":"Feb/01/2013","idnumber":"T332619CLSe","assignment":"T332619CRSa","field_custom1":"Option E"}} |
         Then I should receive from the datahub web service:
          | expected |
-         | {"messagecode":"class_created","message":"Class created with custom field errors - see logs for details.","record":{"idnumber":"T332619CLSe","duration":0,"starttimehour":0,"starttimeminute":0,"endtimehour":0,"endtimeminute":0,"maxstudents":0,"environmentid":0,"enrol_from_waitlist":false,"field_custom1":"Option 4"}} |
+         | {"messagecode":"class_created","message":"Class created with custom field errors - see logs for details.","record":{"idnumber":"T332619CLSe","duration":0,"starttimehour":0,"starttimeminute":0,"endtimehour":0,"endtimeminute":0,"maxstudents":0,"enrol_from_waitlist":false,"field_custom1":"Option 4"}} |
 
     # T33.26.19 #12.1
     Scenario: Create with valid multi-valued custom field parameters.
@@ -143,5 +143,5 @@ Feature: Web service requests can be made to create an ELIS Class Instance.
          | {"data":{"startdate":"Jan/01/2013","enddate":"Feb/01/2013","idnumber":"T332619CLSdd","assignment":"T332619CRSa","field_custom1":"Option 1,Option 3"}} |
         Then I should receive from the datahub web service:
          | expected |
-         | {"messagecode":"class_created","message":"Class created successfully","record":{"idnumber":"T332619CLSdd","duration":0,"starttimehour":0,"starttimeminute":0,"endtimehour":0,"endtimeminute":0,"maxstudents":0,"environmentid":0,"enrol_from_waitlist":false,"field_custom1":"Option 1,Option 3"}} |
+         | {"messagecode":"class_created","message":"Class created successfully","record":{"idnumber":"T332619CLSdd","duration":0,"starttimehour":0,"starttimeminute":0,"endtimehour":0,"endtimeminute":0,"maxstudents":0,"enrol_from_waitlist":false,"field_custom1":"Option 1,Option 3"}} |
 

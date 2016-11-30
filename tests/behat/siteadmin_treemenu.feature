@@ -3,7 +3,7 @@ Feature: Datahub custom menu items in Moodle Site Administration tree-menu.
 
     Background:
         Given I log in as "admin"
-        And I am on site homepage
+        And I am on homepage
 
 
     # T33.19 #1a

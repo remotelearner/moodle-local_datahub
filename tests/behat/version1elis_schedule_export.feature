@@ -83,7 +83,7 @@ Feature: version1elis scheduled export.
           | "First Name","Last Name",Username,"User Idnumber","Course Idnumber","Start Date","End Date",Status,Grade,Letter |
           | Student,Test,testuser,testuser,testcourse1,.*,.*,COMPLETED,95.76000,A |
 
-    # T33.15.2 ~ 
+    # T33.15.2 ~
     Scenario: version1elis advanced calendar schedule export succeeds.
         Given the following ELIS class enrolments exist:
           | user_idnumber | class_idnumber | completestatus | grade | credits | locked |

@@ -1,4 +1,4 @@
-@local @local_datahub
+@local @local_datahub @dh_ws
 Feature: Web service requests can be made to update a userset.
 
     Background:
@@ -73,7 +73,7 @@ Feature: Web service requests can be made to update a userset.
          | {"data":{"name":"TestUserset","field_custom1":"Option E"}} |
         Then I should receive from the datahub web service:
          | expected |
-         | {"messagecode":"userset_updated","message":"Userset updated with custom field errors - see logs for details.","record":{"name":"TestUserset","display":"TestUserset","parent":0,"field_custom1":"Option 4"}} |
+         | {"messagecode":"userset_updated","message":"Userset updated with custom field errors - see logs for details.","record":{"name":"TestUserset","display":"TestUserset","field_custom1":"Option 4"}} |
 
     # T33.26.29 #7.1
     Scenario: Create with invalid multi-valued custom field parameters.
@@ -85,5 +85,5 @@ Feature: Web service requests can be made to update a userset.
          | {"data":{"name":"TestUserset","field_custom1":"Option 1,Option 3"}} |
         Then I should receive from the datahub web service:
          | expected |
-         | {"messagecode":"userset_updated","message":"Userset updated successfully","record":{"name":"TestUserset","display":"TestUserset","parent":0,"field_custom1":"Option 1,Option 3"}} |
+         | {"messagecode":"userset_updated","message":"Userset updated successfully","record":{"name":"TestUserset","display":"TestUserset","field_custom1":"Option 1,Option 3"}} |
 

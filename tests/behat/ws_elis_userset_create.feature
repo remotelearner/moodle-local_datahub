@@ -1,4 +1,4 @@
-@local @local_datahub
+@local @local_datahub @dh_ws
 Feature: Web service requests can be made to create a userset.
 
     Background:
@@ -61,7 +61,7 @@ Feature: Web service requests can be made to create a userset.
          | {"data":{"name":"TestUserset2","display":"test userset 2 description","parent":"top","field_custom1":"Option E"}} |
         Then I should receive from the datahub web service:
          | expected |
-         | {"messagecode":"userset_created","message":"Userset created with custom field errors - see logs for details.","record":{"name":"TestUserset2","display":"test userset 2 description","parent":0,"field_custom1":"Option 4"}} |
+         | {"messagecode":"userset_created","message":"Userset created with custom field errors - see logs for details.","record":{"name":"TestUserset2","display":"test userset 2 description","field_custom1":"Option 4"}} |
 
     # T33.26.28 #9.1
     Scenario: Create with valid multi-valued custom field parameters.
@@ -73,5 +73,5 @@ Feature: Web service requests can be made to create a userset.
          | {"data":{"name":"TestUserset3","display":"test userset 3 description","parent":"top","field_custom1":"Option 1,Option 3"}} |
         Then I should receive from the datahub web service:
          | expected |
-         | {"messagecode":"userset_created","message":"Userset created successfully","record":{"name":"TestUserset3","display":"test userset 3 description","parent":0,"field_custom1":"Option 1,Option 3"}} |
+         | {"messagecode":"userset_created","message":"Userset created successfully","record":{"name":"TestUserset3","display":"test userset 3 description","field_custom1":"Option 1,Option 3"}} |
 

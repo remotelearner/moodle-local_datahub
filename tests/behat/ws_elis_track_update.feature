@@ -1,4 +1,4 @@
-@local @local_datahub
+@local @local_datahub @dh_ws
 Feature: Web service requests can be made to update a track.
 
     Background:
@@ -10,7 +10,7 @@ Feature: Web service requests can be made to update a track.
           | TestProgram | TestProgramIdnumber | 12.34 |
         And the following ELIS tracks exist:
           | program_idnumber | name | idnumber |
-          | TestProgramIdnumber | TestTrack | TestTrackIdnumber | 
+          | TestProgramIdnumber | TestTrack | TestTrackIdnumber |
 
     #T33.26.26 #1
     Scenario: Sending no data returns an error.
