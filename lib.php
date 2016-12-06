@@ -42,6 +42,9 @@ define('RLIP_IMPORT_TEMPDIR', '/datahub/%s/temp/');
 //the default log path
 define('RLIP_DEFAULT_LOG_PATH', '/datahub/log');
 
+// DATAHUB-1590: Required local_elisprogram version.
+define('RLDH_ELISPROGRAM_VERSION', '2015010400');
+
 require_once($CFG->dirroot.'/lib/adminlib.php');
 require_once($CFG->dirroot.'/local/datahub/lib/rlip_dataplugin.class.php');
 
@@ -1349,4 +1352,17 @@ function datahub_fullname($user, $override = false) {
     }
 
     return fullname($user, $override);
+}
+
+/**
+ * Deternmine if local_elisprogram is available.
+ *
+ * @param string $version the minimum version required.
+ * @return bool true if local_elisprogram is installed and at correct version.
+ */
+function local_datahub_elisprogram_available($version = 0) {
+    global $CFG, $DB;
+    return file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php') &&
+            $DB->record_exists_select('config_plugins',
+                    'plugin = "local_elisprogram" AND name = "version" AND value >= ?' , [$version]);
 }
