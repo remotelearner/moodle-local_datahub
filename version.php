@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2015102203;
+$plugin->version = 2015102204;
 $plugin->requires = 2015101600.00; // Requires this Moodle version
 $plugin->component = 'local_datahub';
 $plugin->maturity = MATURITY_STABLE;
@@ -33,7 +33,3 @@ $plugin->release = '3.0.4.2 (Build: 20160823)';
 $plugin->dependencies = array(
     'local_eliscore' => 2015102200
 );
-
-if (file_exists(dirname(__FILE__).'/../elisprogram/lib/setup.php')) {
-    $plugin->dependencies['local_elisprogram'] = 2015102200;
-}
