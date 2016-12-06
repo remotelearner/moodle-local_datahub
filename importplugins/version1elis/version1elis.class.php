@@ -23,6 +23,7 @@
  *
  */
 
+require_once($CFG->dirroot.'/local/datahub/lib.php');
 require_once($CFG->dirroot.'/local/datahub/lib/rlip_importplugin.class.php');
 if (file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php')) {
     require_once($CFG->dirroot.'/local/elisprogram/lib/setup.php');
@@ -5046,10 +5047,7 @@ class rlip_importplugin_version1elis extends rlip_importplugin_base {
      * scheduled tasks
      */
     function is_available() {
-        global $CFG;
-
-        //this plugin is only available if the PM code is present
-        return file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php');
+        return local_datahub_elisprogram_available(RLDH_ELISPROGRAM_VERSION);
     }
 }
 
