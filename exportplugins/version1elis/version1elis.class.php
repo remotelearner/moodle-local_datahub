@@ -307,10 +307,7 @@ class rlip_exportplugin_version1elis extends rlip_exportplugin_base {
      * scheduled tasks
      */
     public function is_available() {
-        global $CFG;
-
-        // This plugin is only available if the PM code is present.
-        return file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php');
+        return local_datahub_elisprogram_available(RLDH_ELISPROGRAM_VERSION);
     }
 
     /**

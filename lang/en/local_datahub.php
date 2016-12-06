@@ -35,6 +35,7 @@ $string['dblogimportexceedstimelimit'] = 'Failed importing all lines from import
 $string['disableincron'] = 'Disable in Moodle cron';
 $string['displaytimeformat'] = '%b/%d/%Y, %I:%M:%S %P';
 $string['duplicate'] = 'Please enter a unique value';
+$string['elisprogram_mismatch'] = 'Note: The installed version of plugin local_elisprogram is too low for this version of DataHub.<br/>Please upgrade plugin local_elisprogram to a compatible version (>= {$a}).';
 $string['export'] = 'Export';
 $string['exportexceedstimelimit'] = 'Export processing aborted due to time restrictions. Export will be attempted again at next cron.';
 $string['exportinvalidlogfilepath'] = 'Log file access failed during export due to invalid logfile path: {$a->logfilepath}.';
