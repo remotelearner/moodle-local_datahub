@@ -590,6 +590,7 @@ class behat_local_datahub extends behat_files implements ContextInterface {
                 $page->fillField('idperiod', $datarow['params']);
             } else {
                 $page = $this->getSession()->getPage();
+                $this->selectOption('id_timezone', '8.0');
                 $params = json_decode($datarow['params']);
                 if (!empty($params->startdate)) {
                     $this->clickRadio('starttype', '1');
