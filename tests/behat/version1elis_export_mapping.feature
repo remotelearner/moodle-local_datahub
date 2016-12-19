@@ -44,7 +44,7 @@ Feature: version1elis export mapping.
         And the Datahub "export_version1elis_scheduled_" log file should contain "Export file .* successfully created"
         And the Datahub "version1elis" export file "should" contain lines:
           | line |
-          | "First Name","Last Name",Username,"User Idnumber","Course Idnumber","Start Date","End Date",Status,Grade,Letter,email,user1,course1,class1,credits |
-          | Student,Test,testuser,testuser,testcourse1,.*,.*,COMPLETED,85.76000,B,testuser@example.com,"Default user text","Default course text","Option 4",1.20 |
-          | Student,Test,testuser2,testuser2,testcourse2,.*,.*,COMPLETED,76.89000,C,testuser2@example.com,"Default user text","Default course text","Option 4",2.40 |
+          | "First Name","Last Name",Username,"User Idnumber","Course Idnumber","Start Date","End Date",Status,Grade,Letter,"User Email address",user1,course1,"Student Credits",class1
+          | Student,Test,testuser,testuser,testcourse1,.*,.*,COMPLETED,85.76000,B,testuser@example.com,"Default user text","Default course text",1.20,"Option 4" |
+          | Student,Test,testuser2,testuser2,testcourse2,.*,.*,COMPLETED,76.89000,C,testuser2@example.com,"Default user text","Default course text",2.40,"Option 4" |
 
