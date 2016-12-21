@@ -29,7 +29,7 @@ $plugin->version = 2015102204;
 $plugin->requires = 2015101600.00; // Requires this Moodle version
 $plugin->component = 'local_datahub';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '3.0.4.2 (Build: 20160823)';
+$plugin->release = '3.0.7.0 (Build: 20161221)';
 $plugin->dependencies = array(
     'local_eliscore' => 2015102200
 );
