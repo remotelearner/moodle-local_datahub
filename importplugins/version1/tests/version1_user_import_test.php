@@ -898,8 +898,6 @@ class version1userimport_testcase extends rlip_test {
         global $CFG;
         require_once($CFG->dirroot.'/local/eliscore/lib/setup.php');
 
-        // Make sure we are not auto-assigning idnumbers.
-        set_config('auto_assign_user_idnumber', 0, 'local_elisprogram');
         elis::$config = new elis_config();
 
         $this->run_core_user_import(array());
@@ -919,8 +917,6 @@ class version1userimport_testcase extends rlip_test {
         global $CFG;
         require_once($CFG->dirroot.'/local/eliscore/lib/setup.php');
 
-        // Make sure we are not auto-assigning idnumbers.
-        set_config('auto_assign_user_idnumber', 0, 'local_elisprogram');
         elis::$config = new elis_config();
 
         // Run the import.
@@ -941,8 +937,6 @@ class version1userimport_testcase extends rlip_test {
         global $CFG;
         require_once($CFG->dirroot.'/local/eliscore/lib/setup.php');
 
-        // Make sure we are not auto-assigning idnumbers.
-        set_config('auto_assign_user_idnumber', 0, 'local_elisprogram');
         elis::$config = new elis_config();
 
         // Create the user.
@@ -970,8 +964,6 @@ class version1userimport_testcase extends rlip_test {
         global $CFG;
         require_once($CFG->dirroot.'/local/eliscore/lib/setup.php');
 
-        // Make sure we are not auto-assigning idnumbers.
-        set_config('auto_assign_user_idnumber', 0, 'local_elisprogram');
         elis::$config = new elis_config();
 
         // Disable idnumber as identifying field
@@ -996,301 +988,6 @@ class version1userimport_testcase extends rlip_test {
     }
 
     /**
-     * Validate that the import auto-assigns missing idnumbers when the column
-     * is not supplied and the config setting is on
-     */
-    public function test_version1importautoassignsmissingidnumbersoncreate() {
-        global $CFG, $DB;
-        require_once($CFG->dirroot.'/local/eliscore/lib/setup.php');
-
-        if (!file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php')) {
-            $this->markTestIncomplete('This test depends on the PM system');
-        }
-
-        // Make sure we are auto-assigning idnumbers.
-        set_config('auto_assign_user_idnumber', 1, 'local_elisprogram');
-        elis::$config = new elis_config();
-
-        // Run the import.
-        $this->run_core_user_import(array('rlipusername' => 'rlipusername'));
-
-        // Make sure the idnumber was set to the username value.
-        $this->assert_record_exists('user', array(
-            'username' => 'rlipusername',
-            'mnethostid' => $CFG->mnet_localhost_id,
-            'idnumber' => 'rlipusername'
-        ));
-    }
-
-    /**
-     * Validate that the import auto-assigns missing idnumbers when they are
-     * empty and the config setting is on
-     */
-    public function test_version1importautoassignsemptyidnumbersoncreate() {
-        global $CFG, $DB;
-        require_once($CFG->dirroot.'/local/eliscore/lib/setup.php');
-
-        if (!file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php')) {
-            $this->markTestIncomplete('This test depends on the PM system');
-        }
-
-        // Make sure we are auto-assigning idnumbers.
-        set_config('auto_assign_user_idnumber', 1, 'local_elisprogram');
-        elis::$config = new elis_config();
-
-        // Run the import.
-        $this->run_core_user_import(array('rlipusername' => 'rlipusername', 'idnumber' => ''));
-
-        // Make sure the idnumber was set to the username value.
-        $this->assert_record_exists('user', array(
-            'username' => 'rlipusername',
-            'mnethostid' => $CFG->mnet_localhost_id,
-            'idnumber' => 'rlipusername'
-        ));
-    }
-
-    /**
-     * Validate that the import performs user synchronization on user create
-     * when an idnumber is supplied
-     */
-    public function test_version1importsyncsusertoelisoncreatewithidnumbersupplied() {
-        global $CFG, $DB;
-
-        if (!file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php')) {
-            $this->markTestIncomplete('This test depends on the PM system');
-        }
-
-        require_once($CFG->dirroot.'/local/elisprogram/lib/setup.php');
-        require_once($CFG->dirroot.'/user/profile/definelib.php');
-        require_once(elis::lib('data/customfield.class.php'));
-        require_once(elispm::lib('data/user.class.php'));
-        require_once($CFG->dirroot.'/local/eliscore/fields/moodleprofile/custom_fields.php');
-
-        // Make sure we are not auto-assigning idnumbers.
-        set_config('auto_assign_user_idnumber', 0, 'local_elisprogram');
-        elis::$config = new elis_config();
-
-        // Create Moodle custom field category.
-        $category = new stdClass;
-        $category->sortorder = $DB->count_records('user_info_category') + 1;
-        $category->id = $DB->insert_record('user_info_category', $category);
-
-        // Create Moodle custom profile field.
-        $this->create_profile_field('rliptext', 'text', $category->id);
-
-        // Obtain the PM user context level.
-        $contextlevel = CONTEXT_ELIS_USER;
-
-        // Make sure the PM category and field exist.
-        $category = new field_category(array('name' => 'rlipcategory'));
-
-        $field = new field(array(
-            'shortname'   => 'rliptext',
-            'name'        => 'rliptext',
-            'datatype'    => 'text',
-            'multivalued' => 0
-        ));
-        $field = field::ensure_field_exists_for_context_level($field, $contextlevel, $category);
-
-        // Make sure the field owner is setup.
-        field_owner::ensure_field_owner_exists($field, 'manual');
-        $ownerid = $DB->get_field(field_owner::TABLE, 'id', array('fieldid' => $field->id, 'plugin' => 'manual'));
-        $owner = new field_owner($ownerid);
-        $owner->param_control = 'text';
-        $owner->save();
-
-        // Make sure the field is set up for synchronization.
-        field_owner::ensure_field_owner_exists($field, 'moodle_profile');
-        $ownerid = $DB->get_field(field_owner::TABLE, 'id', array('fieldid' => $field->id, 'plugin' => 'moodle_profile'));
-        $owner = new field_owner($ownerid);
-        $owner->exclude = pm_moodle_profile::sync_from_moodle;
-        $owner->save();
-
-        // Update the user class's static cache of define user custom fields.
-        $tempuser = new user();
-        $tempuser->reset_custom_field_list();
-
-        // Run the import.
-        $this->run_core_user_import(array('idnumber' => 'rlipidnumber', 'profile_field_rliptext' => 'rliptext'));
-
-        // Make sure PM user was created correctly.
-        $this->assert_record_exists(user::TABLE, array('username' => 'rlipusername', 'idnumber' => 'rlipidnumber'));
-
-        // Make sure the PM custom field data was set.
-        $sql = "SELECT 'x'
-                  FROM {".field::TABLE."} f
-                  JOIN {".field_data_text::TABLE."} d ON f.id = d.fieldid
-                 WHERE f.shortname = ? AND d.data = ?";
-        $params = array('rliptext', 'rliptext');
-        $exists = $DB->record_exists_sql($sql, $params);
-        $this->assertEquals($exists, true);
-    }
-
-    /**
-     * Validate that the import performs user synchronization on user create
-     * when an idnumber is auto-assigned
-     */
-    public function test_version1importsyncsusertoelisoncreatewithidnumberautoassigned() {
-        global $CFG, $DB;
-
-        if (!file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php')) {
-            $this->markTestIncomplete('This test depends on the PM system');
-        }
-
-        require_once($CFG->dirroot.'/local/elisprogram/lib/setup.php');
-        require_once($CFG->dirroot.'/user/profile/definelib.php');
-        require_once(elis::lib('data/customfield.class.php'));
-        require_once(elispm::lib('data/user.class.php'));
-
-        // Make sure we are not auto-assigning idnumbers.
-        set_config('auto_assign_user_idnumber', 1, 'local_elisprogram');
-        elis::$config = new elis_config();
-
-        // Create Moodle custom field category.
-        $category = new stdClass;
-        $category->sortorder = $DB->count_records('user_info_category') + 1;
-        $category->id = $DB->insert_record('user_info_category', $category);
-
-        // Create Moodle custom profile field.
-        $this->create_profile_field('rliptext', 'text', $category->id);
-
-        // Obtain the PM user context level.
-        $contextlevel = CONTEXT_ELIS_USER;
-
-        // Make sure the PM category and field exist.
-        $category = new field_category(array('name' => 'rlipcategory'));
-
-        $field = new field(array(
-            'shortname'   => 'rliptext',
-            'name'        => 'rliptext',
-            'datatype'    => 'text',
-            'multivalued' => 0
-        ));
-        $field = field::ensure_field_exists_for_context_level($field, $contextlevel, $category);
-
-        // Make sure the field owner is setup.
-        field_owner::ensure_field_owner_exists($field, 'manual');
-        $ownerid = $DB->get_field(field_owner::TABLE, 'id', array('fieldid' => $field->id, 'plugin' => 'manual'));
-        $owner = new field_owner($ownerid);
-        $owner->param_control = 'text';
-        $owner->save();
-
-        // Make sure the field is set up for synchronization.
-        field_owner::ensure_field_owner_exists($field, 'moodle_profile');
-        $ownerid = $DB->get_field(field_owner::TABLE, 'id', array('fieldid' => $field->id, 'plugin' => 'moodle_profile'));
-        $owner = new field_owner($ownerid);
-        $owner->exclude = pm_moodle_profile::sync_from_moodle;
-        $owner->save();
-
-        // Update the user class's static cache of define user custom fields.
-        $tempuser = new user();
-        $tempuser->reset_custom_field_list();
-
-        // Run the import.
-        $this->run_core_user_import(array('profile_field_rliptext' => 'rliptext'));
-
-        // Make sure PM user was created correctly.
-        $this->assert_record_exists(user::TABLE, array('username' => 'rlipusername', 'idnumber' => 'rlipusername'));
-
-        // Make sure the PM custom field data was set.
-        $sql = "SELECT 'x'
-                  FROM {".field::TABLE."} f
-                  JOIN {".field_data_text::TABLE."} d ON f.id = d.fieldid
-                 WHERE f.shortname = ? AND d.data = ?";
-        $params = array('rliptext', 'rliptext');
-        $exists = $DB->record_exists_sql($sql, $params);
-        $this->assertEquals($exists, true);
-    }
-
-    /**
-     * Validate that the import performs user synchronization on user update
-     */
-    public function test_version1importsyncsusertoelisonupdate() {
-        global $CFG, $DB;
-
-        if (!file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php')) {
-            $this->markTestIncomplete('This test depends on the PM system');
-        }
-
-        require_once($CFG->dirroot.'/local/elisprogram/lib/setup.php');
-        require_once($CFG->dirroot.'/user/profile/definelib.php');
-        require_once(elis::lib('data/customfield.class.php'));
-        require_once(elispm::lib('data/user.class.php'));
-
-        // Make sure we are not auto-assigning idnumbers.
-        set_config('auto_assign_user_idnumber', 0, 'local_elisprogram');
-        elis::$config = new elis_config();
-
-        // Create Moodle custom field category.
-        $category = new stdClass;
-        $category->sortorder = $DB->count_records('user_info_category') + 1;
-        $category->id = $DB->insert_record('user_info_category', $category);
-
-        // Create Moodle custom profile field.
-        $this->create_profile_field('rliptext', 'text', $category->id);
-
-        // Obtain the PM user context level.
-        $contextlevel = CONTEXT_ELIS_USER;
-
-        // Make sure the PM category and field exist.
-        $category = new field_category(array('name' => 'rlipcategory'));
-
-        $field = new field(array(
-            'shortname'   => 'rliptext',
-            'name'        => 'rliptext',
-            'datatype'    => 'text',
-            'multivalued' => 0
-        ));
-        $field = field::ensure_field_exists_for_context_level($field, $contextlevel, $category);
-
-        // Make sure the field owner is setup.
-        field_owner::ensure_field_owner_exists($field, 'manual');
-        $ownerid = $DB->get_field(field_owner::TABLE, 'id', array('fieldid' => $field->id, 'plugin' => 'manual'));
-        $owner = new field_owner($ownerid);
-        $owner->param_control = 'text';
-        $owner->save();
-
-        // Make sure the field is set up for synchronization.
-        field_owner::ensure_field_owner_exists($field, 'moodle_profile');
-        $ownerid = $DB->get_field(field_owner::TABLE, 'id', array('fieldid' => $field->id, 'plugin' => 'moodle_profile'));
-        $owner = new field_owner($ownerid);
-        $owner->exclude = pm_moodle_profile::sync_from_moodle;
-        $owner->save();
-
-        // Update the user class's static cache of define user custom fields.
-        $tempuser = new user();
-        $tempuser->reset_custom_field_list();
-
-        // Create the user.
-        $this->run_core_user_import(array(
-            'idnumber' => 'rlipidnumber',
-            'profile_field_rliptext' => 'rliptext'
-        ));
-
-        // Make sure PM user was created correctly.
-        $this->assert_record_exists(user::TABLE, array(
-            'username' => 'rlipusername',
-            'idnumber' => 'rlipidnumber'
-        ));
-
-        // Run the import, updating the user.
-        $this->run_core_user_import(array(
-            'action' => 'update',
-            'username' => 'rlipusername',
-            'profile_field_rliptext' => 'rliptextupdated'
-        ));
-
-        // Make sure the PM custom field data was set.
-        $sql = "SELECT 'x'
-                  FROM {".field::TABLE."} f
-                  JOIN {".field_data_text::TABLE."} d ON f.id = d.fieldid
-                 WHERE f.shortname = ? AND d.data = ?";
-        $params = array('rliptext', 'rliptextupdated');
-        $exists = $DB->record_exists_sql($sql, $params);
-        $this->assertEquals($exists, true);
-    }
-
-    /**
      * Validate that default values are correctly set on user creation
      */
     public function test_version1importsetsdefaultsonusercreate() {
@@ -1299,8 +996,6 @@ class version1userimport_testcase extends rlip_test {
 
         set_config('forcetimezone', 99);
 
-        // Make sure we are not auto-assigning idnumbers.
-        set_config('auto_assign_user_idnumber', 0, 'local_elisprogram');
         elis::$config = new elis_config();
 
         $this->run_core_user_import(array());

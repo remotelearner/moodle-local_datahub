@@ -62,18 +62,6 @@ class archivelogfile_testcase extends rlip_test {
                 array('export', 'dhexport_version1', RLIP_DEFAULT_LOG_PATH),
         );
 
-        if (file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php')) {
-            // Add the PM plugins if applicable.
-            $pmruns = array(
-                    array('import', 'dhimport_version1elis', ''),
-                    array('import', 'dhimport_version1elis', RLIP_DEFAULT_LOG_PATH),
-                    array('export', 'dhexport_version1elis', ''),
-                    array('export', 'dhexport_version1elis', RLIP_DEFAULT_LOG_PATH),
-            );
-
-            $runs = array_merge($runs, $pmruns);
-        }
-
         return $runs;
     }
 

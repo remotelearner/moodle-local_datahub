@@ -388,11 +388,6 @@ class version1export_testcase extends rlip_test {
     public function test_version1exportexcludesdeletedusers() {
         global $CFG, $DB;
 
-        if (file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php')) {
-            // Needed to prevent error in PM delete handler.
-            require_once($CFG->dirroot.'/local/elisprogram/lib/setup.php');
-        }
-
         set_config('nonincremental', 1, 'dhexport_version1');
 
         $this->load_csv_data();

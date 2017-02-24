@@ -31,8 +31,6 @@ require_once($CFG->dirroot.'/local/datahub/tests/other/rlip_test.class.php');
 require_once($CFG->dirroot.'/local/datahub/lib.php');
 require_once($CFG->dirroot.'/local/datahub/exportplugins/version1/lib.php');
 require_once($CFG->dirroot.'/local/datahub/importplugins/version1/lib.php');
-require_once($CFG->dirroot.'/local/datahub/exportplugins/version1elis/lib.php');
-require_once($CFG->dirroot.'/local/datahub/importplugins/version1elis/lib.php');
 
 /**
  * Class for testing utility methods
@@ -1194,21 +1192,6 @@ class utilitymethod_testcase extends rlip_test {
         } catch (Exception $e) {
             // Expected exception table not found.
             $this->recreate_table('dhimport_version1', RLIPIMPORT_VERSION1_MAPPING_TABLE);
-        }
-
-        try {
-            $DB->count_records(RLIPEXPORT_VERSION1ELIS_FIELD_TABLE);
-            $this->assertTrue(false);
-        } catch (Exception $e) {
-            // Expected exception table not found.
-            $this->recreate_table('dhexport_version1elis', RLIPEXPORT_VERSION1ELIS_FIELD_TABLE);
-        }
-        try {
-            $DB->count_records(RLIPIMPORT_VERSION1ELIS_MAPPING_TABLE);
-            $this->assertTrue(false);
-        } catch (Exception $e) {
-            // Expected exception table not found.
-            $this->recreate_table('dhimport_version1elis', RLIPIMPORT_VERSION1ELIS_MAPPING_TABLE);
         }
 
         // Test RLIP elis schedule task deleted.

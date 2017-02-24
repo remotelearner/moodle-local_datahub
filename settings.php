@@ -34,12 +34,6 @@ if ($hassiteconfig) {
     $settings = new admin_settingpage('local_datahub', get_string('datahub_settings', 'local_datahub'));
     $ADMIN->add('localplugins', $settings);
 
-    if (local_datahub_elisprogram_available() && !local_datahub_elisprogram_available(RLDH_ELISPROGRAM_VERSION)) {
-        // DATAHUB-1590: Mismatch between versions of local_datahub & local_elisprogram.
-        $settings->add(new admin_setting_heading('local_datahub/elisprogrammismatch',
-                get_string('elisprogram_mismatch', 'local_datahub', RLDH_ELISPROGRAM_VERSION), ''));
-    }
-
     // Start of "scheduling" section
     $settings->add(new admin_setting_heading('local_datahub/scheduling', get_string('rlip_global_scheduling', 'local_datahub'), ''));
 

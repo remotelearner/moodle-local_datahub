@@ -32,10 +32,6 @@ require_once(dirname(__FILE__).'/other/rlip_mock_provider.class.php');
 require_once($CFG->dirroot.'/local/datahub/tests/other/readmemory.class.php');
 require_once($CFG->dirroot.'/local/eliscore/lib/rollover/backup/rollover_backup_controller.class.php');
 
-if (file_exists($CFG->dirroot.'/local/elisprogram/lib/setup.php')) {
-    require_once($CFG->dirroot.'/local/elisprogram/lib/data/userset.class.php');
-}
-
 /**
  * Class for version 1 course import correctness
  * @group local_datahub
