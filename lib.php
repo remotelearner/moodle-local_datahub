@@ -44,6 +44,7 @@ define('RLIP_DEFAULT_LOG_PATH', '/datahub/log');
 
 require_once($CFG->dirroot.'/lib/adminlib.php');
 require_once($CFG->dirroot.'/local/datahub/lib/rlip_dataplugin.class.php');
+require_once($CFG->dirroot.'/local/eliscore/lib.php');
 
 /**
  * Settings page that can have child pages

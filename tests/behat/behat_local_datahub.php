@@ -116,7 +116,7 @@ class behat_local_datahub extends behat_files implements SnippetAcceptingContext
             'xpath',
             "//div[contains(concat(' ', normalize-space(@class), ' '), ' file-picker ')]".
                 "[contains(concat(' ', normalize-space(@class), ' '), ' repository_upload ')]".
-                "/descendant::div[@class='fp-content']".
+                "/descendant::div[contains(concat(' ', normalize-space(@class), ' '), ' fp-content ')]".
                 "/descendant::div[contains(concat(' ', normalize-space(@class), ' '), ' fp-upload-form ')]".
                 "/descendant::form",
             $noformexception

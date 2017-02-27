@@ -76,8 +76,8 @@ $settings->add(new admin_setting_configtext('dhimport_version1/logfilelocation',
 $settings->add(new admin_setting_configtext('dhimport_version1/emailnotification', get_string('emailnotification', 'dhimport_version1'),
         get_string('configemailnotification', 'dhimport_version1'), ''));
 
-$settings->add(new admin_setting_configcheckbox('dhimport_version1/allowduplicateemails', get_string('allowduplicateemails','dhimport_version1elis'),
-        get_string('configallowduplicateemails','dhimport_version1elis'), ''));
+$settings->add(new admin_setting_configcheckbox('dhimport_version1/allowduplicateemails', get_string('allowduplicateemails','dhimport_version1'),
+        get_string('configallowduplicateemails','dhimport_version1'), ''));
 
 // Start of "emails" section.
 $settings->add(new admin_setting_heading('dhimport_version1/emails', get_string('emails', 'dhimport_version1'), ''));

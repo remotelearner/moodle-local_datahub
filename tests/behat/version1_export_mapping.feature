@@ -30,20 +30,20 @@ Feature: version1 export field mapping
           | Grade Cat2 | testcourse2 |
         And the following "grade items" exist:
           | itemname | course | gradecategory |
-          | gradeitem1 | testcourse1 | Grade Cat1 }
+          | gradeitem1 | testcourse1 | Grade Cat1 |
           | gradeitem2 | testcourse2 | Grade Cat2 |
         And the following "course enrolments" exist:
           | user | course | role |
           | testuser | testcourse1 | student |
           | testuser2 | testcourse2 | student |
         And I visit Moodle course "testcourse1"
-        And I navigate to "Grades" node in "Course administration"
+        And I click on "Grades" "text" in the "#nav-drawer" "css_element"
         And I turn editing mode on
         And I give the grade "85.76" to the user "Test User" for the grade item "gradeitem1"
         And I give the grade "85.76" to the user "Test User" for the grade item "Course total"
         And I click on "Save changes" "button"
         And I visit Moodle course "testcourse2"
-        And I navigate to "Grades" node in "Course administration"
+        And I click on "Grades" "text" in the "#nav-drawer" "css_element"
         And I turn editing mode on
         And I give the grade "76.89" to the user "Test User2" for the grade item "gradeitem2"
         And I give the grade "76.89" to the user "Test User2" for the grade item "Course total"
@@ -58,7 +58,7 @@ Feature: version1 export field mapping
         And the Datahub "version1" export file "should" contain lines:
           | line |
           | "First Name","Last Name",Username,"User Idnumber","Course Idnumber","Start Date","End Date",Grade,Letter,customtext1,"Custom menu 1" |
-          | Test,User,testuser,testuser,testcourse1,.*,.*,85.76000,B,"Custom 1 default","Option C" |
-          | Test,User2,testuser2,testuser2,testcourse2,.*,.*,76.89000,C,"Custom 1 default","Option C" |
+          | Test,User,testuser,,testcourse1,.*,.*,85.76000,B,"Custom 1 default","Option C" |
+          | Test,User2,testuser2,,testcourse2,.*,.*,76.89000,C,"Custom 1 default","Option C" |
        # NOTE: the heading column customtext1 should really be "Custom text 1", above ^
 

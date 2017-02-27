@@ -110,6 +110,8 @@ class rlip_fslogger {
      * @return float The numerical timezone offset
      */
     function get_offset_from_timezone_string($timezone) {
+        global $CFG;
+        require_once($CFG->dirroot.'/local/eliscore/lib.php');
         return rl_get_user_timezone_offset($timezone);
     }
 

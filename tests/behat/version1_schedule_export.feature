@@ -24,7 +24,7 @@ Feature: version1 export.
           | Grade Cat3 | testcourse3 |
         And the following "grade items" exist:
           | itemname | course | gradecategory |
-          | gradeitem1 | testcourse1 | Grade Cat1 }
+          | gradeitem1 | testcourse1 | Grade Cat1 |
           | gradeitem2 | testcourse2 | Grade Cat2 |
           | gradeitem3 | testcourse3 | Grade Cat3 |
         And the following "course enrolments" exist:
@@ -33,13 +33,13 @@ Feature: version1 export.
           | testuser2 | testcourse2 | student |
           | testuser | testcourse3 | student |
         And I visit Moodle course "testcourse1"
-        And I navigate to "Grades" node in "Course administration"
+        And I click on "Grades" "text" in the "#nav-drawer" "css_element"
         And I turn editing mode on
         And I give the grade "85.76" to the user "Test User" for the grade item "gradeitem1"
         And I give the grade "85.76" to the user "Test User" for the grade item "Course total"
         And I click on "Save changes" "button"
         And I visit Moodle course "testcourse2"
-        And I navigate to "Grades" node in "Course administration"
+        And I click on "Grades" "text" in the "#nav-drawer" "css_element"
         And I turn editing mode on
         And I give the grade "76.89" to the user "Test User2" for the grade item "gradeitem2"
         And I give the grade "76.89" to the user "Test User2" for the grade item "Course total"
@@ -54,14 +54,14 @@ Feature: version1 export.
         And the Datahub "version1" export file "should" contain lines:
           | line |
           | "First Name","Last Name",Username,"User Idnumber","Course Idnumber","Start Date","End Date",Grade,Letter |
-          | Test,User,testuser,testuser,testcourse1,.*,.*,85.76000,B |
-          | Test,User2,testuser2,testuser2,testcourse2,.*,.*,76.89000,C |
+          | Test,User,testuser,,testcourse1,.*,.*,85.76000,B |
+          | Test,User2,testuser2,,testcourse2,.*,.*,76.89000,C |
         And I wait "60" seconds
         And I wait "60" seconds
         And I wait "30" seconds
         # Add new class completions
         And I visit Moodle course "testcourse3"
-        And I navigate to "Grades" node in "Course administration"
+        And I click on "Grades" "text" in the "#nav-drawer" "css_element"
         And I turn editing mode on
         And I give the grade "98.25" to the user "Test User" for the grade item "gradeitem3"
         And I give the grade "98.25" to the user "Test User" for the grade item "Course total"
@@ -76,11 +76,11 @@ Feature: version1 export.
         And the Datahub "version1" export file "should" contain lines:
           | line |
           | "First Name","Last Name",Username,"User Idnumber","Course Idnumber","Start Date","End Date",Grade,Letter |
-          | Test,User,testuser,testuser,testcourse3,.*,.*,98.25000,A |
+          | Test,User,testuser,,testcourse3,.*,.*,98.25000,A |
         And the Datahub "version1" export file "should not" contain lines:
           | line |
-          | Test,User,testuser,testuser,testcourse1,.*,.*,85.76000,B |
-          | Test,User2,testuser2,testuser2,testcourse2,.*,.*,76.89000,C |
+          | Test,User,testuser,,testcourse1,.*,.*,85.76000,B |
+          | Test,User2,testuser2,,testcourse2,.*,.*,76.89000,C |
 
     # T33.15.2 ~ 3b
     Scenario: version1 advanced schedule non-incremenatal export succeeds.
@@ -98,20 +98,20 @@ Feature: version1 export.
           | Grade Cat2 | testcourse2 |
         And the following "grade items" exist:
           | itemname | course | gradecategory |
-          | gradeitem1 | testcourse1 | Grade Cat1 }
+          | gradeitem1 | testcourse1 | Grade Cat1 |
           | gradeitem2 | testcourse2 | Grade Cat2 |
         And the following "course enrolments" exist:
           | user | course | role |
           | testuser | testcourse1 | student |
           | testuser2 | testcourse2 | student |
         And I visit Moodle course "testcourse1"
-        And I navigate to "Grades" node in "Course administration"
+        And I click on "Grades" "text" in the "#nav-drawer" "css_element"
         And I turn editing mode on
         And I give the grade "95.76" to the user "Test User" for the grade item "gradeitem1"
         And I give the grade "95.76" to the user "Test User" for the grade item "Course total"
         And I click on "Save changes" "button"
         And I visit Moodle course "testcourse2"
-        And I navigate to "Grades" node in "Course administration"
+        And I click on "Grades" "text" in the "#nav-drawer" "css_element"
         And I turn editing mode on
         And I give the grade "16.89" to the user "Test User2" for the grade item "gradeitem2"
         And I give the grade "16.89" to the user "Test User2" for the grade item "Course total"
@@ -132,8 +132,8 @@ Feature: version1 export.
         And the Datahub "version1" export file "should" contain lines:
           | line |
           | "First Name","Last Name",Username,"User Idnumber","Course Idnumber","Start Date","End Date",Grade,Letter |
-          | Test,User,testuser,testuser,testcourse1,.*,.*,95.76000,A |
-          | Test,User2,testuser2,testuser2,testcourse2,.*,.*,16.89000,F |
+          | Test,User,testuser,,testcourse1,.*,.*,95.76000,A |
+          | Test,User2,testuser2,,testcourse2,.*,.*,16.89000,F |
         And I wait "60" seconds
         And I wait "60" seconds
         And I wait "60" seconds
@@ -143,8 +143,8 @@ Feature: version1 export.
         And the Datahub "version1" export file "should" contain lines:
           | line |
           | "First Name","Last Name",Username,"User Idnumber","Course Idnumber","Start Date","End Date",Grade,Letter |
-          | Test,User,testuser,testuser,testcourse1,.*,.*,95.76000,A |
-          | Test,User2,testuser2,testuser2,testcourse2,.*,.*,16.89000,F |
+          | Test,User,testuser,,testcourse1,.*,.*,95.76000,A |
+          | Test,User2,testuser2,,testcourse2,.*,.*,16.89000,F |
 
     # T33.15.2 ~
     Scenario: version1 advanced calendar schedule export succeeds.
@@ -162,20 +162,20 @@ Feature: version1 export.
           | Grade Cat2 | testcourse2 |
         And the following "grade items" exist:
           | itemname | course | gradecategory |
-          | gradeitem1 | testcourse1 | Grade Cat1 }
+          | gradeitem1 | testcourse1 | Grade Cat1 |
           | gradeitem2 | testcourse2 | Grade Cat2 |
         And the following "course enrolments" exist:
           | user | course | role |
           | testuser | testcourse1 | student |
           | testuser2 | testcourse2 | student |
         And I visit Moodle course "testcourse1"
-        And I navigate to "Grades" node in "Course administration"
+        And I click on "Grades" "text" in the "#nav-drawer" "css_element"
         And I turn editing mode on
         And I give the grade "45.76" to the user "Test User" for the grade item "gradeitem1"
         And I give the grade "45.76" to the user "Test User" for the grade item "Course total"
         And I click on "Save changes" "button"
         And I visit Moodle course "testcourse2"
-        And I navigate to "Grades" node in "Course administration"
+        And I click on "Grades" "text" in the "#nav-drawer" "css_element"
         And I turn editing mode on
         And I give the grade "56.89" to the user "Test User2" for the grade item "gradeitem2"
         And I give the grade "56.89" to the user "Test User2" for the grade item "Course total"
@@ -194,6 +194,6 @@ Feature: version1 export.
         And the Datahub "version1" export file "should" contain lines:
           | line |
           | "First Name","Last Name",Username,"User Idnumber","Course Idnumber","Start Date","End Date",Grade,Letter |
-          | Test,User,testuser,testuser,testcourse1,.*,.*,45.76000,F |
-          | Test,User2,testuser2,testuser2,testcourse2,.*,.*,56.89000,F |
+          | Test,User,testuser,,testcourse1,.*,.*,45.76000,F |
+          | Test,User2,testuser2,,testcourse2,.*,.*,56.89000,F |
 
