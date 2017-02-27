@@ -23,6 +23,6 @@
  *
  */
 
-$plugin->version = 2016052300;
-$plugin->release = '3.1.0.0 (Build: 20160721)';
+$plugin->version = 2016120501;
+$plugin->release = '3.2.0.0 (Build: 20170306)';
 $plugin->component = 'dhexport_version1';

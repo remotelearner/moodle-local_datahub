@@ -23,6 +23,6 @@
  *
  */
 
-$plugin->version = 2016052300;
-$plugin->release = '3.1.3.0 (Build: 20161221)';
+$plugin->version = 2016120501;
+$plugin->release = '3.2.0.0 (Build: 20170306)';
 $plugin->component = 'dhimport_version1';

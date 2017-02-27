@@ -25,11 +25,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2016052302;
-$plugin->requires = 2016052300.00;
+$plugin->version = 2016120501;
+$plugin->requires = 2016120501;
 $plugin->component = 'local_datahub';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '3.1.3.0 (Build: 20161221)';
-$plugin->dependencies = array(
-    'local_eliscore' => 2016052300
-);
+$plugin->release = '3.2.0.0 (Build: 20170306)';
+$plugin->dependencies = [
+    'local_eliscore' => 2016120501
+];
