@@ -2534,17 +2534,18 @@ class version1userimport_testcase extends rlip_test {
      */
     public function test_version1importforcepasswordchangeoncreate() {
         global $DB;
+        $changeme = 'changeme';
 
         $this->set_password_policy_for_tests();
-        $this->run_core_user_import(array('password' => 'changeme'));
+        $this->run_core_user_import(['password' => $changeme]);
 
         $record = $DB->get_record('user', array('username' => 'rlipusername'));
         $id = isset($record->id) ? $record->id : 0;
         $this->assertGreaterThan(0, $id);
+        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $id, 'name' => 'auth_forcepasswordchange']));
 
-        $record = $DB->get_record('user_preferences', array('userid' => $id));
-        $name = isset($record->name) ? $record->name : '';
-        $this->assertEquals('auth_forcepasswordchange', $name);
+        // DATAHUB-1609: Verify the password is *not* set to 'changeme'
+        $this->assertNotEquals(hash_internal_user_password($changeme), $record->password);
     }
 
     /**
@@ -2562,9 +2563,7 @@ class version1userimport_testcase extends rlip_test {
 
         $this->run_core_user_import(array('action' => 'update', 'password' => 'changeme'));
 
-        $record = $DB->get_record('user_preferences', array('userid' => $id));
-        $name = isset($record->name) ? $record->name : '';
-        $this->assertEquals('auth_forcepasswordchange', $name);
+        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $id, 'name' => 'auth_forcepasswordchange']));
     }
 
     /**

@@ -812,13 +812,13 @@ class rlip_importplugin_version1 extends rlip_importplugin_base {
         }
 
         // See if we should force password change.
-        $requireforcepasswordchange = (isset($record->password) && $record->password == 'changeme') ? true : false;
+        $requireforcepasswordchange = ($record->password == 'changeme') ? true : false;
 
         //write to the database
         $record->descriptionformat = FORMAT_HTML;
         $record->mnethostid = $CFG->mnet_localhost_id;
-        $cleartextpassword = $record->password;
-        $record->password = hash_internal_user_password($record->password);
+        $cleartextpassword = $requireforcepasswordchange ? generate_password() : $record->password;
+        $record->password = hash_internal_user_password($cleartextpassword);
         $record->timecreated = time();
         $record->timemodified = $record->timecreated;
         //make sure the user is confirmed!
