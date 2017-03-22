@@ -25,11 +25,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2015102204;
+$plugin->version = 2015102205;
 $plugin->requires = 2015101600.00; // Requires this Moodle version
 $plugin->component = 'local_datahub';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '3.0.7.0 (Build: 20161221)';
+$plugin->release = '3.0.9.0 (Build: 20170322)';
 $plugin->dependencies = array(
     'local_eliscore' => 2015102200
 );
